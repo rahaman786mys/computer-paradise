@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact – Computer Paradise</title>
+  <link rel="stylesheet" href="styles.css?v=3">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="index.html" class="nav-logo">
+      <span class="logo-icon">💻</span>
+      <span class="logo-text"><span>Computer</span> Paradise<span class="logo-dot"></span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="buy.html">Buy Laptops & Desktops</a></li>
+      <li><a href="builds.html">PC Builds</a></li>
+      <li><a href="sell.html">Sell</a></li>
+      <li><a href="contact.html">Service</a></li>
+      <li><a href="contact.html">Repair</a></li>
+      <li><a href="contact.html" class="active">Contact</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+    <div class="nav-search">
+      <button class="nav-search-btn" id="searchBtn" aria-label="Search">🔍 <span>Search</span></button>
+      <div class="search-panel" id="searchPanel">
+        <div class="search-panel-header">
+          <input type="text" class="search-input" id="navSearchInput" placeholder="Search laptops, brands, specs..." autocomplete="off">
+          <div class="search-suggestions" id="navSuggestions"></div>
+          <button class="search-close" id="searchClose">✕</button>
+        </div>
+        <div class="search-cats" id="searchCats">
+          <div class="sc-col" data-col="cat">
+            <div class="sc-title">Category</div>
+            <a href="#" class="sc-chip" data-cat="laptop"><span class="sc-ico" style="background:rgba(0,120,212,0.15)">💻</span> Laptop</a>
+            <a href="#" class="sc-chip" data-cat="desktop"><span class="sc-ico" style="background:rgba(40,167,69,0.15)">🖥️</span> Desktop</a>
+            <a href="#" class="sc-chip" data-cat="monitor"><span class="sc-ico" style="background:rgba(111,66,193,0.15)">🖥️</span> Monitor</a>
+            <a href="#" class="sc-chip" data-cat="buyback"><span class="sc-ico" style="background:rgba(255,152,0,0.15)">🔄</span> Buy Back</a>
+            <a href="#" class="sc-chip" data-cat="service"><span class="sc-ico" style="background:rgba(220,53,69,0.15)">🔧</span> Service</a>
+          </div>
+          <div class="sc-col" data-col="l1"><div class="sc-title"></div></div>
+          <div class="sc-col" data-col="l2"><div class="sc-title"></div></div>
+          <div class="sc-col" data-col="l3"><div class="sc-title"></div></div>
+          <div class="sc-col" data-col="l4"><div class="sc-title"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-auth">
+      <button class="btn-login" id="loginBtn">🔐 Login</button>
+      <div class="user-indicator" id="userIndicator">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <span class="user-phone" id="userPhone"></span>
+        <button class="user-logout" id="logoutBtn" title="Logout">✕</button>
+      </div>
+    </div>
+    <button class="btn-cart" id="cartBtn" onclick="toggleCart()" aria-label="Shopping Cart">
+      🛒 <span class="cart-badge" id="cartBadge">0</span>
+    </button>
+    <button class="nav-hamburger" aria-label="Menu">☰</button>
+  </div>
+</nav>
+
+<div class="mobile-drawer" id="mobileDrawer">
+  <a href="index.html">Home</a>
+  <a href="buy.html">Buy Laptops & Desktops</a>
+  <a href="builds.html">PC Builds</a>
+  <a href="sell.html">Sell Your Laptop</a>
+  <a href="contact.html">Service</a>
+  <a href="contact.html">Repair</a>
+  <a href="contact.html" class="active">Contact</a>
+  <a href="about.html">About</a>
+  <hr style="border-color:rgba(255,255,255,0.1);margin:12px 0;">
+  <a href="#" onclick="toggleCart();closeMenu();">🛒 Shopping Cart</a>
+  <a href="#" onclick="openAuthModal();closeMenu();">🔐 Login / Register</a>
+</div>
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<section class="page-header">
+  <div class="container">
+    <h1>Contact Us</h1>
+    <p>We're here to help — reach out anytime</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-cards reveal">
+        <div class="contact-card">
+          <h3><span class="icon-badge">📍</span> Visit Our Store</h3>
+          <p><strong>Computer Paradise</strong><br>134, KT Street, Lashkar Mohalla,<br>Mysore, Karnataka 570019</p>
+        </div>
+        <div class="contact-card">
+          <h3><span class="icon-badge">📞</span> Call or WhatsApp</h3>
+          <p><strong>Phone:</strong> <a href="tel:+91XXXXXXXXXX">+91 XXXXXXXXXX</a></p>
+          <p><strong>WhatsApp:</strong> <a href="https://wa.me/91XXXXXXXXXX" target="_blank">Chat Now</a></p>
+        </div>
+        <div class="contact-card">
+          <h3><span class="icon-badge">🕐</span> Business Hours</h3>
+          <p><strong>Monday – Saturday:</strong> 10:00 AM – 8:00 PM</p>
+          <p><strong>Sunday:</strong> Closed</p>
+        </div>
+        <div class="contact-card social-card">
+          <h3><span class="icon-badge">📱</span> Follow Us</h3>
+          <a href="https://facebook.com/computerparadise" target="_blank" class="social-link facebook">
+            <span class="social-icon">📘</span>
+            <span class="social-label">Facebook</span>
+            <span class="social-handle">@computerparadise</span>
+          </a>
+          <a href="https://instagram.com/computerparadise" target="_blank" class="social-link instagram">
+            <span class="social-icon">📸</span>
+            <span class="social-label">Instagram</span>
+            <span class="social-handle">@computerparadise</span>
+          </a>
+        </div>
+        <div class="contact-card" style="background:var(--accent-light);border-color:var(--accent);">
+          <h3>📞 Need a Call Back?</h3>
+          <p>Leave your number and we'll call you back within minutes.</p>
+          <form id="callForm" style="margin-top:10px;">
+            <div class="form-row" style="grid-template-columns:1fr 1fr;">
+              <input type="text" id="callName" placeholder="Your name" style="padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.85rem;">
+              <input type="tel" id="callPhone" placeholder="Phone number" pattern="[0-9]{10}" style="padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.85rem;">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;padding:10px;">📞 Request Callback</button>
+          </form>
+        </div>
+      </div>
+      <div class="map-wrap reveal">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3898.4!2d76.639!3d12.305!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDE4JzE4LjAiTiA3NsKwMzgnMjAuNCJF!5e0!3m2!1sen!2sin!4v1"
+          allowfullscreen loading="lazy"
+          title="KT Street, Lashkar Mohalla, Mysore"
+          style="min-height:380px;">
+        </iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section services-3">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">🏪 What We Do</div>
+      <h2 class="section-title">Our Core Services</h2>
+    </div>
+    <div class="s3-grid">
+      <a href="sell.html" class="s3-card" style="--c3:#28a745">
+        <div class="s3-icon">💰</div>
+        <div class="s3-title">Sell Refurbished Laptops</div>
+        <div class="s3-desc">We buy quality used laptops, refurbish them, and sell at the best prices with warranty</div>
+      </a>
+      <a href="sell.html" class="s3-card" style="--c3:#0078d4">
+        <div class="s3-icon">📱</div>
+        <div class="s3-title">Buy Old Laptops</div>
+        <div class="s3-desc">Sell your old laptop for instant cash. Quick inspection, fair price, instant payment via WhatsApp</div>
+      </a>
+      <a href="contact.html" class="s3-card" style="--c3:#d4af37">
+        <div class="s3-icon">🔧</div>
+        <div class="s3-title">Service</div>
+        <div class="s3-desc">Expert laptop repair, upgrades, data recovery, and maintenance — all at your doorstep</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="modal-overlay" id="authOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAuthModal()">✕</button>
+    <div class="auth-step active" id="authStep1">
+      <div class="modal-icon">🔐</div>
+      <h2>Login / Register</h2>
+      <p>Enter your phone to login via WhatsApp</p>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <div class="auth-phone-input">
+          <span class="country-code">+91</span>
+          <input type="tel" id="authPhone" placeholder="9876543210" maxlength="10" pattern="[0-9]{10}">
+        </div>
+      </div>
+      <button class="btn btn-green btn-block" id="sendOTPBtn">📤 Send OTP via WhatsApp</button>
+    </div>
+    <div class="auth-step" id="authStep2">
+      <div class="modal-icon">📱</div>
+      <h2>Enter OTP</h2>
+      <p>OTP sent via WhatsApp to <strong id="authDisplayPhone"></strong></p>
+      <div class="otp-row">
+        <input type="text" class="otp-input" maxlength="1"><input type="text" class="otp-input" maxlength="1"><input type="text" class="otp-input" maxlength="1"><input type="text" class="otp-input" maxlength="1"><input type="text" class="otp-input" maxlength="1"><input type="text" class="otp-input" maxlength="1">
+      </div>
+      <button class="btn btn-primary btn-block" id="verifyOTPBtn">✅ Verify OTP</button>
+      <p style="text-align:center;font-size:0.8rem;margin-top:10px;"><a href="#" id="resendOTP" style="color:var(--accent);font-weight:600;">Resend OTP</a></p>
+    </div>
+    <div class="auth-step" id="authStep3">
+      <div class="modal-icon">🎉</div>
+      <h2>Welcome!</h2>
+      <p>Logged in as <strong id="welcomePhone"></strong></p>
+      <button class="btn btn-primary btn-block" id="completeLoginBtn">🚀 Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cart Sidebar -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <h3>🛒 Your Cart</h3>
+    <button class="cart-close" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer" id="cartFooter">
+    <div class="cart-total">
+      <span>Total:</span>
+      <span class="cart-total-amount" id="cartTotal">₹0</span>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="checkoutCart()">💬 Checkout via WhatsApp</button>
+    <button class="btn btn-outline btn-block" onclick="clearCart()">🗑 Clear Cart</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span class="toast-icon">💬</span>
+  <span class="toast-text"></span>
+</div>
+
+<a href="https://wa.me/91XXXXXXXXXX" class="whatsapp-float" target="_blank" aria-label="Chat on WhatsApp">
+  💬
+  <span class="whatsapp-tooltip">Chat with us!</span>
+</a>
+
+<button class="back-top" id="backTop" aria-label="Back to top">↑</button>
+
+<footer class="footer">
+  <div class="footer-fans">
+    <div class="mod-frame">
+      <div class="mod-top-strip"></div>
+      <div class="mod-row">
+        <div class="mod-cell"><div class="mod-fan"><span class="mod-ring"></span><div class="mod-blades-spin"><div class="mod-blades"></div></div><span class="mod-hub"></span></div></div>
+        <div class="mod-cell"><div class="mod-fan"><span class="mod-ring"></span><div class="mod-blades-spin"><div class="mod-blades"></div></div><span class="mod-hub"></span></div></div>
+        <div class="mod-cell"><div class="mod-fan"><span class="mod-ring"></span><div class="mod-blades-spin"><div class="mod-blades"></div></div><span class="mod-hub"></span></div></div>
+        <div class="mod-cell"><div class="mod-fan"><span class="mod-ring"></span><div class="mod-blades-spin"><div class="mod-blades"></div></div><span class="mod-hub"></span></div></div>
+      </div>
+      <div class="mod-bottom-strip"></div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="fb-logo">
+          <span class="fb-logo-icon">💻</span>
+          <span class="fb-logo-text"><span>Computer</span> Paradise</span>
+        </div>
+        <p class="fb-tagline">Mysore's Most Trusted Laptop Store Since 2016</p>
+        <div class="fb-desc">Quality pre-owned &amp; refurbished laptops at the best prices.</div>
+        <div class="fb-address">
+          <span class="fb-addr-icon">📍</span>
+          <span>134, KT Street, Lashkar Mohalla,<br>Mysore, Karnataka 570019</span>
+        </div>
+        <div class="fb-badge">⭐ 4.9 &middot; 1000+ Happy Customers</div>
+      </div>
+      <div>
+        <div class="footer-heading">🔗 Quick Links</div>
+        <ul class="footer-links">
+          <li><a href="buy.html">Buy Laptops & Desktops</a></li>
+          <li><a href="builds.html">PC Builds</a>
+  <a href="sell.html">Sell Your Laptop</a></li>
+          <li><a href="contact.html">Service & Repair</a></li>
+          <li><a href="buy.html">Track Order</a></li>
+          <li><a href="contact.html">Warranty & Support</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">📞 Contact Us</div>
+                <div class="footer-contact-grid">
+          <a href="tel:+91XXXXXXXXXX" class="footer-contact-item phone">
+            <span class="footer-contact-icon">📞</span>
+            <div class="footer-contact-info">
+              <span class="footer-contact-label">Phone</span>
+              <span class="footer-contact-value">+91 XXXXXXXXXX</span>
+              <span class="fc-sub">Mon–Sat, 10AM – 8PM</span>
+            </div>
+          </a>
+          <a href="https://wa.me/91XXXXXXXXXX" target="_blank" class="footer-contact-item whatsapp">
+            <span class="footer-contact-icon">💬</span>
+            <div class="footer-contact-info">
+              <span class="footer-contact-label">WhatsApp</span>
+              <span class="footer-contact-value">Chat with us</span>
+              <span class="fc-sub">Replies within 5 min</span>
+            </div>
+          </a>
+          <a href="https://facebook.com/computerparadise" target="_blank" class="footer-contact-item facebook">
+            <span class="footer-contact-icon">📘</span>
+            <div class="footer-contact-info">
+              <span class="footer-contact-label">Facebook</span>
+              <span class="footer-contact-value">@computerparadise</span>
+            </div>
+          </a>
+          <a href="https://instagram.com/computerparadise" target="_blank" class="footer-contact-item instagram">
+            <span class="footer-contact-icon">📸</span>
+            <div class="footer-contact-info">
+              <span class="footer-contact-label">Instagram</span>
+              <span class="footer-contact-value">@computerparadise</span>
+            </div>
+          </a>
+          <a href="https://maps.google.com/?q=134+KT+Street+Mysore" target="_blank" class="footer-contact-item location">
+            <span class="footer-contact-icon">📍</span>
+            <div class="footer-contact-info">
+              <span class="footer-contact-label">Location</span>
+              <span class="footer-contact-value">Mysore, Karnataka</span>
+              <span class="fc-sub">134, KT Street · Open today</span>
+            </div>
+          </a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="fb-row">
+        <div class="fb-payments">
+          <span title="Cash">💵</span>
+          <span title="UPI">📱</span>
+          <span title="Bank Transfer">🏦</span>
+        </div>
+      </div>
+      <p>&copy; 2026 <strong>Computer Paradise</strong> — All rights reserved. Built with ❤️ in Mysore.</p>
+    </div>
+  </div>
+  </div>
+
+  <!-- Admin Panel Overlay (hidden — double-click logo to access) -->
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-modal">
+    <div class="admin-modal-header">
+      <h2>🛠 Admin Panel</h2>
+      <button class="admin-close" onclick="closeAdminPanel()">✕</button>
+    </div>
+    <div class="admin-modal-body">
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchAdminTab('list')">📋 All</button>
+        <button class="admin-tab" onclick="switchAdminTab('mylistings')">📋 My Listings</button>
+        <button class="admin-tab" onclick="switchAdminTab('add')">➕ Add New</button>
+        <button class="admin-tab" onclick="switchAdminTab('deleted')">🗑 Deleted</button>
+        <button class="admin-tab" onclick="switchAdminTab('inventory')">📦 Inventory</button>
+        <button class="admin-tab" onclick="switchAdminTab('sales')">📊 Sales</button>
+        <button class="admin-tab" onclick="switchAdminTab('customers')">👥 Customers</button>
+        <button class="admin-tab" onclick="switchAdminTab('repairs')">🔧 Repairs</button>
+      </div>
+      <div id="adminTabList" class="admin-tab-content active"></div>
+      <div id="adminTabMyListings" class="admin-tab-content"></div>
+      <div id="adminTabAdd" class="admin-tab-content">
+        <form id="adminForm" onsubmit="return saveAdminLaptop(event)">
+          <input type="hidden" id="afId" value="">
+          <div class="af-row">
+            <div class="af-group"><label>Brand</label>
+              <select id="afBrand" required>
+                <option value="">— Select —</option>
+                <option>Dell</option><option>HP</option><option>Lenovo</option><option>ASUS</option>
+                <option>Acer</option><option>Apple</option><option>MSI</option><option>Samsung</option>
+                <option>Huawei</option><option>Xiaomi</option><option>Compaq</option><option>Others</option>
+              </select>
+            </div>
+            <div class="af-group"><label>Model Name</label><input type="text" id="afName" required placeholder="e.g. Inspiron 15"></div>
+          </div>
+          <div class="af-row">
+            <div class="af-group"><label>Screen Size</label>
+              <select id="afScreen">
+                <option value="">— Select —</option>
+                <option>11.6</option><option>12.3</option><option>13.0</option><option>13.3</option>
+                <option>13.5</option><option>14.0</option><option>14.5</option><option>15.0</option>
+                <option>15.6</option><option>16.0</option><option>16.5</option><option>17.3</option>
+              </select>
+            </div>
+            <div class="af-group"><label>Generation</label>
+              <select id="afGen">
+                <option value="">— Select —</option>
+                <option>1st</option><option>2nd</option><option>3rd</option><option>4th</option>
+                <option>5th</option><option>6th</option><option>7th</option><option>8th</option>
+                <option>9th</option><option>10th</option><option>11th</option><option>12th</option>
+                <option>13th</option><option>14th</option><option>15th</option><option>16th</option>
+              </select>
+            </div>
+            <div class="af-group"><label>Processor</label>
+              <select id="afProcessor" required>
+                <option value="">— Select —</option>
+                <option>Intel i3</option><option>Intel i5</option><option>Intel i7</option><option>Intel i9</option>
+                <option>Intel Ultra 5</option><option>Intel Ultra 7</option><option>Intel Ultra 9</option>
+                <option>AMD Ryzen 3</option><option>AMD Ryzen 5</option><option>AMD Ryzen 7</option><option>AMD Ryzen 9</option>
+                <option>Apple M1</option><option>Apple M2</option><option>Apple M3</option><option>Apple M4</option>
+              </select>
+            </div>
+          </div>
+          <div class="af-row">
+            <div class="af-group"><label>RAM</label>
+              <select id="afRam" required>
+                <option value="">— Select —</option>
+                <option>1GB</option><option>2GB</option><option>4GB</option><option>6GB</option>
+                <option>8GB</option><option>12GB</option><option>16GB</option><option>24GB</option>
+                <option>32GB</option><option>48GB</option><option>64GB</option><option>128GB</option>
+              </select>
+            </div>
+            <div class="af-group"><label>Storage</label>
+              <select id="afStorage" required>
+                <option value="">— Select —</option>
+                <option>32GB</option><option>64GB</option><option>128GB</option><option>256GB</option>
+                <option>512GB</option><option>1TB</option><option>2TB</option>
+              </select>
+            </div>
+          </div>
+          <div class="af-row">
+            <div class="af-group"><label>MRP (₹)</label><input type="number" id="afMrp" required placeholder="e.g. 49999"></div>
+            <div class="af-group"><label>Selling Price (₹)</label><input type="number" id="afPrice" required placeholder="e.g. 34999"></div>
+            <div class="af-group"><label>Purchase Price (₹)</label><input type="number" id="afPurchasePrice" placeholder="e.g. 25000"></div>
+            <div class="af-group"><label>Units</label><input type="number" id="afUnits" value="1" min="1" max="100" placeholder="e.g. 5"></div>
+          </div>
+          <div class="af-row">
+            <div class="af-group"><label>OS</label>
+              <select id="afOs">
+                <option value="windows">Windows</option>
+                <option value="macos">macOS</option>
+                <option value="linux">Linux</option>
+                <option value="chromeos">Chrome OS</option>
+                <option value="dos">DOS</option>
+                <option value="noos">No OS</option>
+              </select>
+            </div>
+            <div class="af-group"><label>Device Type</label>
+              <select id="afDeviceType">
+                <option value="laptop">💻 Laptop</option>
+                <option value="desktop">🖥️ Desktop</option>
+                <option value="tablet">📱 Tablet</option>
+                <option value="other">📦 Other</option>
+              </select>
+            </div>
+            <div class="af-group"><label>Condition</label>
+              <select id="afCondition">
+                <option value="A++">A++ — Like New</option>
+                <option value="A+">A+ — Excellent</option>
+                <option value="A">A — Good</option>
+                <option value="A-">A- — Fair</option>
+                <option value="B+">B+ — Used</option>
+                <option value="B">B — Worn</option>
+                <option value="C">C — Parts</option>
+              </select>
+            </div>
+            <div class="af-group"><label>Badge</label>
+              <select id="afBadge">
+                <option value="">None</option>
+                <option value="bestseller">⭐ Best Seller</option>
+                <option value="new">🔥 New Arrival</option>
+                <option value="deal">⚡ Deal</option>
+              </select>
+            </div>
+          </div>
+          <div class="af-row">
+            <div class="af-group" style="flex:2"><label>Special Specs</label><input type="text" id="afSpecialSpec" placeholder="e.g. Touchscreen, Backlit KB, Fingerprint, 4K OLED..."></div>
+          </div>
+          <div class="af-row">
+            <div class="af-group" style="flex-direction:row;align-items:center;gap:10px">
+              <label style="margin:0"><input type="checkbox" id="afFeatured"> ⭐ Featured listing</label>
+            </div>
+            <div class="af-group"><label>Priority</label><input type="number" id="afPriority" value="0" min="0" step="1"></div>
+          </div>
+          <div class="af-row">
+            <div class="af-group">
+              <label>Photos (will replace all current photos)</label>
+              <input type="file" id="afPhotos" accept="image/*" multiple>
+              <small id="afPhotoCount"></small>
+            </div>
+          </div>
+          <div class="af-btns">
+            <button type="submit" class="btn btn-primary">💾 Save Laptop</button>
+            <button type="button" class="btn btn-outline" onclick="resetAdminForm()">↺ Reset</button>
+            <button type="button" class="btn btn-outline" onclick="showBulkImport()" style="font-size:0.7rem">📥 Bulk Import</button>
+          </div>
+        </form>
+      </div>
+      <div id="adminTabDeleted" class="admin-tab-content"></div>
+      <div id="adminTabInventory" class="admin-tab-content"></div>
+      <div id="adminTabSales" class="admin-tab-content"></div>
+      <div id="adminTabCustomers" class="admin-tab-content"></div>
+      <div id="adminTabRepairs" class="admin-tab-content"></div>
+
+      <div style="text-align:right;padding-top:10px;border-top:1px solid rgba(255,255,255,0.04);font-size:0.7rem;color:rgba(255,255,255,0.15);">
+        Admin actions save automatically
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span class="toast-icon">💬</span>
+  <span class="toast-text"></span>
+</div>
+
+<a href="https://wa.me/91XXXXXXXXXX" class="whatsapp-float" target="_blank" aria-label="Chat on WhatsApp">
+  💬
+  <span class="whatsapp-tooltip">Chat with us!</span>
+</a>
+
+<button class="back-top" id="backTop" aria-label="Back to top">↑</button>
+
+<footer class="footer">
+  <div class="footer-fans">
+    <div class="mod-frame">
+      <div class="mod-top-strip"></div>
+      <div class="mod-row">
+        <div class="mod-cell"><div class="mod-fan"><span class="mod-ring"></span><div class="mod-blades-spin"><div class="mod-blades"></div></div><span class="mod-hub"></span></div></div>
+        <div class="mod-cell"><div class="mod-fan"><span class="mod-ring"></span><div class="mod-blades-spin"><div class="mod-blades"></div></div><span class="mod-hub"></span></div></div>
+        <div class="mod-cell"><div class="mod-fan"><span class="mod-ring"></span><div class="mod-blades-spin"><div class="mod-blades"></div></div><span class="mod-hub"></span></div></div>
+        <div class="mod-cell"><div class="mod-fan"><span class="mod-ring"></span><div class="mod-blades-spin"><div class="mod-blades"></div></div><span class="mod-hub"></span></div></div>
+      </div>
+      <div class="mod-bottom-strip"></div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="fb-logo">
+          <span class="fb-logo-icon">💻</span>
+          <span class="fb-logo-text"><span>Computer</span> Paradise</span>
+        </div>
+        <p class="fb-tagline">Mysore's Most Trusted Laptop Store Since 2016</p>
+        <div class="fb-desc">Quality pre-owned &amp; refurbished laptops at the best prices.</div>
+        <div class="fb-address">
+          <span class="fb-addr-icon">📍</span>
+          <span>134, KT Street, Lashkar Mohalla,<br>Mysore, Karnataka 570019</span>
+        </div>
+        <div class="fb-badge">⭐ 4.9 &middot; 1000+ Happy Customers</div>
+      </div>
+      <div>
+        <div class="footer-heading">🔗 Quick Links</div>
+        <ul class="footer-links">
+          <li><a href="buy.html">Buy Laptops & Desktops</a></li>
+          <li><a href="builds.html">PC Builds</a>
+  <a href="sell.html">Sell Your Laptop</a></li>
+          <li><a href="contact.html">Service & Repair</a></li>
+          <li><a href="buy.html">Track Order</a></li>
+          <li><a href="contact.html">Warranty & Support</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">📞 Contact Us</div>
+        <div class="footer-contact-grid">
+          <a href="tel:+91XXXXXXXXXX" class="footer-contact-item phone">
+            <div class="fc-ambient"></div>
+            <div class="fc-particles"><span class="fc-particle"></span><span class="fc-particle"></span><span class="fc-particle"></span><span class="fc-particle"></span><span class="fc-particle"></span></div>
+            <span class="fc-sparkle">✦</span>
+            <span class="footer-contact-icon">📞<span class="fc-status-dot"></span></span>
+            <div class="footer-contact-info">
+              <span class="footer-contact-label">Phone</span>
+              <span class="footer-contact-value">+91 XXXXXXXXXX</span>
+              <span class="fc-sub">Mon–Sat, 10AM – 8PM</span>
+            </div>
+            <span class="fc-orb"></span>
+            <span class="fc-arrow">→</span>
+          </a>
+          <a href="https://wa.me/91XXXXXXXXXX" target="_blank" class="footer-contact-item whatsapp">
+            <div class="fc-ambient"></div>
+            <div class="fc-particles"><span class="fc-particle"></span><span class="fc-particle"></span><span class="fc-particle"></span><span class="fc-particle"></span><span class="fc-particle"></span></div>
+            <span class="fc-sparkle">✦</span>
+            <span class="footer-contact-icon">💬<span class="fc-status-dot"></span></span>
+            <div class="footer-contact-info">
+              <span class="footer-contact-label">WhatsApp</span>
+              <span class="footer-contact-value">Chat with us</span>
+              <span class="fc-sub">Typically replies within 5 min</span>
+            </div>
+            <span class="fc-orb"></span>
+            <span class="fc-arrow">→</span>
+          </a>
+          <a href="https://facebook.com/computerparadise" target="_blank" class="footer-contact-item facebook">
+            <div class="fc-ambient"></div>
+            <div class="fc-particles"><span class="fc-particle"></span><span class="fc-particle"></span><span class="fc-particle"></span><span class="fc-particle"></span><span class="fc-particle"></span></div>
+            <span class="fc-sparkle">✦</span>
+            <span class="footer-contact-icon">📘</span>
+            <div class="footer-contact-info">
+              <span class="footer-contact-label">Facebook</span>
+              <span class="footer-contact-value">@computerparadise</span>
+              <span class="fc-sub">1.2K followers</span>
+            </div>
+            <span class="fc-orb"></span>
+            <span class="fc-arrow">→</span>
+          </a>
+          <a href="https://instagram.com/computerparadise" target="_blank" class="footer-contact-item instagram">
+            <div class="fc-ambient"></div>
+            <div class="fc-particles"><span class="fc-particle"></span><span class="fc-particle"></span><span class="fc-particle"></span><span class="fc-particle"></span><span class="fc-particle"></span></div>
+            <span class="fc-sparkle">✦</span>
+            <span class="footer-contact-icon">📸</span>
+            <div class="footer-contact-info">
+              <span class="footer-contact-label">Instagram</span>
+              <span class="footer-contact-value">@computerparadise</span>
+              <span class="fc-sub">2.5K followers</span>
+            </div>
+            <span class="fc-orb"></span>
+            <span class="fc-arrow">→</span>
+          </a>
+          <a href="https://maps.google.com/?q=134+KT+Street+Mysore" target="_blank" class="footer-contact-item location">
+            <div class="fc-ambient"></div>
+            <div class="fc-particles"><span class="fc-particle"></span><span class="fc-particle"></span><span class="fc-particle"></span><span class="fc-particle"></span><span class="fc-particle"></span></div>
+            <span class="fc-sparkle">✦</span>
+            <span class="footer-contact-icon">📍</span>
+            <div class="footer-contact-info">
+              <span class="footer-contact-label">Location</span>
+              <span class="footer-contact-value">Mysore, Karnataka</span>
+              <span class="fc-sub">134, KT Street · Open today</span>
+            </div>
+            <span class="fc-orb"></span>
+            <span class="fc-arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="fb-row">
+        <div class="fb-payments">
+          <span title="Cash">💵</span>
+          <span title="UPI">📱</span>
+          <span title="Bank Transfer">🏦</span>
+        </div>
+      </div>
+      <p>&copy; 2026 <strong>Computer Paradise</strong> — All rights reserved. Built with ❤️ in Mysore.</p>
+    </div>
+  </div>
+  </div>
+
+  
+
+  <!-- RGB Controller -->
+  <div class="rgb-control" id="rgbControl">
+    <button class="rgb-btn" id="rgbToggle" onclick="toggleRGBPanel()" title="Change Fan Colors">🎨</button>
+    <div class="rgb-panel" id="rgbPanel">
+      <div class="rgb-header">Fan LED Color</div>
+      <div class="rgb-options">
+        <button class="rgb-opt active" data-mode="rainbow" onclick="setRGBMode('rainbow')" style="background:conic-gradient(#ff1744,#2979ff,#00e676,#ff1744)">🌈</button>
+        <button class="rgb-opt" data-mode="red" onclick="setRGBMode('red')" style="background:#ff1744"></button>
+        <button class="rgb-opt" data-mode="blue" onclick="setRGBMode('blue')" style="background:#2979ff"></button>
+        <button class="rgb-opt" data-mode="green" onclick="setRGBMode('green')" style="background:#00e676"></button>
+        <button class="rgb-opt" data-mode="purple" onclick="setRGBMode('purple')" style="background:#d500f9"></button>
+        <button class="rgb-opt" data-mode="cyan" onclick="setRGBMode('cyan')" style="background:#00e5ff"></button>
+        <button class="rgb-opt" data-mode="warm" onclick="setRGBMode('warm')" style="background:linear-gradient(135deg,#ff6d00,#ffab00)"></button>
+        <button class="rgb-opt" data-mode="white" onclick="setRGBMode('white')" style="background:linear-gradient(135deg,#ffffff,#e0e0e0)">❄️</button>
+        <button class="rgb-opt" data-mode="off" onclick="setRGBMode('off')" style="background:#333"><span style="opacity:0.3">✕</span></button>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
