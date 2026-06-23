@@ -5938,6 +5938,7 @@
 }
 
 @media (max-width: 480px) {
+  .power-cable-svg { display: none; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
   .back-top { bottom: 80px; }
   .slider-track .laptop-card { min-width: 220px; }
