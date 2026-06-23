@@ -13,6 +13,13 @@
       .power-cable-svg, #lightningCanvas, .sparkle-ring, .glint, .shimmer-scan { display: none !important; }
     }
   </style>
+  <script>
+    if (window.innerWidth <= 1024) {
+      document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.power-cable-svg, #lightningCanvas, .sparkle-ring, .glint, .shimmer-scan, .connection-spark, .plug-tip, .power-flow').forEach(function(el) { el.style.display = 'none'; });
+      });
+    }
+  </script>
 </head>
 <body>
 
