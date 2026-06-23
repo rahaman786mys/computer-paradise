@@ -5090,30 +5090,37 @@
   border-color: rgba(255,255,255,0.2);
 }
 .footer-contact-item.phone .footer-contact-icon {
-  background: linear-gradient(135deg, #25d366, #128c7e);
+  background: url('https://cdn.simpleicons.org/phone/ffffff') center/contain no-repeat;
+  background-size: 70%;
 }
 .footer-contact-item.whatsapp .footer-contact-icon {
-  background: linear-gradient(135deg, #25d366, #128c7e);
+  background: url('https://cdn.simpleicons.org/whatsapp/ffffff') center/contain no-repeat;
+  background-size: 70%;
 }
 .footer-contact-item.facebook .footer-contact-icon {
-  background: linear-gradient(135deg, #1877f2, #0d5bd9);
+  background: url('https://cdn.simpleicons.org/facebook/ffffff') center/contain no-repeat;
+  background-size: 70%;
 }
 .footer-contact-item.instagram .footer-contact-icon {
-  background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  background: url('https://cdn.simpleicons.org/instagram/ffffff') center/contain no-repeat;
+  background-size: 70%;
 }
 .footer-contact-item.location .footer-contact-icon {
-  background: linear-gradient(135deg, #ff6b6b, #d63031);
+  background: url('https://cdn.simpleicons.org/googlemaps/ffffff') center/contain no-repeat;
+  background-size: 70%;
 }
+.footer-contact-item.email .footer-contact-icon { background: linear-gradient(135deg, #667eea, #5a32a3); color: #fff; }
 .footer-contact-item:hover .footer-contact-icon {
   transform: scale(1.2) rotate(-8deg);
   box-shadow: 0 6px 20px rgba(0,0,0,0.4);
 }
-.footer-contact-item.phone .footer-contact-icon svg,
-.footer-contact-item.whatsapp .footer-contact-icon svg,
-.footer-contact-item.facebook .footer-contact-icon svg,
-.footer-contact-item.instagram .footer-contact-icon svg,
-.footer-contact-item.location .footer-contact-icon svg {
-  display: block;
+.footer-contact-item.phone .footer-contact-icon,
+.footer-contact-item.whatsapp .footer-contact-icon,
+.footer-contact-item.facebook .footer-contact-icon,
+.footer-contact-item.instagram .footer-contact-icon,
+.footer-contact-item.location .footer-contact-icon {
+  color: transparent;
+  font-size: 0;
 }
 
 /* Live status dot */
