@@ -1531,7 +1531,7 @@
   filter: drop-shadow(0 2px 8px rgba(212, 175, 55, 0.3));
 }
 .glow-text {
-  animation: textPower 2.5s ease-in-out 1.7s infinite;
+  animation: textPower 5s ease-in-out 1.7s infinite;
 }
 @keyframes textPower {
   0%, 40% {
@@ -1543,7 +1543,7 @@
       5px 5px 0 #5a4510,
       6px 6px 0 #403008,
       7px 7px 6px rgba(0,0,0,0.3),
-      0 0 20px rgba(212,175,55,0.06);
+      0 0 15px rgba(212,175,55,0.04);
   }
   55% {
     text-shadow:
@@ -1554,8 +1554,8 @@
       5px 5px 0 #5a4510,
       6px 6px 0 #403008,
       7px 7px 6px rgba(0,0,0,0.3),
-      0 0 80px rgba(212,175,55,0.5),
-      0 0 160px rgba(212,175,55,0.25);
+      0 0 30px rgba(212,175,55,0.15),
+      0 0 60px rgba(212,175,55,0.08);
   }
   70% {
     text-shadow:
@@ -1566,8 +1566,8 @@
       5px 5px 0 #5a4510,
       6px 6px 0 #403008,
       7px 7px 6px rgba(0,0,0,0.3),
-      0 0 100px rgba(212,175,55,0.6),
-      0 0 200px rgba(212,175,55,0.3);
+      0 0 40px rgba(212,175,55,0.2),
+      0 0 80px rgba(212,175,55,0.1);
   }
   85% {
     text-shadow:
@@ -1578,8 +1578,8 @@
       5px 5px 0 #5a4510,
       6px 6px 0 #403008,
       7px 7px 6px rgba(0,0,0,0.3),
-      0 0 60px rgba(212,175,55,0.3),
-      0 0 120px rgba(212,175,55,0.15);
+      0 0 20px rgba(212,175,55,0.08),
+      0 0 40px rgba(212,175,55,0.04);
   }
 }
 
@@ -1605,43 +1605,43 @@
 
 .sparkle-ring .sr {
   position: absolute;
-  font-size: 1.6rem;
+  font-size: 1.2rem;
   color: var(--accent);
-  text-shadow: 0 0 12px rgba(212, 175, 55, 0.9), 0 0 30px rgba(212, 175, 55, 0.5), 0 0 60px rgba(212, 175, 55, 0.3);
-  animation: sparkleFloat var(--d, 3s) ease-in-out var(--dl, 0s) infinite;
+  text-shadow: 0 0 6px rgba(212, 175, 55, 0.5), 0 0 15px rgba(212, 175, 55, 0.25);
+  animation: sparkleFloat var(--d, 5s) ease-in-out var(--dl, 0s) infinite;
   opacity: 0;
-  filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.8));
+  filter: drop-shadow(0 0 3px rgba(212, 175, 55, 0.4));
 }
 
 @keyframes sparkleFloat {
   0%, 100% { opacity: 0; transform: translate(0, 0) scale(0.5) rotate(0deg); }
-  20% { opacity: 1; transform: translate(calc(var(--tx, 10px) * 0.3), calc(var(--ty, -10px) * 0.3)) scale(1) rotate(15deg); }
-  50% { opacity: 1; transform: translate(var(--tx, 10px), var(--ty, -10px)) scale(1.2) rotate(30deg); }
-  80% { opacity: 0.6; transform: translate(calc(var(--tx, 10px) * 1.5), calc(var(--ty, -10px) * 1.5)) scale(0.8) rotate(45deg); }
+  20% { opacity: 0.6; transform: translate(calc(var(--tx, 10px) * 0.3), calc(var(--ty, -10px) * 0.3)) scale(0.9) rotate(15deg); }
+  50% { opacity: 0.7; transform: translate(var(--tx, 10px), var(--ty, -10px)) scale(1) rotate(30deg); }
+  80% { opacity: 0.3; transform: translate(calc(var(--tx, 10px) * 1.5), calc(var(--ty, -10px) * 1.5)) scale(0.7) rotate(45deg); }
 }
 
 /* Glint sparkles on title */
 .glint {
   position: absolute;
-  width: 4px;
-  height: 4px;
+  width: 3px;
+  height: 3px;
   background: #fff;
   border-radius: 50%;
-  box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.8), 0 0 12px 4px rgba(212, 175, 55, 0.5);
-  animation: glintPop 3s ease-in-out infinite;
+  box-shadow: 0 0 4px 1px rgba(255, 255, 255, 0.5), 0 0 8px 2px rgba(212, 175, 55, 0.3);
+  animation: glintPop 5s ease-in-out infinite;
   pointer-events: none;
   opacity: 0;
 }
 .glint:nth-child(1) { top: 5%; left: 10%; animation-delay: 0s; }
-.glint:nth-child(2) { top: 15%; right: 5%; animation-delay: 0.8s; }
-.glint:nth-child(3) { bottom: 10%; left: 20%; animation-delay: 1.6s; }
-.glint:nth-child(4) { bottom: 20%; right: 15%; animation-delay: 2.4s; }
+.glint:nth-child(2) { top: 15%; right: 5%; animation-delay: 1.2s; }
+.glint:nth-child(3) { bottom: 10%; left: 20%; animation-delay: 2.4s; }
+.glint:nth-child(4) { bottom: 20%; right: 15%; animation-delay: 3.6s; }
 
 @keyframes glintPop {
   0%, 100% { opacity: 0; transform: scale(0); }
-  30% { opacity: 1; transform: scale(1.5); }
-  50% { opacity: 1; transform: scale(1); }
-  70% { opacity: 0.5; transform: scale(0.5); }
+  30% { opacity: 0.5; transform: scale(1.2); }
+  50% { opacity: 0.6; transform: scale(1); }
+  70% { opacity: 0.3; transform: scale(0.5); }
 }
 
 /* Shimmer scan lines on title text */
@@ -1651,17 +1651,17 @@
   left: -30%;
   width: 30%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
   pointer-events: none;
-  animation: shimmerScan 4s ease-in-out infinite;
+  animation: shimmerScan 6s ease-in-out infinite;
   transform: skewX(-20deg);
 }
-.shimmer-scan.ss2 { animation-delay: 2s; }
+.shimmer-scan.ss2 { animation-delay: 3s; }
 
 @keyframes shimmerScan {
   0% { left: -30%; opacity: 0; }
-  20% { opacity: 1; }
-  80% { opacity: 1; }
+  20% { opacity: 0.5; }
+  80% { opacity: 0.5; }
   100% { left: 130%; opacity: 0; }
 }
 
@@ -1888,8 +1888,8 @@
 }
 
 @keyframes badgePulse {
-  0%, 100% { box-shadow: 0 0 30px rgba(212,175,55,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
-  50% { box-shadow: 0 0 40px rgba(212,175,55,0.2), inset 0 1px 0 rgba(255,255,255,0.08); }
+  0%, 100% { box-shadow: 0 0 30px rgba(212,175,55,0.1), inset 0 1px 0 rgba(255,255,255,0.05); }
+  50% { box-shadow: 0 0 35px rgba(212,175,55,0.15), inset 0 1px 0 rgba(255,255,255,0.06); }
 }
 
 /* Halo ring behind badge */
