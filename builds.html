@@ -3,863 +3,1213 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pro PC Builds – Computer Paradise</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-
-<nav class="navbar">
-  <div class="container">
-    <a href="index.html" class="nav-logo"><span class="logo-icon">💻</span><span class="logo-text"><span>Computer</span> Paradise<span class="logo-dot"></span></span></a>
-    <ul class="nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="buy.html">Buy Laptops & Desktops</a></li>
-      <li><a href="builds.html" class="active">PC Builds</a></li>
-      <li><a href="sell.html">Sell</a></li>
-      <li><a href="contact.html">Service</a></li>
-      <li><a href="contact.html">Contact</a></li>
-      <li><a href="about.html">About</a></li>
-    </ul>
-    <div class="nav-auth">
-      <button class="btn-login" id="loginBtn">🔐 Login</button>
-      <div class="user-indicator" id="userIndicator"><div class="user-avatar" id="userAvatar">U</div><span class="user-phone" id="userPhone"></span><button class="user-logout" onclick="logoutUser()">✕</button></div>
-      <button class="btn-login" id="adminPanelBtn" onclick="openAdminPanel()" style="display:none">🛠 Admin</button>
-    </div>
-    <button class="btn-cart" id="cartBtn" onclick="toggleCart()">🛒 <span class="cart-badge" id="cartBadge">0</span></button>
-    <button class="nav-hamburger">☰</button>
-  </div>
-</nav>
-
-<div class="mobile-drawer" id="mobileDrawer">
-  <a href="index.html">Home</a><a href="buy.html">Buy Laptops & Desktops</a><a href="builds.html" class="active">PC Builds</a>
-  <a href="sell.html">Sell Your Laptop</a><a href="contact.html">Service</a><a href="contact.html">Contact</a><a href="about.html">About</a>
-  <hr><a href="#" onclick="toggleCart();closeMenu();">🛒 Shopping Cart</a><a href="#" onclick="openAuthModal();closeMenu();">🔐 Login / Register</a>
-</div>
-<div class="drawer-overlay" id="drawerOverlay"></div>
-
-<!-- ===== COSMIC HERO ===== -->
-<section class="ch-hero">
-  <div class="ch-nebula"></div>
-  <div class="ch-bg-stars"></div>
-  <div class="ch-galaxy ch-g1"></div><div class="ch-galaxy ch-g2"></div><div class="ch-galaxy ch-g3"></div>
-  <div class="ch-galaxy ch-g4"></div><div class="ch-galaxy ch-g5"></div><div class="ch-galaxy ch-g6"></div>
-  <div class="ch-fall ch-f1"></div><div class="ch-fall ch-f2"></div><div class="ch-fall ch-f3"></div>
-  <div class="ch-fall ch-f4"></div><div class="ch-fall ch-f5"></div>
-  <div class="ch-fall ch-f6"></div><div class="ch-fall ch-f7"></div><div class="ch-fall ch-f8"></div>
-  <div class="ch-fall ch-f9"></div><div class="ch-fall ch-f10"></div>
-  <div class="ch-fall ch-f11"></div><div class="ch-fall ch-f12"></div><div class="ch-fall ch-f13"></div>
-  <div class="ch-fall ch-f14"></div><div class="ch-fall ch-f15"></div>
-  <div class="container">
-    <div class="ch-badge"><span>🔥</span> 2026 PRO SERIES</div>
-    <h1 class="ch-title">Built to <span>Dominate</span></h1>
-    <p class="ch-sub">Custom gaming rigs & creator workstations engineered for those who demand the absolute best</p>
-    <div class="ch-stats">
-      <div class="ch-stat"><span>240</span> FPS</div>
-      <div class="ch-stat"><span>8</span>K Ready</div>
-      <div class="ch-stat"><span>0</span>% Lag</div>
-      <div class="ch-stat"><span>247</span> Support</div>
-    </div>
-    <div class="ch-actions">
-      <a href="#builds" class="ch-btn ch-btn-primary">⚡ Explore Builds</a>
-      <a href="#why" class="ch-btn ch-btn-ghost">Why Us →</a>
-    </div>
-  </div>
-</section>
-
-<!-- ===== STREAMING BUILDS ===== -->
-<section class="pb-section" id="builds">
-  <div class="container">
-    <div class="pb-intro">
-      <h2>📺 Streaming & Content Creation Builds</h2>
-      <p>Pre-configured rigs — or build your own custom setup below</p>
-    </div>
-    <div class="pb-grid">
-      <div class="pb-card">
-        <div class="pb-c-badge">📱 Starter</div>
-        <div class="pb-c-top"><h3>Ryzen 5 Stream</h3><span class="pb-c-price">₹68,999</span></div>
-        <div class="pb-c-tag">1080p · 120 FPS</div>
-        <div class="pb-c-specs"><div>⚡ Ryzen 5 7600</div><div>🎮 RTX 4060 Ti 8GB</div><div>🧠 32GB DDR5</div><div>💾 1TB NVMe</div></div>
-        <button class="pb-btn-sm" onclick="showToast('\uD83D\uDCAC Enquiry sent!')">💬 Enquire</button>
-      </div>
-      <div class="pb-card featured">
-        <div class="pb-c-badge">🎙️ Pro</div>
-        <div class="pb-c-top"><h3>Ryzen 7 Stream</h3><span class="pb-c-price">₹99,999</span></div>
-        <div class="pb-c-tag">1440p · 144 FPS</div>
-        <div class="pb-c-specs"><div>⚡ Ryzen 7 7800X3D</div><div>🎮 RTX 4070 Super 12GB</div><div>🧠 32GB DDR5</div><div>💾 2TB NVMe</div></div>
-        <button class="pb-btn-sm" onclick="showToast('\uD83D\uDCAC Enquiry sent!')">💬 Enquire</button>
-      </div>
-      <div class="pb-card">
-        <div class="pb-c-badge">🌟 Elite</div>
-        <div class="pb-c-top"><h3>Ryzen 9 Stream</h3><span class="pb-c-price">₹1,74,999</span></div>
-        <div class="pb-c-tag">4K · Dual PC</div>
-        <div class="pb-c-specs"><div>⚡ Ryzen 9 7950X</div><div>🎮 RTX 4080 Super 16GB</div><div>🧠 64GB DDR5</div><div>💾 2TB NVMe Gen5</div></div>
-        <button class="pb-btn-sm" onclick="showToast('\uD83D\uDCAC Enquiry sent!')">💬 Enquire</button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<select id="bCPU" onchange="calcBuild()">
-              <option value="0">— Choose Processor —</option>
-              <optgroup label="✦ AMD — Ryzen 3 (Entry)">
-                <option value="9500">  Ryzen 3 7100</option>
-              </optgroup>
-              <optgroup label="✦ AMD — Ryzen 5 (Mid)">
-                <option value="12500">  Ryzen 5 7600</option>
-                <option value="18500">  Ryzen 5 7600X</option>
-              </optgroup>
-              <optgroup label="✦ AMD — Ryzen 7 (High)">
-                <option value="28500">  Ryzen 7 7700X</option>
-                <option value="32500">  Ryzen 7 7800X3D</option>
-              </optgroup>
-              <optgroup label="✦ AMD — Ryzen 9 (Flagship)">
-                <option value="42500">  Ryzen 9 7900X</option>
-                <option value="48500">  Ryzen 9 7950X</option>
-                <option value="58500">  Ryzen 9 7950X3D</option>
-              </optgroup>
-              <optgroup label="✦ Intel — Core i3 (Entry)">
-                <option value="8500">  i3 14100F</option>
-              </optgroup>
-              <optgroup label="✦ Intel — Core i5 (Mid)">
-                <option value="12000">  i5 14400F</option>
-                <option value="16500">  i5 14600K</option>
-                <option value="22000">  i5 14600KF</option>
-              </optgroup>
-              <optgroup label="✦ Intel — Core i7 (High)">
-                <option value="28000">  i7 14700K</option>
-                <option value="38000">  i7 14700KF</option>
-              </optgroup>
-              <optgroup label="✦ Intel — Core i9 (Flagship)">
-                <option value="42000">  i9 14900K</option>
-                <option value="55000">  i9 14900KS</option>
-              </optgroup>
-              <optgroup label="✦ Intel — Core Ultra">
-                <option value="28500">  Ultra 5 225H</option>
-                <option value="39500">  Ultra 7 265K</option>
-                <option value="52000">  Ultra 9 285K</option>
-              </optgroup>
-            </select> html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pro PC Builds – Computer Paradise</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-
-<nav class="navbar">
-  <div class="container">
-    <a href="index.html" class="nav-logo"><span class="logo-icon">💻</span><span class="logo-text"><span>Computer</span> Paradise<span class="logo-dot"></span></span></a>
-    <ul class="nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="buy.html">Buy Laptops & Desktops</a></li>
-      <li><a href="builds.html" class="active">PC Builds</a></li>
-      <li><a href="sell.html">Sell</a></li>
-      <li><a href="contact.html">Service</a></li>
-      <li><a href="contact.html">Contact</a></li>
-      <li><a href="about.html">About</a></li>
-    </ul>
-    <div class="nav-auth">
-      <button class="btn-login" id="loginBtn">🔐 Login</button>
-      <div class="user-indicator" id="userIndicator"><div class="user-avatar" id="userAvatar">U</div><span class="user-phone" id="userPhone"></span><button class="user-logout" onclick="logoutUser()">✕</button></div>
-      <button class="btn-login" id="adminPanelBtn" onclick="openAdminPanel()" style="display:none">🛠 Admin</button>
-    </div>
-    <button class="btn-cart" id="cartBtn" onclick="toggleCart()">🛒 <span class="cart-badge" id="cartBadge">0</span></button>
-    <button class="nav-hamburger">☰</button>
-  </div>
-</nav>
-
-<div class="mobile-drawer" id="mobileDrawer">
-  <a href="index.html">Home</a><a href="buy.html">Buy Laptops & Desktops</a><a href="builds.html" class="active">PC Builds</a>
-  <a href="sell.html">Sell Your Laptop</a><a href="contact.html">Service</a><a href="contact.html">Contact</a><a href="about.html">About</a>
-  <hr><a href="#" onclick="toggleCart();closeMenu();">🛒 Shopping Cart</a><a href="#" onclick="openAuthModal();closeMenu();">🔐 Login / Register</a>
-</div>
-<div class="drawer-overlay" id="drawerOverlay"></div>
-
-<!-- ===== COSMIC HERO ===== -->
-<section class="ch-hero">
-  <div class="ch-nebula"></div>
-  <div class="ch-bg-stars"></div>
-  <div class="ch-galaxy ch-g1"></div><div class="ch-galaxy ch-g2"></div><div class="ch-galaxy ch-g3"></div>
-  <div class="ch-galaxy ch-g4"></div><div class="ch-galaxy ch-g5"></div><div class="ch-galaxy ch-g6"></div>
-  <div class="ch-fall ch-f1"></div><div class="ch-fall ch-f2"></div><div class="ch-fall ch-f3"></div>
-  <div class="ch-fall ch-f4"></div><div class="ch-fall ch-f5"></div>
-  <div class="ch-fall ch-f6"></div><div class="ch-fall ch-f7"></div><div class="ch-fall ch-f8"></div>
-  <div class="ch-fall ch-f9"></div><div class="ch-fall ch-f10"></div>
-  <div class="ch-fall ch-f11"></div><div class="ch-fall ch-f12"></div><div class="ch-fall ch-f13"></div>
-  <div class="ch-fall ch-f14"></div><div class="ch-fall ch-f15"></div>
-  <div class="container">
-    <div class="ch-badge"><span>🔥</span> 2026 PRO SERIES</div>
-    <h1 class="ch-title">Built to <span>Dominate</span></h1>
-    <p class="ch-sub">Custom gaming rigs & creator workstations engineered for those who demand the absolute best</p>
-    <div class="ch-stats">
-      <div class="ch-stat"><span>240</span> FPS</div>
-      <div class="ch-stat"><span>8</span>K Ready</div>
-      <div class="ch-stat"><span>0</span>% Lag</div>
-      <div class="ch-stat"><span>247</span> Support</div>
-    </div>
-    <div class="ch-actions">
-      <a href="#builds" class="ch-btn ch-btn-primary">⚡ Explore Builds</a>
-      <a href="#why" class="ch-btn ch-btn-ghost">Why Us →</a>
-    </div>
-  </div>
-</section>
-
-<!-- ===== STREAMING BUILDS ===== -->
-<section class="pb-section" id="builds">
-  <div class="container">
-    <div class="pb-intro">
-      <h2>📺 Streaming & Content Creation Builds</h2>
-      <p>Pre-configured rigs — or build your own custom setup below</p>
-    </div>
-    <div class="pb-grid">
-      <div class="pb-card">
-        <div class="pb-c-badge">📱 Starter</div>
-        <div class="pb-c-top"><h3>Ryzen 5 Stream</h3><span class="pb-c-price">₹68,999</span></div>
-        <div class="pb-c-tag">1080p · 120 FPS</div>
-        <div class="pb-c-specs"><div>⚡ Ryzen 5 7600</div><div>🎮 RTX 4060 Ti 8GB</div><div>🧠 32GB DDR5</div><div>💾 1TB NVMe</div></div>
-        <button class="pb-btn-sm" onclick="showToast('\uD83D\uDCAC Enquiry sent!')">💬 Enquire</button>
-      </div>
-      <div class="pb-card featured">
-        <div class="pb-c-badge">🎙️ Pro</div>
-        <div class="pb-c-top"><h3>Ryzen 7 Stream</h3><span class="pb-c-price">₹99,999</span></div>
-        <div class="pb-c-tag">1440p · 144 FPS</div>
-        <div class="pb-c-specs"><div>⚡ Ryzen 7 7800X3D</div><div>🎮 RTX 4070 Super 12GB</div><div>🧠 32GB DDR5</div><div>💾 2TB NVMe</div></div>
-        <button class="pb-btn-sm" onclick="showToast('\uD83D\uDCAC Enquiry sent!')">💬 Enquire</button>
-      </div>
-      <div class="pb-card">
-        <div class="pb-c-badge">🌟 Elite</div>
-        <div class="pb-c-top"><h3>Ryzen 9 Stream</h3><span class="pb-c-price">₹1,74,999</span></div>
-        <div class="pb-c-tag">4K · Dual PC</div>
-        <div class="pb-c-specs"><div>⚡ Ryzen 9 7950X</div><div>🎮 RTX 4080 Super 16GB</div><div>🧠 64GB DDR5</div><div>💾 2TB NVMe Gen5</div></div>
-        <button class="pb-btn-sm" onclick="showToast('\uD83D\uDCAC Enquiry sent!')">💬 Enquire</button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== PC BUILDER ===== -->
-<section class="pb-section pb-builder" id="builder">
-  <div class="container">
-    <div class="pb-intro">
-      <div class="pb-badge-icon">🔧</div>
-      <h2>Custom PC Configurator</h2>
-      <p>Pick your components and we'll build it, test it, and deliver it ready to run</p>
-    </div>
-    <div class="pb-builder-grid">
-      <div class="pb-builder-left">
-        <div class="pb-category">
-          <div class="pb-cat-title">⚡ Processor</div>
-          <div class="pb-comp">
-            <select id="bCPU" onchange="calcBuild()">
-              <option value="0">— Choose Processor —</option>
-              <optgroup label="AMD Ryzen (Desktop)">
-                <option value="9500">AMD Ryzen 3 7100</option>
-                <option value="12500">AMD Ryzen 5 7600</option>
-                <option value="18500">AMD Ryzen 5 7600X</option>
-                <option value="28500">AMD Ryzen 7 7700X</option>
-                <option value="32500">AMD Ryzen 7 7800X3D</option>
-                <option value="42500">AMD Ryzen 9 7900X</option>
-                <option value="48500">AMD Ryzen 9 7950X</option>
-                <option value="58500">AMD Ryzen 9 7950X3D</option>
-              </optgroup>
-              <optgroup label="Intel Core (Desktop)">
-                <option value="8500">Intel Core i3 14100F</option>
-                <option value="12000">Intel Core i5 14400F</option>
-                <option value="16500">Intel Core i5 14600K</option>
-                <option value="22000">Intel Core i5 14600KF</option>
-                <option value="28000">Intel Core i7 14700K</option>
-                <option value="38000">Intel Core i7 14700KF</option>
-                <option value="42000">Intel Core i9 14900K</option>
-                <option value="55000">Intel Core i9 14900KS</option>
-              </optgroup>
-              <optgroup label="Intel Core Ultra">
-                <option value="28500">Intel Ultra 5 225H</option>
-                <option value="39500">Intel Ultra 7 265K</option>
-                <option value="52000">Intel Ultra 9 285K</option>
-              </optgroup>
-            </select>
-          </div>
-        </div>
-
-        <div class="pb-category">
-          <div class="pb-cat-title">🎮 Graphics Card</div>
-          <div class="pb-comp">
-            <select id="bGPU" onchange="calcBuild()">
-              <option value="0">— Choose Graphics Card —</option>
-              <optgroup label="NVIDIA GeForce RTX">
-                <option value="18000">RTX 3050 6GB</option>
-                <option value="23000">RTX 4060 8GB</option>
-                <option value="28000">RTX 4060 Ti 8GB</option>
-                <option value="36000">RTX 4060 Ti 16GB</option>
-                <option value="43000">RTX 4070 12GB</option>
-                <option value="55000">RTX 4070 Super 12GB</option>
-                <option value="72000">RTX 4070 Ti Super 16GB</option>
-                <option value="82000">RTX 4080 16GB</option>
-                <option value="95000">RTX 4080 Super 16GB</option>
-                <option value="155000">RTX 4090 24GB</option>
-              </optgroup>
-              <optgroup label="AMD Radeon RX">
-                <option value="16000">RX 7600 8GB</option>
-                <option value="22000">RX 7600 XT 16GB</option>
-                <option value="35000">RX 7700 XT 12GB</option>
-                <option value="42000">RX 7800 XT 16GB</option>
-                <option value="65000">RX 7900 GRE 16GB</option>
-                <option value="75000">RX 7900 XT 20GB</option>
-                <option value="95000">RX 7900 XTX 24GB</option>
-              </optgroup>
-              <optgroup label="Intel Arc">
-                <option value="14000">Intel Arc A750 8GB</option>
-                <option value="22000">Intel Arc A770 16GB</option>
-                <option value="28000">Intel Arc B580 12GB</option>
-              </optgroup>
-            </select>
-          </div>
-        </div>
-
-        <div class="pb-category">
-          <div class="pb-cat-title">🧠 Memory (RAM)</div>
-          <div class="pb-comp">
-            <select id="bRAM" onchange="calcBuild()">
-              <option value="0">— Choose RAM —</option>
-              <optgroup label="DDR5 (Latest)">
-                <option value="3200">16GB (2×8) DDR5 5200MHz</option>
-                <option value="4500">16GB (2×8) DDR5 6000MHz</option>
-                <option value="5500">32GB (2×16) DDR5 5600MHz</option>
-                <option value="8500">32GB (2×16) DDR5 6000MHz CL30</option>
-                <option value="9500">32GB (2×16) RGB DDR5 6000MHz</option>
-                <option value="16500">64GB (2×32) DDR5 6000MHz</option>
-                <option value="22000">64GB (2×32) RGB DDR5 6400MHz</option>
-                <option value="32000">128GB (4×32) DDR5 6000MHz</option>
-              </optgroup>
-              <optgroup label="DDR4 (Budget)">
-                <option value="2500">16GB (2×8) DDR4 3200MHz</option>
-                <option value="3500">32GB (2×16) DDR4 3200MHz</option>
-                <option value="6500">64GB (2×32) DDR4 3200MHz</option>
-              </optgroup>
-              <optgroup label="Brands: Corsair, G.Skill, Kingston, ADATA, TeamGroup, Crucial"> </optgroup>
-            </select>
-          </div>
-        </div>
-
-        <div class="pb-category">
-          <div class="pb-cat-title">💾 Storage (SSD/HDD)</div>
-          <div class="pb-comp">
-            <select id="bStorage" onchange="calcBuild()">
-              <option value="0">— Choose Storage —</option>
-              <optgroup label="NVMe SSD (Gen4)">
-                <option value="3500">500GB NVMe Gen4</option>
-                <option value="5500">1TB NVMe Gen4</option>
-                <option value="9500">2TB NVMe Gen4</option>
-                <option value="18500">4TB NVMe Gen4</option>
-              </optgroup>
-              <optgroup label="NVMe SSD (Gen5)">
-                <option value="12500">1TB NVMe Gen5</option>
-                <option value="16500">2TB NVMe Gen5</option>
-                <option value="28000">4TB NVMe Gen5</option>
-              </optgroup>
-              <optgroup label="SATA SSD">
-                <option value="2500">480GB SATA SSD</option>
-                <option value="4000">960GB SATA SSD</option>
-                <option value="7500">1.92TB SATA SSD</option>
-              </optgroup>
-              <optgroup label="HDD (Mass Storage)">
-                <option value="3500">1TB HDD 7200RPM</option>
-                <option value="5000">2TB HDD 7200RPM</option>
-                <option value="8500">4TB HDD 7200RPM</option>
-                <option value="14000">8TB HDD 7200RPM</option>
-              </optgroup>
-              <optgroup label="Brands: Samsung, WD, Crucial, Kingston, Seagate, Adata"> </optgroup>
-            </select>
-          </div>
-        </div>
-
-        <div class="pb-category">
-          <div class="pb-cat-title">🖥️ Motherboard</div>
-          <div class="pb-comp">
-            <select id="bMobo" onchange="calcBuild()">
-              <option value="0">— Choose Motherboard —</option>
-              <optgroup label="AMD Socket AM5">
-                <option value="8000">A620M DDR5</option>
-                <option value="12000">B650M DDR5</option>
-                <option value="15000">B650M WiFi DDR5</option>
-                <option value="16000">B650E DDR5</option>
-                <option value="18000">X670E DDR5</option>
-                <option value="25000">X670E WiFi DDR5</option>
-                <option value="28000">X670E Extreme DDR5</option>
-              </optgroup>
-              <optgroup label="Intel Socket LGA1700">
-                <option value="8000">H610M DDR4</option>
-                <option value="9000">B760 DDR4</option>
-                <option value="12000">B760 DDR5</option>
-                <option value="14000">B760 WiFi DDR5</option>
-                <option value="16000">Z790 DDR5</option>
-                <option value="20000">Z790 WiFi DDR5</option>
-                <option value="28000">Z790 Apex DDR5</option>
-              </optgroup>
-              <optgroup label="Brands: ASUS, Gigabyte, MSI, ASRock, Biostar, Colorful"> </optgroup>
-            </select>
-          </div>
-        </div>
-
-        <div class="pb-category">
-          <div class="pb-cat-title">🔌 Power Supply (PSU)</div>
-          <div class="pb-comp">
-            <select id="bPSU" onchange="calcBuild()">
-              <option value="0">— Choose PSU —</option>
-              <optgroup label="80+ Bronze (Budget)">
-                <option value="3500">450W Bronze</option>
-                <option value="4500">550W Bronze</option>
-                <option value="5500">650W Bronze</option>
-              </optgroup>
-              <optgroup label="80+ Gold (Recommended)">
-                <option value="5500">550W Gold</option>
-                <option value="6500">650W Gold</option>
-                <option value="7500">750W Gold</option>
-                <option value="8500">750W Gold Modular</option>
-                <option value="9500">850W Gold</option>
-                <option value="11000">850W Gold Modular</option>
-                <option value="13500">1000W Gold</option>
-                <option value="16500">1000W Gold Modular</option>
-              </optgroup>
-              <optgroup label="80+ Platinum (Premium)">
-                <option value="12000">850W Platinum</option>
-                <option value="16500">1000W Platinum</option>
-                <option value="22000">1200W Platinum</option>
-                <option value="28000">1600W Platinum</option>
-              </optgroup>
-              <optgroup label="Brands: Corsair, Cooler Master, Antec, MSI, Gigabyte, DeepCool, Thermaltake, NZXT"> </optgroup>
-            </select>
-          </div>
-        </div>
-
-        <div class="pb-category">
-          <div class="pb-cat-title">❄️ CPU Cooler</div>
-          <div class="pb-comp">
-            <select id="bCooler" onchange="calcBuild()">
-              <option value="0">— Choose CPU Cooler —</option>
-              <optgroup label="✦ Air Cooling (Budget)">
-                <option value="0">  Stock Cooler (Included)</option>
-                <option value="1500">  Budget Air Cooler</option>
-                <option value="2500">  Single Tower Cooler</option>
-                <option value="3500">  Single Tower RGB</option>
-              </optgroup>
-              <optgroup label="✦ Air Cooling (Performance)">
-                <option value="4500">  Dual Tower Cooler</option>
-                <option value="5500">  Dual Tower RGB</option>
-              </optgroup>
-              <optgroup label="✦ Liquid AIO (All-in-One)">
-                <option value="5500">  120mm AIO</option>
-                <option value="7500">  240mm AIO</option>
-                <option value="8500">  240mm AIO + RGB</option>
-                <option value="9500">  360mm AIO</option>
-                <option value="12500">  360mm AIO + RGB</option>
-                <option value="18000">  420mm AIO + RGB</option>
-              </optgroup>
-              <optgroup label="Brands: Cooler Master, DeepCool, NZXT, Corsair, Noctua, Arctic, Antec"> </optgroup>
-            </select>
-          </div>
-        </div>
-
-        <div class="pb-category">
-          <div class="pb-cat-title">📦 Cabinet / Case</div>
-          <div class="pb-comp">
-            <select id="bCase" onchange="calcBuild()">
-              <option value="0">— Choose Cabinet —</option>
-              <optgroup label="✦ Mini / ITX (Small Form Factor)">
-                <option value="2500">  Budget ITX</option>
-                <option value="4500">  ITX with TG Panel</option>
-                <option value="7500">  Premium ITX</option>
-              </optgroup>
-              <optgroup label="✦ Mid Tower ATX (Most Popular)">
-                <option value="2000">  Budget ATX</option>
-                <option value="3000">  Basic Mid Tower</option>
-                <option value="4000">  Mid Tower + TG Side</option>
-                <option value="5500">  Mid Tower + RGB Front</option>
-                <option value="6500">  Mid Tower Mesh + 3 Fans</option>
-                <option value="8500">  Premium Mid Tower TG</option>
-              </optgroup>
-              <optgroup label="✦ Full Tower (Large)">
-                <option value="6500">  Basic Full Tower</option>
-                <option value="9500">  Full Tower + RGB</option>
-                <option value="12500">  Premium Full Tower</option>
-                <option value="16500">  Showcase Full Tower</option>
-              </optgroup>
-              <optgroup label="Indian Brands: Ant Esports, Zebronics, Cooler Master, DeepCool, Corsair, NZXT, Lian Li, Phanteks, MSI, Thermaltake"> </optgroup>
-            </select>
-          </div>
-        </div>
-
-        <div class="pb-category">
-          <div class="pb-cat-title">🖥️ Monitor (Optional)</div>
-          <div class="pb-comp">
-            <select id="bMonitor" onchange="calcBuild()">
-              <option value="0">— Choose Monitor —</option>
-              <optgroup label="1080p Gaming">
-                <option value="8500">22" 1080p 75Hz</option>
-                <option value="12000">24" 1080p 165Hz</option>
-                <option value="16500">27" 1080p 180Hz</option>
-              </optgroup>
-              <optgroup label="1440p Gaming">
-                <option value="18500">27" 1440p 165Hz</option>
-                <option value="22000">27" 1440p 180Hz</option>
-                <option value="28000">27" 1440p 240Hz</option>
-                <option value="35000">32" 1440p 165Hz Curved</option>
-              </optgroup>
-              <optgroup label="4K / Creator">
-                <option value="28000">27" 4K 60Hz IPS</option>
-                <option value="38000">28" 4K 144Hz</option>
-                <option value="48000">32" 4K 144Hz</option>
-                <option value="65000">32" 4K MiniLED</option>
-              </optgroup>
-              <optgroup label="Brands: LG, Samsung, BenQ, Dell, Acer, ASUS, MSI, Gigabyte, AOC, ViewSonic"> </optgroup>
-            </select>
-          </div>
-        </div>
-
-        <div class="pb-category">
-          <div class="pb-cat-title">⌨️ Keyboard & Mouse Combo (Optional)</div>
-          <div class="pb-comp">
-            <select id="bKM" onchange="calcBuild()">
-              <option value="0">— Skip / Choose —</option>
-              <optgroup label="Combo Sets">
-                <option value="1500">Basic KB+Mouse Combo</option>
-                <option value="3500">RGB Gaming Combo</option>
-              </optgroup>
-              <optgroup label="Mechanical Keyboards">
-                <option value="2500">TKL Mechanical Blue</option>
-                <option value="4500">Full Size Mechanical RGB</option>
-                <option value="7500">Wireless Mechanical</option>
-              </optgroup>
-              <optgroup label="Gaming Mice">
-                <option value="1000">Basic Gaming Mouse</option>
-                <option value="2500">RGB Gaming Mouse</option>
-                <option value="4500">Wireless Gaming Mouse</option>
-              </optgroup>
-              <optgroup label="Brands: Zebronics, Ant Esports, Logitech, Razer, Corsair, HyperX, Redragon, Cosmic Byte"> </optgroup>
-            </select>
-          </div>
-        </div>
-
-        <div class="pb-category">
-          <div class="pb-cat-title">🎧 Headset & Speakers (Optional)</div>
-          <div class="pb-comp">
-            <select id="bAudio" onchange="calcBuild()">
-              <option value="0">— Skip / Choose —</option>
-              <optgroup label="Headsets">
-                <option value="1200">Basic Headset</option>
-                <option value="2500">RGB Gaming Headset</option>
-                <option value="5500">Wireless Gaming Headset</option>
-              </optgroup>
-              <optgroup label="Speakers">
-                <option value="1500">2.0 Desktop Speakers</option>
-                <option value="3500">2.1 Speakers + Subwoofer</option>
-                <option value="6500">Soundbar</option>
-              </optgroup>
-              <optgroup label="Brands: Zebronics, Ant Esports, Logitech, Razer, HyperX, JBL, Corsair"> </optgroup>
-            </select>
-          </div>
-        </div>
-
-        <div class="pb-category">
-          <div class="pb-cat-title">🛡️ Accessories (Optional)</div>
-          <div class="pb-comp">
-            <select id="bAccessories" onchange="calcBuild()">
-              <option value="0">— Skip / Choose —</option>
-              <optgroup label="Cooling & Lighting">
-                <option value="1500">3x RGB Case Fans</option>
-                <option value="2500">5x ARGB Case Fans + Hub</option>
-                <option value="3500">RGB Strip Kit</option>
-                <option value="4500">Fan Controller Hub</option>
-              </optgroup>
-              <optgroup label="UPS & Power">
-                <option value="3500">600VA UPS</option>
-                <option value="5500">1100VA UPS</option>
-                <option value="8500">1500VA UPS</option>
-              </optgroup>
-              <optgroup label="Networking">
-                <option value="1500">WiFi 6 Card</option>
-                <option value="3500">WiFi 6E Card</option>
-                <option value="2500">Bluetooth Adapter</option>
-              </optgroup>
-              <optgroup label="Brands: Ant Esports, Zebronics, DeepCool, Cooler Master, APC, TP-Link, Intel"> </optgroup>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="pb-builder-right">
-        <div class="pb-summary">
-          <div class="pb-summary-header">
-            <span>📋 Build Summary</span>
-            <span class="pb-summary-badge" id="pbCompat">Ready</span>
-          </div>
-          <div id="pbSummary" class="pb-summary-list">
-            <div class="pb-summary-empty">Select your components to build your dream PC</div>
-          </div>
-          <div class="pb-total-row">
-            <span class="pb-total-label">Estimated Total</span>
-            <span class="pb-total-amount" id="pbTotal">₹0</span>
-          </div>
-          <div class="pb-specs-row">
-            <span id="pbCores">—</span>
-            <span id="pbTdp">—</span>
-          </div>
-          <button class="pb-btn-lg" onclick="sendBuild()" id="pbSendBtn" disabled>💬 Send Build via WhatsApp</button>
-          <p class="pb-note">We'll confirm within 30 min · Free delivery in Mysore</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
+  <title>PC Builds – Computer Paradise</title>
+  <link rel="stylesheet" href="styles.css?v=3">
 <style>
-.ch-hero {
-  background: #010108;
-  padding: calc(var(--nav-height) + 50px) 20px 60px;
-  min-height: 85vh; display: flex; align-items: center; justify-content: center;
-  text-align: center; position: relative; overflow: hidden;
-}
-
-/* Deep background star field - drifting */
-.ch-bg-stars {
-  position:absolute; inset:0; z-index:0; pointer-events:none;
-}
-.ch-bg-stars::before {
-  content:""; position:absolute; width:3px; height:3px; inset:0;
-  border-radius:50%;
-  box-shadow:
-    8px 15px 0 0 rgba(255,255,255,0.3), 25px 60px 0 0 rgba(255,255,255,0.2), 50px 30px 0 0 rgba(255,255,255,0.35), 75px 90px 0 0 rgba(255,255,255,0.15), 100px 45px 0 0 rgba(255,255,255,0.3),
-    130px 80px 0 0 rgba(255,255,255,0.2), 160px 20px 0 0 rgba(255,255,255,0.35), 190px 70px 0 0 rgba(255,255,255,0.15), 220px 55px 0 0 rgba(255,255,255,0.3), 250px 10px 0 0 rgba(255,255,255,0.2),
-    280px 95px 0 0 rgba(255,255,255,0.35), 310px 40px 0 0 rgba(255,255,255,0.15), 340px 85px 0 0 rgba(255,255,255,0.3), 370px 25px 0 0 rgba(255,255,255,0.2), 400px 65px 0 0 rgba(255,255,255,0.35),
-    18px 140px 0 0 rgba(255,255,255,0.2), 38px 180px 0 0 rgba(255,255,255,0.35), 58px 120px 0 0 rgba(255,255,255,0.15), 78px 170px 0 0 rgba(255,255,255,0.3), 98px 150px 0 0 rgba(255,255,255,0.2),
-    118px 190px 0 0 rgba(255,255,255,0.35), 138px 110px 0 0 rgba(255,255,255,0.15), 158px 200px 0 0 rgba(255,255,255,0.3), 178px 130px 0 0 rgba(255,255,255,0.2), 198px 160px 0 0 rgba(255,255,255,0.35),
-    218px 125px 0 0 rgba(255,255,255,0.15), 238px 185px 0 0 rgba(255,255,255,0.3), 258px 145px 0 0 rgba(255,255,255,0.2), 278px 105px 0 0 rgba(255,255,255,0.35), 298px 165px 0 0 rgba(255,255,255,0.15),
-    318px 195px 0 0 rgba(255,255,255,0.3), 338px 115px 0 0 rgba(255,255,255,0.2), 358px 175px 0 0 rgba(255,255,255,0.35), 378px 135px 0 0 rgba(255,255,255,0.15), 398px 155px 0 0 rgba(255,255,255,0.3),
-    12px 250px 0 0 rgba(255,255,255,0.3), 32px 290px 0 0 rgba(255,255,255,0.15), 52px 220px 0 0 rgba(255,255,255,0.35), 72px 280px 0 0 rgba(255,255,255,0.2), 92px 240px 0 0 rgba(255,255,255,0.3),
-    112px 270px 0 0 rgba(255,255,255,0.15), 132px 210px 0 0 rgba(255,255,255,0.35), 152px 300px 0 0 rgba(255,255,255,0.2), 172px 230px 0 0 rgba(255,255,255,0.3), 192px 260px 0 0 rgba(255,255,255,0.15),
-    212px 225px 0 0 rgba(255,255,255,0.35), 232px 285px 0 0 rgba(255,255,255,0.2), 252px 245px 0 0 rgba(255,255,255,0.3), 272px 205px 0 0 rgba(255,255,255,0.15), 292px 265px 0 0 rgba(255,255,255,0.35),
-    312px 295px 0 0 rgba(255,255,255,0.2), 332px 215px 0 0 rgba(255,255,255,0.3), 352px 275px 0 0 rgba(255,255,255,0.15), 372px 235px 0 0 rgba(255,255,255,0.35), 392px 255px 0 0 rgba(255,255,255,0.2),
-    22px 350px 0 0 rgba(255,255,255,0.2), 42px 390px 0 0 rgba(255,255,255,0.35), 62px 320px 0 0 rgba(255,255,255,0.15), 82px 380px 0 0 rgba(255,255,255,0.3), 102px 340px 0 0 rgba(255,255,255,0.2),
-    122px 370px 0 0 rgba(255,255,255,0.35), 142px 310px 0 0 rgba(255,255,255,0.15), 162px 400px 0 0 rgba(255,255,255,0.3), 182px 330px 0 0 rgba(255,255,255,0.2), 202px 360px 0 0 rgba(255,255,255,0.35),
-    222px 325px 0 0 rgba(255,255,255,0.15), 242px 385px 0 0 rgba(255,255,255,0.3), 262px 345px 0 0 rgba(255,255,255,0.2), 282px 305px 0 0 rgba(255,255,255,0.35), 302px 365px 0 0 rgba(255,255,255,0.15);
-  animation: chBgDrift 15s linear infinite;
-  background:transparent;
-}
-.ch-bg-stars::after {
-  content:""; position:absolute; width:2px; height:2px; inset:0;
-  border-radius:50%;
-  box-shadow:
-    5px 45px 0 0 rgba(255,255,255,0.15), 35px 85px 0 0 rgba(255,255,255,0.1), 65px 25px 0 0 rgba(255,255,255,0.18), 95px 75px 0 0 rgba(255,255,255,0.08), 125px 55px 0 0 rgba(255,255,255,0.15),
-    155px 15px 0 0 rgba(255,255,255,0.1), 185px 95px 0 0 rgba(255,255,255,0.18), 215px 35px 0 0 rgba(255,255,255,0.08), 245px 65px 0 0 rgba(255,255,255,0.15), 275px 5px 0 0 rgba(255,255,255,0.1),
-    305px 88px 0 0 rgba(255,255,255,0.18), 335px 12px 0 0 rgba(255,255,255,0.08), 365px 48px 0 0 rgba(255,255,255,0.15), 395px 72px 0 0 rgba(255,255,255,0.1), 15px 168px 0 0 rgba(255,255,255,0.1),
-    45px 128px 0 0 rgba(255,255,255,0.18), 75px 188px 0 0 rgba(255,255,255,0.08), 105px 148px 0 0 rgba(255,255,255,0.15), 135px 108px 0 0 rgba(255,255,255,0.1), 165px 198px 0 0 rgba(255,255,255,0.18),
-    195px 158px 0 0 rgba(255,255,255,0.08), 225px 118px 0 0 rgba(255,255,255,0.15), 255px 178px 0 0 rgba(255,255,255,0.1), 285px 138px 0 0 rgba(255,255,255,0.18), 315px 98px 0 0 rgba(255,255,255,0.08),
-    345px 258px 0 0 rgba(255,255,255,0.1), 375px 218px 0 0 rgba(255,255,255,0.18), 405px 278px 0 0 rgba(255,255,255,0.08), 28px 358px 0 0 rgba(255,255,255,0.15), 58px 318px 0 0 rgba(255,255,255,0.1),
-    88px 378px 0 0 rgba(255,255,255,0.18), 118px 338px 0 0 rgba(255,255,255,0.08), 148px 298px 0 0 rgba(255,255,255,0.15), 178px 368px 0 0 rgba(255,255,255,0.1), 208px 328px 0 0 rgba(255,255,255,0.18);
-  animation: chBgDrift2 20s linear infinite;
-  background:transparent;
-}
-@keyframes chBgDrift { 0% { transform:translate(0,0); } 100% { transform:translate(20px,10px); } }
-@keyframes chBgDrift2 { 0% { transform:translate(0,0); } 100% { transform:translate(30px,15px); } }
-
-/* Multi-colored galaxy blobs */
-.ch-galaxy {
-  position:absolute; border-radius:50%; z-index:0; pointer-events:none;
-  filter: blur(4px);
-}
-.ch-g1 { width:220px; height:220px; top:-50px; right:-60px; background:radial-gradient(ellipse, rgba(120,60,180,0.04), transparent 70%); animation:chGDrift 25s ease-in-out infinite alternate; }
-.ch-g2 { width:160px; height:160px; top:30%; left:-50px; background:radial-gradient(ellipse, rgba(60,120,220,0.035), transparent 70%); animation:chGDrift 30s ease-in-out infinite alternate-reverse; }
-.ch-g3 { width:100px; height:100px; top:15%; right:20%; background:radial-gradient(ellipse, rgba(220,120,60,0.03), transparent 70%); animation:chGDrift 20s ease-in-out infinite alternate; }
-.ch-g4 { width:140px; height:140px; bottom:20%; right:10%; background:radial-gradient(ellipse, rgba(160,60,220,0.03), transparent 70%); animation:chGDrift 28s ease-in-out infinite alternate-reverse; }
-.ch-g5 { width:80px; height:80px; top:5%; left:20%; background:radial-gradient(ellipse, rgba(60,220,160,0.025), transparent 70%); animation:chGDrift 22s ease-in-out infinite alternate; }
-.ch-g6 { width:180px; height:180px; bottom:-60px; right:30%; background:radial-gradient(ellipse, rgba(100,160,255,0.03), transparent 70%); animation:chGDrift 35s ease-in-out infinite alternate-reverse; }
-@keyframes chGDrift { 0% { transform:translate(0,0) scale(1); } 100% { transform:translate(30px,-20px) scale(1.05); } }
-
-/* Stars falling across screen */
-.ch-fall {
-  position:absolute; border-radius:50%; z-index:1;
-  animation: chFall linear infinite;
-}
-.ch-fall::after {
-  content:""; position:absolute; top:50%; transform:translateY(-50%);
-  height:2px; background:linear-gradient(to left, rgba(255,255,255,0.4), transparent);
-}
-.ch-f1 { width:3px; height:3px; background:#fff; top:-5%; left:10%; --fdx:100px; --fdy:600px; --fds:4; animation-duration:3s; animation-delay:0s; }
-.ch-f1::after { width:60px; right:3px; }
-.ch-f2 { width:4px; height:4px; background:#ffd700; top:-8%; left:30%; --fdx:80px; --fdy:700px; --fds:5; animation-duration:3.5s; animation-delay:0.5s; }
-.ch-f2::after { width:80px; right:4px; }
-.ch-f3 { width:2px; height:2px; background:#80b5ff; top:-3%; left:50%; --fdx:120px; --fdy:550px; --fds:3; animation-duration:2.8s; animation-delay:1s; }
-.ch-f3::after { width:50px; right:2px; }
-.ch-f4 { width:3px; height:3px; background:#fff; top:-10%; left:70%; --fdx:60px; --fdy:800px; --fds:4.5; animation-duration:4s; animation-delay:1.5s; }
-.ch-f4::after { width:70px; right:3px; }
-.ch-f5 { width:4px; height:4px; background:#ff8a80; top:-6%; left:90%; --fdx:140px; --fdy:650px; --fds:5; animation-duration:3.2s; animation-delay:0.8s; }
-.ch-f5::after { width:85px; right:4px; }
-.ch-f6 { width:2px; height:2px; background:#69f0ae; top:-12%; left:20%; --fdx:90px; --fdy:750px; --fds:3.5; animation-duration:3.8s; animation-delay:1.2s; }
-.ch-f6::after { width:55px; right:2px; }
-.ch-f7 { width:3px; height:3px; background:#fff; top:-4%; left:40%; --fdx:110px; --fdy:600px; --fds:4; animation-duration:2.5s; animation-delay:0.3s; }
-.ch-f7::after { width:65px; right:3px; }
-.ch-f8 { width:4px; height:4px; background:#ffd700; top:-7%; left:60%; --fdx:70px; --fdy:700px; --fds:5; animation-duration:3.6s; animation-delay:0.7s; }
-.ch-f8::after { width:75px; right:4px; }
-.ch-f9 { width:2px; height:2px; background:#80b5ff; top:-5%; left:80%; --fdx:130px; --fdy:550px; --fds:3; animation-duration:2.2s; animation-delay:1.8s; }
-.ch-f9::after { width:45px; right:2px; }
-.ch-f10 { width:3px; height:3px; background:#fff; top:-9%; left:5%; --fdx:50px; --fdy:800px; --fds:4.5; animation-duration:4.2s; animation-delay:0.4s; }
-.ch-f10::after { width:60px; right:3px; }
-.ch-f11 { width:4px; height:4px; background:#ff8a80; top:-15%; left:45%; --fdx:100px; --fdy:900px; --fds:5; animation-duration:4.5s; animation-delay:2s; }
-.ch-f11::after { width:90px; right:4px; }
-.ch-f12 { width:2px; height:2px; background:#69f0ae; top:-3%; left:75%; --fdx:80px; --fdy:500px; --fds:3.5; animation-duration:2s; animation-delay:1.4s; }
-.ch-f12::after { width:50px; right:2px; }
-.ch-f13 { width:3px; height:3px; background:#fff; top:-11%; left:55%; --fdx:90px; --fdy:750px; --fds:4; animation-duration:3.4s; animation-delay:0.9s; }
-.ch-f13::after { width:70px; right:3px; }
-.ch-f14 { width:4px; height:4px; background:#ffd700; top:-6%; left:15%; --fdx:110px; --fdy:650px; --fds:5; animation-duration:3s; animation-delay:1.6s; }
-.ch-f14::after { width:80px; right:4px; }
-.ch-f15 { width:2px; height:2px; background:#80b5ff; top:-8%; left:35%; --fdx:60px; --fdy:600px; --fds:3; animation-duration:2.6s; animation-delay:0.2s; }
-.ch-f15::after { width:40px; right:2px; }
-
-@keyframes chFall { 
-  0% { transform:translate(0,0) scale(0.3); opacity:0; }
-  5% { opacity:1; }
-  100% { transform:translate(var(--fdx),var(--fdy)) scale(var(--fds,4)); opacity:0; }
-}
-
-/* Nebula overlay */
-.ch-nebula {
-  position:absolute; inset:0; z-index:0; pointer-events:none;
-  background:
-    radial-gradient(ellipse at 20% 30%, rgba(100,50,150,0.012) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 70%, rgba(50,100,200,0.008) 0%, transparent 50%);
-}
-
-.ch-hero .container { position: relative; z-index: 2; }
-.ch-badge { display:inline-flex; align-items:center; gap:6px; padding:6px 20px; border-radius:50px; background:rgba(212,175,55,0.06); border:1px solid rgba(212,175,55,0.1); font-size:0.6rem; font-weight:700; letter-spacing:2px; color:var(--accent); margin-bottom:18px; }
-.ch-title { font-size:clamp(2.8rem,7vw,5.5rem); font-weight:900; color:#fff; line-height:1; margin-bottom:12px; letter-spacing:-2px; }
-.ch-title span { background:linear-gradient(135deg,var(--accent),#fff,var(--accent)); background-size:200% 100%; -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation:chShimmer 4s linear infinite; }
-@keyframes chShimmer { 0% { background-position:0% 50%; } 100% { background-position:200% 50%; } }
-.ch-sub { font-size:clamp(0.9rem,1.3vw,1.05rem); color:rgba(255,255,255,0.35); max-width:520px; margin:0 auto 28px; }
-.ch-stats { display:flex; gap:32px; justify-content:center; margin-bottom:28px; }
-.ch-stat { font-size:0.7rem; color:rgba(255,255,255,0.2); }
-.ch-stat span { display:block; font-size:1.3rem; font-weight:900; color:var(--accent); }
-.ch-actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
-.ch-btn { display:inline-flex; align-items:center; gap:8px; padding:12px 28px; border-radius:50px; font-size:0.85rem; font-weight:700; cursor:pointer; text-decoration:none; transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1); }
-.ch-btn-primary { background:linear-gradient(135deg,var(--accent),#c9a032); color:#0a0a0a; border:none; }
-.ch-btn-primary:hover { transform:translateY(-3px); box-shadow:0 8px 30px rgba(212,175,55,0.3); }
-.ch-btn-ghost { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); color:rgba(255,255,255,0.4); }
-.ch-btn-ghost:hover { border-color:rgba(212,175,55,0.2); color:#fff; }
-
-/* Build Cards & PC Builder */
-.pb-section { padding:50px 0; background:#060610; }
-.pb-intro { text-align:center; margin-bottom:28px; }
-.pb-intro h2 { font-size:1.3rem; font-weight:800; color:#fff; margin-bottom:4px; }
-.pb-intro p { color:rgba(255,255,255,0.3); font-size:0.82rem; }
-.pb-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; max-width:1000px; margin:0 auto; }
-.pb-card { background:linear-gradient(145deg,rgba(255,255,255,0.025),rgba(255,255,255,0.008)); border:1px solid rgba(255,255,255,0.025); border-radius:14px; padding:20px 20px 16px; transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1); }
-.pb-card:hover { transform:translateY(-4px); border-color:rgba(212,175,55,0.06); box-shadow:0 20px 60px rgba(0,0,0,0.4); }
-.pb-card.featured { border-color:rgba(212,175,55,0.04); background:linear-gradient(145deg,rgba(212,175,55,0.02),rgba(255,255,255,0.005)); }
-.pb-c-badge { font-size:0.55rem; font-weight:700; color:rgba(212,175,55,0.3); margin-bottom:6px; }
-.pb-c-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
-.pb-c-top h3 { font-size:0.9rem; font-weight:800; color:#fff; }
-.pb-c-price { font-size:1.1rem; font-weight:900; color:var(--accent); }
-.pb-c-tag { font-size:0.6rem; color:rgba(255,255,255,0.2); margin-bottom:8px; }
-.pb-c-specs { display:flex; flex-direction:column; gap:2px; margin-bottom:10px; }
-.pb-c-specs div { font-size:0.68rem; color:rgba(255,255,255,0.5); }
-.pb-btn-sm { padding:6px 16px; border-radius:50px; border:none; background:linear-gradient(135deg,var(--accent),#c9a032); color:#0a0a0a; font-size:0.7rem; font-weight:700; cursor:pointer; width:100%; transition:all 0.3s; }
-.pb-btn-sm:hover { transform:scale(1.03); box-shadow:0 4px 16px rgba(212,175,55,0.15); }
-
-.pb-builder { background:#08081a; }
-.pb-category { margin-bottom:14px; }
-.pb-cat-title { font-size:0.65rem; font-weight:700; color:rgba(255,255,255,0.25); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid rgba(255,255,255,0.03); }
-.pb-builder-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; max-width:1100px; margin:0 auto; }
-.pb-comp { margin-bottom:6px; }
-.pb-comp label { display:block; font-size:0.65rem; font-weight:600; color:rgba(255,255,255,0.3); margin-bottom:3px; }
-.pb-comp select { width:100%; padding:9px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.08); background:#242438; color:#f0f0f0; font-size:0.78rem; outline:none; cursor:pointer; }
-.pb-comp select:focus { border-color:rgba(212,175,55,0.25); background:#2a2a42; }
-.pb-comp select option { background:#242438; color:#f0f0f0; padding:6px 10px; }
-.pb-comp select option:first-child { color:#999; }
-.pb-comp select optgroup { background:#1a1a2a; color:#ffd700; font-weight:700; }
-.pb-summary { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.03); border-radius:14px; padding:20px; position:sticky; top:90px; }
-.pb-summary-header { display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; font-weight:700; color:#fff; margin-bottom:12px; }
-.pb-summary-badge { font-size:0.55rem; padding:2px 8px; border-radius:4px; background:rgba(76,175,80,0.1); color:#4caf50; }
-.pb-summary-list { min-height:140px; }
-.pb-summary-empty { font-size:0.75rem; color:rgba(255,255,255,0.1); text-align:center; padding:40px 0; line-height:1.5; }
-.pb-summary-item { display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid rgba(255,255,255,0.01); font-size:0.72rem; }
-.pb-summary-item span:first-child { color:rgba(255,255,255,0.55); }
-.pb-summary-item span:last-child { color:#fff; font-weight:600; }
-.pb-total-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; margin-top:6px; border-top:2px solid rgba(212,175,55,0.06); }
-.pb-total-label { font-size:0.8rem; font-weight:700; color:#fff; }
-.pb-total-amount { font-size:1.3rem; font-weight:900; color:var(--accent); }
-.pb-specs-row { display:flex; gap:8px; margin-bottom:10px; font-size:0.6rem; color:rgba(255,255,255,0.15); }
-.pb-btn-lg { padding:10px; border-radius:8px; border:none; background:linear-gradient(135deg,var(--accent),#c9a032); color:#0a0a0a; font-size:0.8rem; font-weight:700; cursor:pointer; width:100%; transition:all 0.3s; }
-.pb-btn-lg:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(212,175,55,0.2); }
-.pb-btn-lg:disabled { opacity:0.3; cursor:not-allowed; transform:none; }
-.pb-note { font-size:0.6rem; color:rgba(255,255,255,0.12); text-align:center; margin-top:8px; }
-.pb-badge-icon { font-size:2rem; margin-bottom:6px; }
-
-@media (max-width:768px) {
-  .ch-hero { padding:calc(var(--nav-height)+30px) 16px 40px; min-height:auto; }
-  .ch-stats { gap:16px; flex-wrap:wrap; }
-  .pb-grid { grid-template-columns:1fr; }
-  .pb-builder-grid { grid-template-columns:1fr; }
-}
+.hero-pc-3d{transform:scale(0.55);transform-origin:center center;margin-bottom:10px;display:flex;align-items:center;justify-content:center;}
+@keyframes h3d-flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+/* Case body */
+.hero-pc-3d .pc{position:relative;width:540px;height:600px;animation:h3d-flt 5s ease-in-out infinite;}
+.hero-pc-3d .pc-body{position:absolute;inset:0;background:linear-gradient(145deg,#161622,#0a0a12);border-radius:18px;box-shadow:0 30px 120px rgba(0,0,0,0.7),0 0 80px rgba(30,0,70,0.06),inset 0 0 100px rgba(0,0,0,0.3);overflow:hidden;}
+.hero-pc-3d .pc-body::before{content:'';position:absolute;inset:0;border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,0.02) 0%,transparent 30%,transparent 70%,rgba(255,255,255,0.005) 100%);pointer-events:none;z-index:20;}
+.hero-pc-3d .pc-body::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,rgba(255,255,255,0.04),transparent 60%);border-radius:18px 18px 0 0;z-index:20;}
+/* Front panel */
+.hero-pc-3d .front-panel{position:absolute;top:0;left:0;bottom:0;width:160px;background:linear-gradient(180deg,#141420,#0a0a12);border-right:1px solid rgba(255,255,255,0.02);z-index:5;}
+.hero-pc-3d .front-panel::after{content:'';position:absolute;right:-1px;top:10px;bottom:10px;width:1px;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.015),transparent);}
+.hero-pc-3d .mesh-f{position:absolute;inset:12px 8px 50px 8px;background-image:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,0.004) 3px,rgba(255,255,255,0.004) 4px),repeating-linear-gradient(90deg,transparent,transparent 3px,rgba(255,255,255,0.004) 3px,rgba(255,255,255,0.004) 4px);z-index:1;}
+.hero-pc-3d .mesh-b{position:absolute;inset:12px 8px 50px 8px;z-index:1;background:repeating-linear-gradient(0deg,transparent,transparent 7px,rgba(0,0,0,0.12) 7px,rgba(0,0,0,0.12) 8px);}
+.hero-pc-3d .fcol{position:absolute;inset:20px 8px 55px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:3;}
+.hero-pc-3d .f120{position:relative;width:86px;height:86px;flex-shrink:0;}
+.hero-pc-3d .fb{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 30% 30%,#1c1c2e,#0a0a14);border:1px solid rgba(255,255,255,0.015);display:flex;align-items:center;justify-content:center;}
+.hero-pc-3d .fbl{width:68px;height:68px;border-radius:50%;background:conic-gradient(from 0deg,rgba(255,255,255,0.025) 0deg,transparent 16deg,rgba(255,255,255,0.025) 48deg,transparent 64deg,rgba(255,255,255,0.025) 96deg,transparent 112deg,rgba(255,255,255,0.025) 144deg,transparent 160deg,rgba(255,255,255,0.025) 192deg,transparent 208deg,rgba(255,255,255,0.025) 240deg,transparent 256deg,rgba(255,255,255,0.025) 288deg,transparent 304deg,rgba(255,255,255,0.025) 336deg,transparent 352deg,rgba(255,255,255,0.025) 360deg);animation:h3d-sp .35s linear infinite;z-index:1;}
+@keyframes h3d-sp{to{transform:rotate(360deg)}}
+.hero-pc-3d .fbl::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;background:radial-gradient(circle,#3a3a4a,#0d0d0d);border:1px solid rgba(255,255,255,0.012);}
+.hero-pc-3d .fr{position:absolute;inset:-1px;border-radius:50%;-webkit-mask:radial-gradient(circle at center,transparent 42%,black 43%);mask:radial-gradient(circle at center,transparent 42%,black 43%);opacity:0.65;z-index:2;}
+.hero-pc-3d .fio{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:5;display:flex;align-items:center;gap:8px;}
+.hero-pc-3d .fpw{width:8px;height:8px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#66bb6a,#1b5e20);box-shadow:0 0 5px rgba(76,175,80,0.35),0 0 12px rgba(76,175,80,0.08);animation:h3d-pp 2.5s ease-in-out infinite;}
+@keyframes h3d-pp{0%,100%{box-shadow:0 0 5px rgba(76,175,80,0.3)}50%{box-shadow:0 0 12px rgba(76,175,80,0.5),0 0 20px rgba(76,175,80,0.1)}}
+.hero-pc-3d .fhd{width:3px;height:3px;border-radius:50%;background:#ff1744;box-shadow:0 0 3px rgba(255,23,68,0.3);animation:h3d-fh .8s step-end infinite;}
+@keyframes h3d-fh{0%,90%{opacity:1}40%{opacity:0.1}60%{opacity:0.7}75%{opacity:0.1}}
+.hero-pc-3d .fusb{display:flex;gap:2px}.hero-pc-3d .fusb div{width:3px;height:4px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.01);border-radius:1px}
+.hero-pc-3d .fbr{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);font-size:0.2rem;color:rgba(255,255,255,0.02);letter-spacing:3px;white-space:nowrap;z-index:5;}
+/* Glass area */
+.hero-pc-3d .glass-area{position:absolute;top:10px;left:168px;right:10px;bottom:10px;border-radius:12px;z-index:2;background:linear-gradient(135deg,rgba(8,10,28,0.65),rgba(4,4,16,0.75));border:1px solid rgba(255,255,255,0.008);overflow:hidden;box-shadow:inset 0 0 40px rgba(0,0,0,0.3);}
+.hero-pc-3d .interior{position:absolute;inset:0;background:linear-gradient(135deg,#0a0a16,#06060e);}
+.hero-pc-3d .mobo{position:absolute;top:40px;left:14px;right:14px;height:300px;background:linear-gradient(135deg,#0c180c 0%,#0a0a16 40%,#0e0808 100%);border:1px solid rgba(255,255,255,0.01);border-radius:4px;}
+.hero-pc-3d .vrm{position:absolute;top:60px;left:16px;width:44px;height:54px;z-index:8;display:grid;grid-template-columns:repeat(4,1fr);gap:2px;}
+.hero-pc-3d .vrm-b{width:100%;height:100%;background:linear-gradient(180deg,#1e1e2e,#0e0e1a);border:1px solid rgba(255,255,255,0.012);border-radius:2px;}
+.hero-pc-3d .vrm-b::after{content:'';display:block;height:40%;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,0.006) 2px,rgba(255,255,255,0.006) 3px);margin-top:2px;}
+.hero-pc-3d .chipset{position:absolute;bottom:28px;right:12px;width:38px;height:32px;z-index:8;background:linear-gradient(135deg,#1a1a2e,#0a0a14);border:1px solid rgba(255,255,255,0.01);border-radius:3px;display:flex;align-items:center;justify-content:center;}
+.hero-pc-3d .chipset::after{content:'X670';font-size:0.18rem;font-weight:800;color:rgba(255,255,255,0.03);letter-spacing:1px;}
+.hero-pc-3d .chipset::before{content:'';position:absolute;inset:3px;background:repeating-linear-gradient(45deg,transparent,transparent 2px,rgba(255,255,255,0.004) 2px,rgba(255,255,255,0.004) 3px);}
+.hero-pc-3d .m2{position:absolute;bottom:66px;left:14px;width:50px;height:10px;z-index:8;background:linear-gradient(90deg,#0a0a0a,#1a1a1a);border:1px solid rgba(255,255,255,0.008);border-radius:2px;}
+.hero-pc-3d .m2::after{content:'';position:absolute;right:-3px;top:2px;width:6px;height:6px;background:#1a1a2e;border-radius:50%;border:1px solid rgba(255,255,255,0.008);}
+.hero-pc-3d .cpuz{position:absolute;top:70px;left:64px;z-index:9;}
+.hero-pc-3d .cpu{width:68px;height:68px;background:radial-gradient(circle at 30% 30%,#1a1a2e,#08080e);border:1px solid rgba(255,255,255,0.012);border-radius:4px;display:flex;align-items:center;justify-content:center;position:relative;}
+.hero-pc-3d .cpu::after{content:'AMD';font-size:0.3rem;font-weight:800;color:rgba(255,255,255,0.07);letter-spacing:1px;}
+.hero-pc-3d .cpu-r{position:absolute;inset:-2px;border-radius:6px;background:conic-gradient(from 0deg,transparent,#ff0040,transparent,#0088ff,transparent);opacity:0.2;animation:h3d-cR 4s linear infinite;}
+@keyframes h3d-cR{to{transform:rotate(360deg)}}
+.hero-pc-3d .ap{position:absolute;top:56px;left:72px;width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#1c1c30,#0c0c18);border:1px solid rgba(255,255,255,0.01);display:flex;align-items:center;justify-content:center;z-index:10;}
+.hero-pc-3d .ap-r{position:absolute;inset:-2px;border-radius:50%;-webkit-mask:radial-gradient(circle at center,transparent 46%,black 47%);mask:radial-gradient(circle at center,transparent 46%,black 47%);opacity:0.5;animation:h3d-aS 3s linear infinite;}
+@keyframes h3d-aS{to{transform:rotate(360deg)}}
+.hero-pc-3d .ap-i{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,0.008);display:flex;align-items:center;justify-content:center;font-size:0.28rem;font-weight:800;color:rgba(255,255,255,0.04);}
+.hero-pc-3d .aT{position:absolute;top:108px;left:76px;z-index:8;display:flex;gap:10px;}
+.hero-pc-3d .aT div{width:5px;height:32px;border-radius:2px;background:linear-gradient(180deg,#1c1c30,#111);border:1px solid rgba(255,255,255,0.008);position:relative;}
+.hero-pc-3d .brd{position:absolute;inset:0;border-radius:2px;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,0.006) 3px,rgba(255,255,255,0.006) 4px);}
+.hero-pc-3d .t1{transform:rotate(-7deg);transform-origin:top center;}
+.hero-pc-3d .t2{transform:rotate(7deg);transform-origin:top center;}
+.hero-pc-3d .ramz{position:absolute;top:148px;left:62px;display:flex;gap:3px;z-index:9;}
+.hero-pc-3d .rs{width:9px;height:40px;background:linear-gradient(180deg,#1c1c2e,#0a0a12);border:1px solid rgba(255,255,255,0.01);border-radius:2px;position:relative;overflow:hidden;}
+.hero-pc-3d .rs::after{content:'';position:absolute;bottom:5px;left:0;right:0;height:8px;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,0.004) 2px,rgba(255,255,255,0.004) 3px);}
+.hero-pc-3d .rr{position:absolute;top:0;left:0;right:0;height:8px;border-radius:2px 2px 0 0;}
+.hero-pc-3d .rg{position:absolute;top:-3px;left:-5px;right:-5px;bottom:0;filter:blur(8px);opacity:0.2;}
+.hero-pc-3d .c8{position:absolute;top:42px;left:110px;z-index:7;display:flex;gap:1px;}
+.hero-pc-3d .c8 div{width:2px;height:10px;background:linear-gradient(180deg,#333,#1a1a1a);border:1px solid rgba(255,255,255,0.004);border-radius:1px;}
+.hero-pc-3d .gpu{position:absolute;bottom:42px;left:12px;right:12px;height:72px;background:linear-gradient(180deg,#1a1a1a,#080808);border:1px solid rgba(255,255,255,0.012);border-radius:5px;z-index:11;box-shadow:0 8px 30px rgba(0,0,0,0.6);}
+.hero-pc-3d .gbp{position:absolute;inset:1px;background:linear-gradient(135deg,#1a1a2e 0%,#0a0a0a 100%);border-radius:4px;overflow:hidden;}
+.hero-pc-3d .gbp::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(118,185,0,0.012),transparent 40%,rgba(255,0,80,0.008),transparent 70%);}
+.hero-pc-3d .gbp::after{content:'';position:absolute;top:8px;right:12px;width:40px;height:18px;border:1px solid rgba(118,185,0,0.025);border-radius:2px;background:rgba(118,185,0,0.008);}
+.hero-pc-3d .gl{position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:0.35rem;font-weight:800;color:rgba(118,185,0,0.12);letter-spacing:1px;z-index:4;}
+.hero-pc-3d .gl small{display:block;font-size:0.2rem;color:rgba(255,255,255,0.02);letter-spacing:2px;}
+.hero-pc-3d .gf2{position:absolute;right:10px;top:50%;transform:translateY(-50%);display:flex;gap:4px;z-index:4;}
+.hero-pc-3d .gf2 div{width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#1a1a1a,#080808);border:1px solid rgba(255,255,255,0.008);display:flex;align-items:center;justify-content:center;}
+.hero-pc-3d .gb2{width:18px;height:18px;border-radius:50%;background:conic-gradient(from 0deg,rgba(255,255,255,0.02) 0deg,transparent 20deg,rgba(255,255,255,0.02) 60deg,transparent 80deg,rgba(255,255,255,0.02) 120deg,transparent 140deg,rgba(255,255,255,0.02) 180deg,transparent 200deg,rgba(255,255,255,0.02) 240deg,transparent 260deg,rgba(255,255,255,0.02) 300deg,transparent 320deg,rgba(255,255,255,0.02) 360deg);animation:h3d-gS .25s linear infinite;}
+@keyframes h3d-gS{to{transform:rotate(360deg)}}
+.hero-pc-3d .gb2::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:5px;height:5px;border-radius:50%;background:#222;}
+.hero-pc-3d .gP{position:absolute;right:1px;top:1px;display:flex;gap:1px;z-index:3;}
+.hero-pc-3d .gP div{width:3px;height:8px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.006);border-radius:1px;}
+.hero-pc-3d .gr{position:absolute;bottom:1px;left:8px;right:8px;height:2px;border-radius:1px;z-index:5;}
+.hero-pc-3d .gsb{position:absolute;bottom:42px;left:16px;width:6px;height:50px;z-index:10;background:linear-gradient(0deg,#0a0a12,#1a1a2e);border:1px solid rgba(255,255,255,0.006);border-radius:2px;}
+.hero-pc-3d .c24{position:absolute;bottom:54px;left:68px;z-index:7;display:flex;gap:1px;flex-wrap:wrap;width:20px;}
+.hero-pc-3d .c24 div{width:2px;height:18px;background:linear-gradient(180deg,#333,#1a1a1a);border:1px solid rgba(255,255,255,0.004);border-radius:1px;}
+.hero-pc-3d .cc{position:absolute;top:3px;left:-1px;right:-1px;height:1px;background:rgba(255,255,255,0.006);border-radius:1px;}
+.hero-pc-3d .cp{position:absolute;bottom:78px;left:40px;z-index:7;display:flex;gap:1px;}
+.hero-pc-3d .cp div{width:2px;height:12px;background:linear-gradient(180deg,#333,#1a1a1a);border:1px solid rgba(255,255,255,0.004);border-radius:1px;}
+.hero-pc-3d .re{position:absolute;bottom:112px;right:14px;width:60px;height:60px;z-index:6;}
+.hero-pc-3d .rei{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 30% 30%,#14141e,#080810);border:1px solid rgba(255,255,255,0.01);display:flex;align-items:center;justify-content:center;}
+.hero-pc-3d .reb{width:46px;height:46px;border-radius:50%;background:conic-gradient(from 0deg,rgba(255,255,255,0.018) 0deg,transparent 18deg,rgba(255,255,255,0.018) 54deg,transparent 72deg,rgba(255,255,255,0.018) 108deg,transparent 126deg,rgba(255,255,255,0.018) 162deg,transparent 180deg,rgba(255,255,255,0.018) 216deg,transparent 234deg,rgba(255,255,255,0.018) 270deg,transparent 288deg,rgba(255,255,255,0.018) 324deg,transparent 342deg,rgba(255,255,255,0.018) 360deg);animation:h3d-sp .5s linear infinite;}
+.hero-pc-3d .reb::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:8px;height:8px;border-radius:50%;background:#222;}
+.hero-pc-3d .rer{position:absolute;inset:-1px;border-radius:50%;-webkit-mask:radial-gradient(circle at center,transparent 41%,black 42%);mask:radial-gradient(circle at center,transparent 41%,black 42%);opacity:0.5;}
+.hero-pc-3d .rg2{position:absolute;inset:0;border-radius:50%;z-index:2;pointer-events:none;background:repeating-conic-gradient(from 0deg,transparent 0deg,transparent 10deg,rgba(0,0,0,0.05) 10deg,rgba(0,0,0,0.05) 11deg);-webkit-mask:radial-gradient(circle at center,transparent 58%,black 59%);mask:radial-gradient(circle at center,transparent 58%,black 59%);}
+.hero-pc-3d .psu{position:absolute;bottom:8px;left:14px;right:14px;height:42px;background:linear-gradient(0deg,#080810,#12121e);border:1px solid rgba(255,255,255,0.006);border-radius:3px;z-index:3;}
+.hero-pc-3d .psf{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;background:radial-gradient(circle,#1a1a1a,#080808);border:1px solid rgba(255,255,255,0.006);display:flex;align-items:center;justify-content:center;}
+.hero-pc-3d .psb{width:20px;height:20px;border-radius:50%;background:conic-gradient(from 0deg,rgba(255,255,255,0.012) 0deg,transparent 22deg,rgba(255,255,255,0.012) 66deg,transparent 88deg,rgba(255,255,255,0.012) 132deg,transparent 154deg,rgba(255,255,255,0.012) 198deg,transparent 220deg,rgba(255,255,255,0.012) 264deg,transparent 286deg,rgba(255,255,255,0.012) 330deg,transparent 352deg,rgba(255,255,255,0.012) 360deg);animation:h3d-sp .7s linear infinite;}
+.hero-pc-3d .psb::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:4px;height:4px;border-radius:50%;background:#222;}
+.hero-pc-3d .psl{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:0.18rem;font-weight:700;color:rgba(255,255,255,0.015);letter-spacing:2px;}
+.hero-pc-3d .psg{position:absolute;right:8px;bottom:3px;display:flex;gap:2px;}
+.hero-pc-3d .psg div{width:12px;height:2px;background:rgba(255,255,255,0.012);border-radius:1px;}
+.hero-pc-3d .ils{position:absolute;bottom:52px;left:16px;right:16px;height:2px;border-radius:1px;z-index:6;}
+.hero-pc-3d .glass-tint{position:absolute;inset:0;z-index:12;pointer-events:none;background:linear-gradient(135deg,rgba(8,10,28,0.55),rgba(6,6,20,0.6),rgba(4,4,16,0.65),rgba(8,10,28,0.55));}
+.hero-pc-3d .glass-glow{position:absolute;inset:0;z-index:13;pointer-events:none;opacity:0.08;}
+.hero-pc-3d .glass-edge-l{position:absolute;inset:0;z-index:15;pointer-events:none;border:1px solid rgba(255,255,255,0.008);border-radius:12px;box-shadow:inset 0 0 50px rgba(255,255,255,0.001);}
+.hero-pc-3d .glass-r1{position:absolute;inset:0;z-index:16;pointer-events:none;background:linear-gradient(155deg,rgba(255,255,255,0.03) 0%,transparent 18%,rgba(100,180,255,0.008) 32%,transparent 48%,rgba(255,255,255,0.004) 62%,transparent 78%,rgba(150,100,255,0.006) 100%);}
+.hero-pc-3d .glass-r2{position:absolute;inset:0;z-index:17;pointer-events:none;background:conic-gradient(from 0deg,transparent,rgba(255,255,255,0.0015),transparent,rgba(100,150,255,0.0015),transparent);animation:h3d-gR 14s linear infinite;}
+@keyframes h3d-gR{to{transform:rotate(360deg)}}
+.hero-pc-3d .glass-r3{position:absolute;top:0;left:0;right:40%;bottom:60%;z-index:18;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,0.012) 0%,transparent 100%);}
+.hero-pc-3d .lk{position:absolute;bottom:-30px;left:-60px;right:-20px;height:60px;filter:blur(45px);z-index:0;pointer-events:none;}
+.hero-pc-3d .feet{position:absolute;bottom:-6px;left:30px;right:30px;height:6px;z-index:0;display:flex;justify-content:space-between;}
+.hero-pc-3d .ft{width:28px;height:100%;background:linear-gradient(0deg,#040404,#0e0e1a);border:1px solid rgba(255,255,255,0.005);border-top:none;border-radius:0 0 4px 4px;}
+@media(max-width:900px){.hero-pc-3d{transform:scale(0.4)}}
+@media(max-width:600px){.hero-pc-3d{transform:scale(0.28)}}
 </style>
+</head>
+<body>
 
-<!-- ===== BUILD CARDS ===== -->
+<nav class="navbar">
+  <div class="container">
+    <a href="index.html" class="nav-logo">
+      <span class="logo-icon">💻</span>
+      <span class="logo-text"><span>Computer</span> Paradise<span class="logo-dot"></span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="buy.html">Buy Laptops &amp; Desktops</a></li>
+      <li><a href="builds.html" class="active">PC Builds</a></li>
+      <li><a href="sell.html">Sell</a></li>
+      <li><a href="contact.html">Service</a></li>
+      <li><a href="contact.html">Repair</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+    <div class="nav-auth">
+      <button class="btn-login" id="loginBtn">🔐 Login</button>
+      <div class="user-indicator" id="userIndicator">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <span class="user-phone" id="userPhone"></span>
+        <button class="user-logout" onclick="logoutUser()" title="Logout">✕</button>
+      </div>
+      <button class="btn-login" id="adminPanelBtn" onclick="openAdminPanel()" style="display:none;border-color:rgba(212,175,55,0.3);color:var(--accent);">🛠 Admin</button>
+    </div>
+    <button class="btn-cart" id="cartBtn" onclick="toggleCart()" aria-label="Shopping Cart">
+      🛒 <span class="cart-badge" id="cartBadge">0</span>
+    </button>
+    <button class="nav-hamburger" aria-label="Menu">☰</button>
+  </div>
+</nav>
+
+<div class="mobile-drawer" id="mobileDrawer">
+  <a href="index.html">Home</a>
+  <a href="buy.html">Buy Laptops &amp; Desktops</a>
+  <a href="builds.html" class="active">PC Builds</a>
+  <a href="sell.html">Sell Your Laptop</a>
+  <a href="contact.html">Service</a>
+  <a href="contact.html">Repair</a>
+  <a href="contact.html">Contact</a>
+  <a href="about.html">About</a>
+  <hr style="border-color:rgba(255,255,255,0.1);margin:12px 0;">
+  <a href="#" onclick="toggleCart();closeMenu();">🛒 Shopping Cart</a>
+  <a href="#" id="mobileLoginBtn" onclick="openAuthModal();closeMenu();">🔐 Login / Register</a>
+</div>
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<section class="hero" id="buildsHero">
+  <canvas id="particleCanvas"></canvas>
+  <div class="hero-shapes">
+    <div class="hero-shape"></div>
+    <div class="hero-shape"></div>
+    <div class="hero-shape"></div>
+  </div>
+  <div class="container">
+    <div class="hero-brand">
+
+      <!-- Gaming Desk Setup Illustration -->
+      <div class="gaming-setup" aria-hidden="true">
+        <!-- Ambient RGB Haze -->
+        <div class="haze"></div>
+
+        <!-- LED Ambient Glow -->
+        <div class="led-strip led-left"></div>
+        <div class="led-strip led-right"></div>
+        <div class="led-strip led-bottom"></div>
+        <!-- Light Beams from Monitors -->
+        <div class="light-beam light-beam-v"></div>
+        <div class="light-beam light-beam-l"></div>
+        <!-- Dust Particles -->
+        <div class="dust-particles">
+          <span class="dust"></span>
+          <span class="dust"></span>
+          <span class="dust"></span>
+          <span class="dust"></span>
+          <span class="dust"></span>
+          <span class="dust"></span>
+          <span class="dust"></span>
+          <span class="dust"></span>
+          <span class="dust"></span>
+          <span class="dust"></span>
+        </div>
+        <!-- Desk Surface -->
+        <div class="desk">
+          <div class="desk-leg desk-leg-l"></div>
+          <div class="desk-leg desk-leg-r"></div>
+          <div class="desk-surface">
+            <!-- Vertical Monitor (Left) -->
+            <div class="monitor-vertical">
+              <div class="monitor-v-bezel">
+                <div class="monitor-screen screen-cyber">
+                  <div class="screen-content"></div>
+                  <div class="cyber-city"></div>
+                  <div class="cyber-neon cyber-neon-1"></div>
+                  <div class="cyber-neon cyber-neon-2"></div>
+                  <div class="cyber-neon cyber-neon-3"></div>
+                  <div class="screen-scanline"></div>
+                  <div class="screen-reflection"></div>
+                </div>
+              </div>
+              <div class="monitor-v-stand"></div>
+            </div>
+            <!-- Landscape Monitor (Center) -->
+            <div class="monitor-landscape">
+              <div class="monitor-l-bezel">
+                <div class="monitor-screen screen-cyber">
+                  <div class="screen-content"></div>
+                  <div class="cyber-city"></div>
+                  <div class="cyber-neon cyber-neon-1"></div>
+                  <div class="cyber-neon cyber-neon-2"></div>
+                  <div class="cyber-neon cyber-neon-3"></div>
+                  <div class="screen-scanline"></div>
+                  <div class="screen-reflection"></div>
+                  <!-- Audio Visualizer -->
+                  <div class="audio-vis">
+                    <div class="avis-bar"></div>
+                    <div class="avis-bar"></div>
+                    <div class="avis-bar"></div>
+                    <div class="avis-bar"></div>
+                    <div class="avis-bar"></div>
+                    <div class="avis-bar"></div>
+                    <div class="avis-bar"></div>
+                    <div class="avis-bar"></div>
+                    <div class="avis-bar"></div>
+                    <div class="avis-bar"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="monitor-l-stand"></div>
+            </div>
+            <!-- Cables from PC to Monitors -->
+            <div class="cable cable-1"></div>
+            <div class="cable cable-2"></div>
+            <!-- PC Case (Right) -->
+            <div class="pc-case">
+              <div class="pc-glass">
+                <div class="pc-mb-glow"></div>
+                <div class="pc-gpu"></div>
+                <div class="pc-gpu-glow"></div>
+                <div class="pc-fan pc-fan-top"></div>
+                <div class="pc-fan pc-fan-bottom"></div>
+                <div class="pc-ram pc-ram-1"></div>
+                <div class="pc-ram pc-ram-2"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Keyboard & Mouse -->
+          <div class="desk-accessories">
+            <div class="keyboard">
+              <div class="kb-keys"></div>
+              <div class="kb-glow"></div>
+            </div>
+            <div class="mouse-area">
+              <div class="mousepad"></div>
+              <div class="gaming-mouse">
+                <div class="mouse-light"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Desk Reflection -->
+          <div class="desk-reflection"></div>
+        </div>
+        <!-- Energy Particles around PC -->
+        <div class="energy-particles">
+          <span class="eparticle"></span>
+          <span class="eparticle"></span>
+          <span class="eparticle"></span>
+          <span class="eparticle"></span>
+          <span class="eparticle"></span>
+          <span class="eparticle"></span>
+          <span class="eparticle"></span>
+          <span class="eparticle"></span>
+        </div>
+
+
+        <!-- PC Power LED -->
+        <div class="power-led"></div>
+        <!-- Ambient Glow Orbs -->
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+        <div class="glow-orb glow-orb-3"></div>
+      </div>
+
+      <h1 class="hero-title pixel-title">
+        <span class="pixel-text" data-text="PIXEL Performance">PIXEL Performance</span>
+        <span class="pixel-sub">Build the Impossible</span>
+      </h1>
+      <div class="hero-type-tags">
+        <span class="htag htag-gaming">Gaming</span>
+        <span class="htag htag-creation">Content Creation</span>
+        <span class="htag htag-office">Office Productivity</span>
+        <span class="htag htag-streaming">Streaming</span>
+      </div>
+      <div class="hero-btns">
+        <a href="#prebuilt" class="btn btn-primary"><span class="btn-shine"></span><span class="btn-icon">🛠</span> Explore Pre‑built <span class="btn-arrow">→</span></a>
+        <a href="#builder" class="btn btn-outline"><span class="btn-shine"></span><span class="btn-icon">⚡</span> Custom Configurator <span class="btn-arrow">→</span></a>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint" onclick="document.getElementById('prebuilt').scrollIntoView({behavior:'smooth'});">
+    <span class="arrow">⌄</span>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<section class="pb-section reveal" id="prebuilt">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">🔥 Featured Builds</div>
+      <h2 class="section-title" style="color:#fff;">Pre‑built PC Builds</h2>
+      <p class="section-sub">Hand‑picked configurations, ready to ship</p>
+    </div>
+    <div class="pb-cards" id="pbCardsContainer">
+      <div class="pb-card reveal" data-tilt>
+        <div class="pb-image">
+          <img class="pb-img" src="assets/images/Screenshot_124.png" alt="Gaming Beast">
+          <div class="pb-image-overlay"></div>
+          <div class="pb-fan-1"></div>
+          <div class="pb-fan-2"></div>
+          <div class="pb-fan-3"></div>
+          <div class="pb-led-strip"></div>
+          <div class="pb-led-top"></div>
+          <div class="pb-led-left"></div>
+          <div class="pb-gpu-glow"></div>
+          <div class="pb-cpu-glow"></div>
+          <div class="pb-ram-glow"></div>
+        </div>
+        <div class="pb-badge" style="--bg:linear-gradient(135deg,#ff1744,#d50000)">⚡ Beast</div>
+        <div class="pb-content">
+          <div class="pb-category">Gaming</div>
+          <h3 class="pb-title">Gaming Beast</h3>
+          <div class="pb-desc">
+            <span><strong>CPU:</strong> Intel i7‑13700K</span>
+            <span><strong>GPU:</strong> RTX 3070 8GB</span>
+            <span><strong>RAM:</strong> 16GB DDR5</span>
+            <span><strong>Storage:</strong> 1TB NVMe SSD</span>
+          </div>
+          <div class="pb-price-row">
+            <span class="pb-price">₹1,49,999</span>
+            <span class="pb-price-label">incl. GST</span>
+          </div>
+          <button class="btn btn-primary pb-wa-btn" onclick="whatsappBuild('Gaming Beast',149999)">💬 Get Quote</button>
+        </div>
+      </div>
+      <div class="pb-card reveal" data-tilt>
+        <div class="pb-image">
+          <img class="pb-img" src="assets/images/Screenshot_125.png" alt="Creative Studio">
+          <div class="pb-image-overlay"></div>
+          <div class="pb-fan-1"></div>
+          <div class="pb-fan-2"></div>
+          <div class="pb-fan-3"></div>
+          <div class="pb-led-strip"></div>
+          <div class="pb-led-top"></div>
+          <div class="pb-led-left"></div>
+          <div class="pb-gpu-glow"></div>
+          <div class="pb-cpu-glow"></div>
+          <div class="pb-ram-glow"></div>
+        </div>
+        <div class="pb-badge" style="--bg:linear-gradient(135deg,#7c4dff,#651fff)">🎨 Creator</div>
+        <div class="pb-content">
+          <div class="pb-category">Content Creation</div>
+          <h3 class="pb-title">Creative Studio</h3>
+          <div class="pb-desc">
+            <span><strong>CPU:</strong> AMD Ryzen 7 7800X3D</span>
+            <span><strong>GPU:</strong> RX 6600 8GB</span>
+            <span><strong>RAM:</strong> 32GB DDR5</span>
+            <span><strong>Storage:</strong> 2TB HDD + 512GB SSD</span>
+          </div>
+          <div class="pb-price-row">
+            <span class="pb-price">₹1,29,999</span>
+            <span class="pb-price-label">incl. GST</span>
+          </div>
+          <button class="btn btn-primary pb-wa-btn" onclick="whatsappBuild('Creative Studio',129999)">💬 Get Quote</button>
+        </div>
+      </div>
+      <div class="pb-card reveal" data-tilt>
+        <div class="pb-image">
+          <img class="pb-img" src="assets/images/Screenshot_126.png" alt="Office Pro">
+          <div class="pb-image-overlay"></div>
+          <div class="pb-fan-1"></div>
+          <div class="pb-fan-2"></div>
+          <div class="pb-fan-3"></div>
+          <div class="pb-led-strip"></div>
+          <div class="pb-led-top"></div>
+          <div class="pb-led-left"></div>
+          <div class="pb-gpu-glow"></div>
+          <div class="pb-cpu-glow"></div>
+          <div class="pb-ram-glow"></div>
+        </div>
+        <div class="pb-badge" style="--bg:linear-gradient(135deg,#00c853,#00a844)">💼 Office</div>
+        <div class="pb-content">
+          <div class="pb-category">Business</div>
+          <h3 class="pb-title">Office Pro</h3>
+          <div class="pb-desc">
+            <span><strong>CPU:</strong> Intel i5‑13400</span>
+            <span><strong>GPU:</strong> Integrated UHD</span>
+            <span><strong>RAM:</strong> 8GB DDR4</span>
+            <span><strong>Storage:</strong> 512GB NVMe SSD</span>
+          </div>
+          <div class="pb-price-row">
+            <span class="pb-price">₹79,999</span>
+            <span class="pb-price-label">incl. GST</span>
+          </div>
+          <button class="btn btn-primary pb-wa-btn" onclick="whatsappBuild('Office Pro',79999)">💬 Get Quote</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pb-section pb-builder-section reveal" id="builder">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">⚙️ Custom Build</div>
+      <h2 class="section-title" style="color:#fff;">PC Configurator</h2>
+      <p class="section-sub">Pick your components and we'll assemble it for you</p>
+    </div>
+    <!-- Advanced PC Search Engine -->
+    <div class="pc-search-engine">
+      <div class="search-header">
+        <div class="search-title">
+          <span class="search-title-icon">⚡</span>
+          <span>Build Your Dream PC</span>
+        </div>
+        <div class="search-subtitle">Select your preferences and we'll find the perfect build for you</div>
+      </div>
+      
+      <!-- Quick Presets -->
+      <div class="search-presets">
+        <div class="preset-card" onclick="applyPreset('budget')">
+          <span class="preset-icon">💰</span>
+          <span class="preset-name">Budget Build</span>
+        </div>
+        <div class="preset-card" onclick="applyPreset('gaming')">
+          <span class="preset-icon">🎮</span>
+          <span class="preset-name">Gaming</span>
+        </div>
+        <div class="preset-card" onclick="applyPreset('streaming')">
+          <span class="preset-icon">📺</span>
+          <span class="preset-name">Streaming</span>
+        </div>
+        <div class="preset-card" onclick="applyPreset('creator')">
+          <span class="preset-icon">🎨</span>
+          <span class="preset-name">Content Creator</span>
+        </div>
+        <div class="preset-card" onclick="applyPreset('workstation')">
+          <span class="preset-icon">🖥️</span>
+          <span class="preset-name">Workstation</span>
+        </div>
+      </div>
+
+      <div class="search-grid">
+        <!-- Row 1: Core Components -->
+        <div class="search-section">
+          <div class="section-label">🔲 Core Components</div>
+          <div class="search-filter">
+            <label class="filter-label">Processor Brand</label>
+            <select class="filter-select" id="searchCPUBrand">
+              <option value="">Any Brand</option>
+              <option value="intel">Intel</option>
+              <option value="amd">AMD</option>
+            </select>
+          </div>
+          <div class="search-filter">
+            <label class="filter-label">Processor Series</label>
+            <select class="filter-select" id="searchCPU">
+              <option value="">Any Processor</option>
+              <optgroup label="Intel Core (12th Gen)">
+                <option value="i3-12100">i3-12100 (4C/8T)</option>
+                <option value="i5-12400">i5-12400 (6C/12T)</option>
+                <option value="i5-12600K">i5-12600K (10C/16T)</option>
+                <option value="i7-12700K">i7-12700K (12C/20T)</option>
+              </optgroup>
+              <optgroup label="Intel Core (13th Gen)">
+                <option value="i3-13100">i3-13100 (4C/8T)</option>
+                <option value="i5-13400">i5-13400 (10C/16T)</option>
+                <option value="i5-13600K">i5-13600K (14C/20T)</option>
+                <option value="i7-13700K">i7-13700K (16C/24T)</option>
+                <option value="i9-13900K">i9-13900K (24C/32T)</option>
+              </optgroup>
+              <optgroup label="Intel Core (14th Gen)">
+                <option value="i5-14400">i5-14400 (10C/16T)</option>
+                <option value="i5-14600K">i5-14600K (14C/20T)</option>
+                <option value="i7-14700K">i7-14700K (20C/28T)</option>
+                <option value="i9-14900K">i9-14900K (24C/32T)</option>
+              </optgroup>
+              <optgroup label="Intel Core Ultra (Arrow Lake)">
+                <option value="ultra5-245">Core Ultra 5 245</option>
+                <option value="ultra7-265">Core Ultra 7 265</option>
+                <option value="ultra9-285">Core Ultra 9 285</option>
+              </optgroup>
+              <optgroup label="AMD Ryzen (5000 Series)">
+                <option value="r5-5600X">Ryzen 5 5600X (6C/12T)</option>
+                <option value="r7-5800X">Ryzen 7 5800X (8C/16T)</option>
+                <option value="r7-5800X3D">Ryzen 7 5800X3D (8C/16T)</option>
+                <option value="r9-5900X">Ryzen 9 5900X (12C/24T)</option>
+              </optgroup>
+              <optgroup label="AMD Ryzen (7000 Series)">
+                <option value="r5-7600X">Ryzen 5 7600X (6C/12T)</option>
+                <option value="r7-7700X">Ryzen 7 7700X (8C/16T)</option>
+                <option value="r7-7800X3D">Ryzen 7 7800X3D (8C/16T)</option>
+                <option value="r9-7900X">Ryzen 9 7900X (12C/24T)</option>
+                <option value="r9-7950X">Ryzen 9 7950X (16C/32T)</option>
+              </optgroup>
+              <optgroup label="AMD Ryzen (9000 Series)">
+                <option value="r5-9600X">Ryzen 5 9600X (6C/12T)</option>
+                <option value="r7-9700X">Ryzen 7 9700X (8C/16T)</option>
+                <option value="r9-9900X">Ryzen 9 9900X (12C/24T)</option>
+                <option value="r9-9950X">Ryzen 9 9950X (16C/32T)</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="search-filter">
+            <label class="filter-label">Motherboard</label>
+            <select class="filter-select" id="searchMobo">
+              <option value="">Any Motherboard</option>
+              <optgroup label="Intel">
+                <option value="b660">B660 (Budget)</option>
+                <option value="z690">Z690 (Mid-range)</option>
+                <option value="b760">B760 (Budget)</option>
+                <option value="z790">Z790 (High-end)</option>
+              </optgroup>
+              <optgroup label="AMD">
+                <option value="b550">B550 (Budget)</option>
+                <option value="x570">X570 (Mid-range)</option>
+                <option value="b650">B650 (Budget)</option>
+                <option value="x670">X670 (High-end)</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+
+        <!-- Row 2: Graphics & Memory -->
+        <div class="search-section">
+          <div class="section-label">🎮 Graphics & Memory</div>
+          <div class="search-filter">
+            <label class="filter-label">Graphics Card</label>
+            <select class="filter-select" id="searchGPU">
+              <option value="">Any Graphics</option>
+              <optgroup label="NVIDIA GeForce (30 Series)">
+                <option value="rtx3050">RTX 3050 8GB</option>
+                <option value="rtx3060">RTX 3060 12GB</option>
+                <option value="rtx3070">RTX 3070 8GB</option>
+                <option value="rtx3080">RTX 3080 10GB</option>
+                <option value="rtx3090">RTX 3090 24GB</option>
+              </optgroup>
+              <optgroup label="NVIDIA GeForce (40 Series)">
+                <option value="rtx4060">RTX 4060 8GB</option>
+                <option value="rtx4060ti">RTX 4060 Ti 8GB</option>
+                <option value="rtx4070">RTX 4070 12GB</option>
+                <option value="rtx4070super">RTX 4070 Super 12GB</option>
+                <option value="rtx4070ti">RTX 4070 Ti 12GB</option>
+                <option value="rtx4070tisuper">RTX 4070 Ti Super 16GB</option>
+                <option value="rtx4080">RTX 4080 16GB</option>
+                <option value="rtx4080super">RTX 4080 Super 16GB</option>
+                <option value="rtx4090">RTX 4090 24GB</option>
+              </optgroup>
+              <optgroup label="NVIDIA RTX (50 Series)">
+                <option value="rtx5070">RTX 5070 12GB</option>
+                <option value="rtx5070ti">RTX 5070 Ti 16GB</option>
+                <option value="rtx5080">RTX 5080 16GB</option>
+                <option value="rtx5090">RTX 5090 32GB</option>
+              </optgroup>
+              <optgroup label="AMD Radeon (6000 Series)">
+                <option value="rx6600">RX 6600 8GB</option>
+                <option value="rx6650xt">RX 6650 XT 8GB</option>
+                <option value="rx6700xt">RX 6700 XT 12GB</option>
+                <option value="rx6800xt">RX 6800 XT 16GB</option>
+                <option value="rx6950xt">RX 6950 XT 16GB</option>
+              </optgroup>
+              <optgroup label="AMD Radeon (7000 Series)">
+                <option value="rx7600">RX 7600 8GB</option>
+                <option value="rx7700xt">RX 7700 XT 12GB</option>
+                <option value="rx7800xt">RX 7800 XT 16GB</option>
+                <option value="rx7900gre">RX 7900 GRE 16GB</option>
+                <option value="rx7900xt">RX 7900 XT 20GB</option>
+                <option value="rx7900xtx">RX 7900 XTX 24GB</option>
+              </optgroup>
+              <optgroup label="Integrated">
+                <option value="uhd630">Intel UHD 630</option>
+                <option value="irisxe">Intel Iris Xe</option>
+                <option value="uhd770">Intel UHD 770</option>
+                <option value="vega8">AMD Radeon Vega 8</option>
+                <option value="rdna2">AMD RDNA 2 (780M)</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="search-filter">
+            <label class="filter-label">RAM Capacity</label>
+            <select class="filter-select" id="searchRAM">
+              <option value="">Any RAM</option>
+              <option value="8gb">8GB</option>
+              <option value="16gb">16GB</option>
+              <option value="32gb">32GB</option>
+              <option value="64gb">64GB</option>
+              <option value="128gb">128GB</option>
+            </select>
+          </div>
+          <div class="search-filter">
+            <label class="filter-label">RAM Type</label>
+            <select class="filter-select" id="searchRAMType">
+              <option value="">Any Type</option>
+              <option value="ddr4">DDR4</option>
+              <option value="ddr5">DDR5</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Row 3: Storage & PSU -->
+        <div class="search-section">
+          <div class="section-label">💾 Storage & Power</div>
+          <div class="search-filter">
+            <label class="filter-label">Primary Storage</label>
+            <select class="filter-select" id="searchStorage">
+              <option value="">Any Storage</option>
+              <option value="256gb-ssd">256GB NVMe SSD</option>
+              <option value="512gb-ssd">512GB NVMe SSD</option>
+              <option value="1tb-ssd">1TB NVMe SSD</option>
+              <option value="2tb-ssd">2TB NVMe SSD</option>
+              <option value="4tb-ssd">4TB NVMe SSD</option>
+            </select>
+          </div>
+          <div class="search-filter">
+            <label class="filter-label">Secondary Storage</label>
+            <select class="filter-select" id="searchHDD">
+              <option value="">None</option>
+              <option value="1tb-hdd">1TB HDD</option>
+              <option value="2tb-hdd">2TB HDD</option>
+              <option value="4tb-hdd">4TB HDD</option>
+            </select>
+          </div>
+          <div class="search-filter">
+            <label class="filter-label">Power Supply</label>
+            <select class="filter-select" id="searchPSU">
+              <option value="">Any PSU</option>
+              <option value="450w">450W 80+ Bronze</option>
+              <option value="550w">550W 80+ Bronze</option>
+              <option value="650w">650W 80+ Gold</option>
+              <option value="750w">750W 80+ Gold</option>
+              <option value="850w">850W 80+ Gold</option>
+              <option value="1000w">1000W 80+ Platinum</option>
+              <option value="1200w">1200W 80+ Titanium</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Row 4: Cooling & Case -->
+        <div class="search-section">
+          <div class="section-label">❄️ Cooling & Case</div>
+          <div class="search-filter">
+            <label class="filter-label">CPU Cooling</label>
+            <select class="filter-select" id="searchCooler">
+              <option value="">Any Cooling</option>
+              <option value="stock">Stock Cooler</option>
+              <option value="tower">Tower Air Cooler</option>
+              <option value="aio120">120mm AIO Liquid</option>
+              <option value="aio240">240mm AIO Liquid</option>
+              <option value="aio360">360mm AIO Liquid</option>
+              <option value="custom">Custom Loop</option>
+            </select>
+          </div>
+          <div class="search-filter">
+            <label class="filter-label">Case Type</label>
+            <select class="filter-select" id="searchCase">
+              <option value="">Any Case</option>
+              <option value="atx">ATX Mid Tower</option>
+              <option value="matx">Micro ATX</option>
+              <option value="itx">Mini ITX</option>
+              <option value="full">Full Tower</option>
+              <option value="open">Open Frame</option>
+            </select>
+          </div>
+          <div class="search-filter">
+            <label class="filter-label">Case Color</label>
+            <select class="filter-select" id="searchCaseColor">
+              <option value="">Any Color</option>
+              <option value="black">⬛ Black</option>
+              <option value="white">⬜ White</option>
+              <option value="grey">⬛ Gunmetal Grey</option>
+              <option value="pink">🩷 Pink</option>
+              <option value="blue">🟦 Blue</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Row 5: Extras -->
+        <div class="search-section">
+          <div class="section-label">✨ Extras</div>
+          <div class="search-filter">
+            <label class="filter-label">RGB Lighting</label>
+            <select class="filter-select" id="searchRGB">
+              <option value="">No Preference</option>
+              <option value="none">No RGB</option>
+              <option value="minimal">Subtle RGB</option>
+              <option value="full">Full RGB</option>
+              <option value="argb">ARGB (Customizable)</option>
+            </select>
+          </div>
+          <div class="search-filter">
+            <label class="filter-label">WiFi</label>
+            <select class="filter-select" id="searchWiFi">
+              <option value="">No Preference</option>
+              <option value="none">No WiFi</option>
+              <option value="wifi5">WiFi 5</option>
+              <option value="wifi6">WiFi 6</option>
+              <option value="wifi6e">WiFi 6E</option>
+              <option value="wifi7">WiFi 7</option>
+            </select>
+          </div>
+          <div class="search-filter">
+            <label class="filter-label">Operating System</label>
+            <select class="filter-select" id="searchOS">
+              <option value="">Any OS</option>
+              <option value="none">No OS (DOS/Linux)</option>
+              <option value="win11home">Windows 11 Home</option>
+              <option value="win11pro">Windows 11 Pro</option>
+              <option value="linux">Ubuntu Linux</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Row 6: Budget & Use Case -->
+        <div class="search-section">
+          <div class="section-label">🎯 Budget & Purpose</div>
+          <div class="search-filter">
+            <label class="filter-label">Budget Range</label>
+            <select class="filter-select" id="searchBudget">
+              <option value="">Any Budget</option>
+              <option value="30000">Under ₹30,000</option>
+              <option value="50000">Under ₹50,000</option>
+              <option value="75000">Under ₹75,000</option>
+              <option value="100000">Under ₹1,00,000</option>
+              <option value="150000">Under ₹1,50,000</option>
+              <option value="200000">Under ₹2,00,000</option>
+              <option value="300000">Under ₹3,00,000</option>
+              <option value="500000">Above ₹3,00,000</option>
+            </select>
+          </div>
+          <div class="search-filter">
+            <label class="filter-label">Primary Use</label>
+            <select class="filter-select" id="searchUseCase">
+              <option value="">All Builds</option>
+              <option value="gaming">🎮 Gaming</option>
+              <option value="office">💼 Office & Productivity</option>
+              <option value="creator">🎨 Content Creation</option>
+              <option value="streaming">📺 Streaming</option>
+              <option value="coding">💻 Programming</option>
+              <option value="3d">🏗️ 3D Modeling</option>
+              <option value="video">🎬 Video Editing</option>
+              <option value="music">🎵 Music Production</option>
+              <option value="workstation">🖥️ Workstation</option>
+              <option value="htpc">📺 HTPC / Home Theater</option>
+            </select>
+          </div>
+          <div class="search-filter">
+            <label class="filter-label">Brand Preference</label>
+            <select class="filter-select" id="searchBrand">
+              <option value="">Any Brand</option>
+              <option value="asus">ASUS / ROG</option>
+              <option value="msi">MSI</option>
+              <option value="gigabyte">Gigabyte / AORUS</option>
+              <option value="nzxt">NZXT</option>
+              <option value="corsair">Corsair</option>
+              <option value="custom">Custom / No Brand</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search Actions -->
+      <div class="search-footer">
+        <div class="search-actions">
+          <button class="search-btn search-btn-primary" onclick="searchBuilds()">
+            <span class="search-btn-icon">🔍</span>
+            Find My Build
+          </button>
+          <button class="search-btn search-btn-outline" onclick="resetSearch()">
+            <span class="search-btn-icon">↺</span>
+            Reset All
+          </button>
+        </div>
+        <div class="search-stats" id="searchStats">
+          <span class="stat-item">📊 <span id="matchCount">--</span> builds match your criteria</span>
+        </div>
+      </div>
+
+      <!-- Quick Tags -->
+      <div class="search-tags" id="searchTags">
+        <span class="search-tag" data-filter="popular">🔥 Popular</span>
+        <span class="search-tag" data-filter="gaming">🎮 Gaming</span>
+        <span class="search-tag" data-filter="office">💼 Office</span>
+        <span class="search-tag" data-filter="creator">🎨 Creator</span>
+        <span class="search-tag" data-filter="streaming">📺 Streaming</span>
+        <span class="search-tag" data-filter="budget">💰 Budget</span>
+        <span class="search-tag" data-filter="premium">👑 Premium</span>
+      </div>
+    </div>
+
+  </div>
+</section>
 
 <footer class="footer">
-  <div class="footer-fans"><div class="mod-frame"><div class="mod-top-strip"></div><div class="mod-row"><div class="mod-cell"><div class="mod-fan"><span class="mod-ring"></span><div class="mod-blades-spin"><div class="mod-blades"></div></div><span class="mod-hub"></span></div></div><div class="mod-cell"><div class="mod-fan"><span class="mod-ring"></span><div class="mod-blades-spin"><div class="mod-blades"></div></div><span class="mod-hub"></span></div></div><div class="mod-cell"><div class="mod-fan"><span class="mod-ring"></span><div class="mod-blades-spin"><div class="mod-blades"></div></div><span class="mod-hub"></span></div></div><div class="mod-cell"><div class="mod-fan"><span class="mod-ring"></span><div class="mod-blades-spin"><div class="mod-blades"></div></div><span class="mod-hub"></span></div></div></div><div class="mod-bottom-strip"></div></div></div>
+  <div class="footer-fans">
+    <div class="mod-frame">
+      <div class="mod-top-strip"></div>
+      <div class="mod-row">
+        <div class="mod-cell"><div class="mod-fan"><span class="mod-ring"></span><div class="mod-blades-spin"><div class="mod-blades"></div></div><span class="mod-hub"></span></div></div>
+        <div class="mod-cell"><div class="mod-fan"><span class="mod-ring"></span><div class="mod-blades-spin"><div class="mod-blades"></div></div><span class="mod-hub"></span></div></div>
+        <div class="mod-cell"><div class="mod-fan"><span class="mod-ring"></span><div class="mod-blades-spin"><div class="mod-blades"></div></div><span class="mod-hub"></span></div></div>
+        <div class="mod-cell"><div class="mod-fan"><span class="mod-ring"></span><div class="mod-blades-spin"><div class="mod-blades"></div></div><span class="mod-hub"></span></div></div>
+      </div>
+      <div class="mod-bottom-strip"></div>
+    </div>
+  </div>
   <div class="container">
     <div class="footer-grid">
-      <div class="footer-brand"><div class="fb-logo"><span class="fb-logo-icon">💻</span><span class="fb-logo-text"><span>Computer</span> Paradise</span></div><p class="fb-tagline">Mysore's Most Trusted Laptop Store Since 2016</p><div class="fb-desc">Quality pre-owned &amp; refurbished laptops at the best prices.</div><div class="fb-address"><span class="fb-addr-icon">📍</span><span>134, KT Street, Lashkar Mohalla,<br>Mysore, Karnataka 570019</span></div><div class="fb-badge">⭐ 4.9 · 1000+ Happy Customers</div></div>
-      <div><div class="footer-heading">🔗 Quick Links</div><ul class="footer-links"><li><a href="buy.html">Buy Laptops & Desktops</a></li><li><a href="builds.html">PC Builds</a></li><li><a href="sell.html">Sell Your Laptop</a></li><li><a href="contact.html">Service & Repair</a></li><li><a href="contact.html">Warranty & Support</a></li><li><a href="about.html">About Us</a></li></ul></div>
-      <div><div class="footer-heading">📞 Contact Us</div><div class="footer-contact-grid"><a href="tel:+91XXXXXXXXXX" class="footer-contact-item phone"><span class="footer-contact-icon">📞</span><div class="footer-contact-info"><span class="footer-contact-label">Phone</span><span class="footer-contact-value">+91 XXXXXXXXXX</span><span class="fc-sub">Mon–Sat, 10AM – 8PM</span></div></a><a href="https://wa.me/91XXXXXXXXXX" target="_blank" class="footer-contact-item whatsapp"><span class="footer-contact-icon">💬</span><div class="footer-contact-info"><span class="footer-contact-label">WhatsApp</span><span class="footer-contact-value">Chat with us</span><span class="fc-sub">Replies within 5 min</span></div></a><a href="https://facebook.com/computerparadise" target="_blank" class="footer-contact-item facebook"><span class="footer-contact-icon">📘</span><div class="footer-contact-info"><span class="footer-contact-label">Facebook</span><span class="footer-contact-value">@computerparadise</span></div></a><a href="https://instagram.com/computerparadise" target="_blank" class="footer-contact-item instagram"><span class="footer-contact-icon">📸</span><div class="footer-contact-info"><span class="footer-contact-label">Instagram</span><span class="footer-contact-value">@computerparadise</span></div></a><a href="https://maps.google.com/?q=134+KT+Street+Mysore" target="_blank" class="footer-contact-item location"><span class="footer-contact-icon">📍</span><div class="footer-contact-info"><span class="footer-contact-label">Location</span><span class="footer-contact-value">Mysore, Karnataka</span><span class="fc-sub">134, KT Street · Open today</span></div></a></div></div>
+      <div class="footer-brand">
+        <div class="fb-logo">
+          <span class="fb-logo-icon">💻</span>
+          <span class="fb-logo-text"><span>Computer</span> Paradise</span>
+        </div>
+        <p class="fb-tagline">Mysore's Most Trusted Laptop Store Since 2016</p>
+        <div class="fb-desc">Quality pre‑owned &amp; refurbished laptops at the best prices.</div>
+        <div class="fb-address">
+          <span class="fb-addr-icon">📍</span>
+          <span>134, KT Street, Lashkar Mohalla,<br>Mysore, Karnataka 570019</span>
+        </div>
+        <div class="fb-badge">⭐ 4.9 · 1000+ Happy Customers</div>
+      </div>
+      <div>
+        <div class="footer-heading">Quick Links</div>
+        <ul class="footer-links">
+          <li><a href="buy.html">Buy Laptops &amp; Desktops</a></li>
+          <li><a href="builds.html">PC Builds</a></li>
+          <li><a href="sell.html">Sell Your Laptop</a></li>
+          <li><a href="contact.html">Service &amp; Repair</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">📞 Contact Us</div>
+        <div class="footer-contact-grid">
+          <a href="tel:+91XXXXXXXXXX" class="footer-contact-item phone">
+            <div class="footer-contact-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C10.07 21 3 13.93 3 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.25 1.01l-2.2 2.2z"/></svg>
+              <span class="fc-status-dot"></span>
+            </div>
+            <div class="footer-contact-info">
+              <span class="footer-contact-label">Phone</span>
+              <span class="footer-contact-value">+91 XXXXXXXXXX</span>
+              <span class="fc-sub">Mon–Sat, 10AM – 8PM</span>
+            </div>
+            <span class="fc-arrow">→</span>
+          </a>
+          <a href="https://wa.me/91XXXXXXXXXX" target="_blank" class="footer-contact-item whatsapp">
+            <div class="footer-contact-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              <span class="fc-status-dot"></span>
+            </div>
+            <div class="footer-contact-info">
+              <span class="footer-contact-label">WhatsApp</span>
+              <span class="footer-contact-value">Chat with us</span>
+              <span class="fc-sub">Replies within 5 min</span>
+            </div>
+            <span class="fc-arrow">→</span>
+          </a>
+          <a href="https://facebook.com/computerparadise" target="_blank" class="footer-contact-item facebook">
+            <div class="footer-contact-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </div>
+            <div class="footer-contact-info">
+              <span class="footer-contact-label">Facebook</span>
+              <span class="footer-contact-value">@computerparadise</span>
+            </div>
+            <span class="fc-arrow">→</span>
+          </a>
+          <a href="https://instagram.com/computerparadise" target="_blank" class="footer-contact-item instagram">
+            <div class="footer-contact-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </div>
+            <div class="footer-contact-info">
+              <span class="footer-contact-label">Instagram</span>
+              <span class="footer-contact-value">@computerparadise</span>
+            </div>
+            <span class="fc-arrow">→</span>
+          </a>
+          <a href="https://maps.google.com/?q=134+KT+Street+Mysore" target="_blank" class="footer-contact-item location">
+            <div class="footer-contact-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/></svg>
+            </div>
+            <div class="footer-contact-info">
+              <span class="footer-contact-label">Location</span>
+              <span class="footer-contact-value">Mysore, Karnataka</span>
+              <span class="fc-sub">134, KT Street · Open today</span>
+            </div>
+            <span class="fc-arrow">→</span>
+          </a>
+        </div>
+      </div>
     </div>
-    <div class="footer-bottom"><div class="fb-row"><div class="fb-payments"><span title="Cash">💵</span><span title="UPI">📱</span><span title="Bank Transfer">🏦</span></div></div><p>&copy; 2026 <strong>Computer Paradise</strong> — All rights reserved. Built with ❤️ in Mysore.</p></div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 <strong>Computer Paradise</strong> – All rights reserved. Built with ❤️ in Mysore.</p>
+    </div>
   </div>
 </footer>
 
-<script src="script.js"></script>
 <script>
-function calcBuild() {
-  var selects = ['bCPU','bGPU','bRAM','bStorage','bMobo','bPSU','bCooler','bCase','bMonitor','bKM','bAudio','bAccessories'];
-  var labels = ['\u2699\uFE0F CPU','\uD83C\uDFAE GPU','\uD83E\uDDE0 RAM','\uD83D\uDCBE Storage','\uD83D\uDDA5\uFE0F MoBo','\uD83D\uDD0C PSU','\u2744\uFE0F Cooler','\uD83D\uDCE6 Case','\uD83D\uDDA5\uFE0F Monitor','\u2328\uFE0F KB+Mouse','\uD83C\uDFA7 Audio','\uD83D\uDEE1\uFE0F Accessories'];
-  var total = 0;
-  var items = [];
-  for(var i=0; i<selects.length; i++) {
-    var el = document.getElementById(selects[i]);
-    var val = parseInt(el.value) || 0;
-    if(val > 0) {
-      total += val;
-      var name = el.options[el.selectedIndex].text.split('\u2014')[0]?.trim() || '';
-      items.push('<div class="pb-summary-item"><span>' + labels[i] + '</span><span>\u20B9' + val.toLocaleString() + '</span></div>');
+  const componentData = {};
+
+  function selectComponent(el, group) {
+    const parent = el.closest('.comp-options');
+    parent.querySelectorAll('.comp-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    const price = parseInt(el.dataset.price);
+    const name = el.dataset.name;
+    const key = group;
+    if (price > 0) {
+      componentData[key] = { name, price };
+    } else {
+      delete componentData[key];
     }
+    updateBuilderSummary();
+    updateBuilderTotal();
   }
-  document.getElementById('pbTotal').textContent = '\u20B9' + total.toLocaleString();
-  var summary = document.getElementById('pbSummary');
-  if(items.length === 0) {
-    summary.innerHTML = '<div class="pb-summary-empty">Select components to build your dream PC</div>';
-    document.getElementById('pbSendBtn').disabled = true;
-  } else {
-    summary.innerHTML = items.join('');
-    document.getElementById('pbSendBtn').disabled = false;
+
+  document.querySelectorAll('.comp-card').forEach(card => {
+    card.addEventListener('click', function() {
+      const group = this.closest('.comp-group').dataset.group;
+      selectComponent(this, group);
+    });
+  });
+
+  function updateBuilderSummary() {
+    const container = document.getElementById('summaryItems');
+    const countEl = document.getElementById('partsCount');
+    const keys = Object.keys(componentData);
+    const required = ['cpu','gpu','ram','storage'];
+    const hasRequired = required.every(k => componentData[k]);
+    document.getElementById('configSubmitBtn').disabled = !hasRequired;
+    if (!keys.length) {
+      container.innerHTML = '<div class="summary-placeholder">Select components above</div>';
+      countEl.textContent = '0/5';
+      return;
+    }
+    let html = '';
+    keys.forEach(k => {
+      const item = componentData[k];
+      const icons = { cpu:'🔲', gpu:'🎮', ram:'🧠', storage:'💾', psu:'🔌' };
+      html += `<div class="summary-item"><span>${icons[k]||'📦'} ${item.name}</span><span>₹${item.price.toLocaleString()}</span></div>`;
+    });
+    container.innerHTML = html;
+    countEl.textContent = `${keys.length}/5`;
   }
-  var compat = document.getElementById('pbCompat');
-  if(items.length >= 5) { compat.textContent = '\u2705 Compatible'; compat.style.background = 'rgba(76,175,80,0.1)'; compat.style.color = '#4caf50'; }
-  else if(items.length > 0) { compat.textContent = '\uD83D\uDD11 Partial'; compat.style.background = 'rgba(255,152,0,0.1)'; compat.style.color = '#ff9800'; }
-  else { compat.textContent = 'Ready'; compat.style.background = 'rgba(255,255,255,0.03)'; compat.style.color = 'rgba(255,255,255,0.2)'; }
+
+  function updateBuilderTotal() {
+    const subtotalEl = document.getElementById('summarySubtotal');
+    const totalEl = document.getElementById('summaryTotal');
+    let sub = 0;
+    Object.values(componentData).forEach(v => sub += v.price);
+    subtotalEl.textContent = '₹' + sub.toLocaleString();
+    const total = sub + 999;
+    totalEl.textContent = '₹' + total.toLocaleString();
+    totalEl.style.transform = 'scale(1.1)';
+    setTimeout(() => totalEl.style.transform = 'scale(1)', 200);
+  }
+
+  function sendConfig() {
+    const keys = Object.keys(componentData);
+    if (keys.length < 4) return;
+    let msg = '*Custom PC Build Request*\n\n';
+    keys.forEach(k => {
+      const item = componentData[k];
+      msg += `${k.toUpperCase()}: ${item.name} — ₹${item.price.toLocaleString()}\n`;
+    });
+    const sub = Object.values(componentData).reduce((s, v) => s + v.price, 0);
+    msg += `\nSubtotal: ₹${sub.toLocaleString()}`;
+    msg += `\nAssembly: ₹999`;
+    msg += `\n*Total: ₹${(sub + 999).toLocaleString()}*`;
+    const notes = document.getElementById('notes')?.value.trim();
+    if (notes) msg += `\n\nNotes: ${notes}`;
+    const url = `https://wa.me/91XXXXXXXXXX?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+  }
+
+  function whatsappBuild(name, price) {
+    const msg = `*PC Build Quote*\n${name}\nPrice: ₹${price.toLocaleString()}\n\nReply to confirm.`;
+    const url = `https://wa.me/91XXXXXXXXXX?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+  }
+
+  const tiltCards = document.querySelectorAll('[data-tilt]');
+  tiltCards.forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+      const rotX = (y - cy) / cy * -8;
+      const rotY = (x - cx) / cx * 8;
+      card.style.setProperty('--rotX', rotX + 'deg');
+      card.style.setProperty('--rotY', rotY + 'deg');
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.setProperty('--rotX', '0deg');
+      card.style.setProperty('--rotY', '0deg');
+    });
+  });
+
+  const revealEls = document.querySelectorAll('.reveal');
+  const ro = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        ro.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  revealEls.forEach(el => ro.observe(el));
+
+  const particleCanvas = document.getElementById('particleCanvas');
+  if (particleCanvas) {
+    const ctx = particleCanvas.getContext('2d');
+    let w, h, particles = [];
+    function resize() {
+      const hero = document.getElementById('buildsHero');
+      if (!hero) return;
+      w = hero.offsetWidth;
+      h = hero.offsetHeight;
+      particleCanvas.width = w;
+      particleCanvas.height = h;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+    class Particle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * w;
+        this.y = Math.random() * h;
+        this.vx = (Math.random() - 0.5) * 0.6;
+        this.vy = (Math.random() - 0.5) * 0.6;
+        this.r = Math.random() * 2 + 0.5;
+        this.a = Math.random() * 0.4 + 0.1;
+        this.life = 0;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.life += 0.005;
+        if (this.x < 0 || this.x > w || this.y < 0 || this.y > h || this.life > 1) this.reset();
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(212,175,55,${this.a * (1 - this.life)})`;
+        ctx.fill();
+      }
+    }
+    for (let i = 0; i < 120; i++) particles.push(new Particle());
+    let connDist = 120;
+    function animate() {
+      ctx.clearRect(0, 0, w, h);
+      particles.forEach(p => { p.update(); p.draw(); });
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          if (dist < connDist) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(212,175,55,${(1 - dist / connDist) * 0.15})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+  }
+</script>
+<script>
+// ===== 3D PC RGB Engine =====
+(function(){
+  const scope = document.querySelector('.hero-pc-3d');
+  if(!scope) return;
+  const frs = scope.querySelectorAll('[data-fr]');
+  const rr = scope.querySelector('#reR');
+  const ar = scope.querySelector('#apR');
+  const cr = scope.querySelector('#cpuR');
+  const gr = scope.querySelector('#gpuRGB');
+  const il = scope.querySelector('#iLed');
+  const ig = scope.querySelector('#iGlow');
+  const lk = scope.querySelector('#lkEl');
+  const ram = scope.querySelectorAll('.rs');
+
+  function hs(h,s=100,l=48){return `hsl(${h%360},${s}%,${l}%)`}
+  function hsa(h,s=100,l=48,a=1){return `hsla(${h%360},${s}%,${l}%,${a})`}
+
+  function tick(){
+    const t = Date.now()/1000;
+    const sp = 22;
+    const h = (t*sp)%360;
+
+    frs.forEach((el,i)=>{
+      const hh = (h+i*120)%360;
+      el.style.background=`conic-gradient(from 0deg,${hs(hh)},${hs(hh+90)},${hs(hh+180)},${hs(hh+270)},${hs(hh)})`;
+    });
+
+    if(rr){const rh=(h+180)%360;rr.style.background=`conic-gradient(from 0deg,${hs(rh)},${hs(rh+90)},${hs(rh+180)},${hs(rh+270)},${hs(rh)})`}
+    if(ar){const ah=(h+40)%360;ar.style.background=`conic-gradient(from 0deg,${hs(ah)},${hs(ah+90)},${hs(ah+180)},${hs(ah+270)},${hs(ah)})`}
+    if(cr)cr.style.background=`conic-gradient(from 0deg,transparent,${hs(h+60)},transparent,${hs(h+240)},transparent)`
+    if(gr){const gh=(h+90)%360;gr.style.background=`linear-gradient(90deg,${hs(gh)},${hs(gh+120)},${hs(gh+240)},${hs(gh)})`;gr.style.boxShadow=`0 0 6px ${hs(gh,100,42)},0 0 14px ${hs(gh+120,100,32)}`}
+    if(il){const lh=(h+60)%360;il.style.background=`linear-gradient(90deg,${hs(lh)},${hs(lh+150)},${hs(lh+300)},${hs(lh)})`;il.style.boxShadow=`0 0 10px ${hs(lh,100,38)},0 0 24px ${hs(lh+150,100,28)}`}
+    if(ig)ig.style.background=`radial-gradient(ellipse at 50% 80%,${hsa(h+100,100,45,0.08)},transparent)`
+    if(lk)lk.style.background=`radial-gradient(ellipse at center,${hsa(h+200,100,50,0.06)},transparent)`
+
+    ram.forEach((el,i)=>{
+      const hh=(h+i*60+30)%360;
+      const r=el.querySelector('.rr');
+      const g=el.querySelector('.rg');
+      if(r)r.style.background=hs(hh);
+      if(g){g.style.background=hs(hh);g.style.boxShadow=`0 0 10px ${hs(hh)}`}
+    });
+
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+// Search Engine Functions
+function searchBuilds() {
+  const cpu = document.getElementById('searchCPU')?.value;
+  const gpu = document.getElementById('searchGPU')?.value;
+  const ram = document.getElementById('searchRAM')?.value;
+  const storage = document.getElementById('searchStorage')?.value;
+  const budget = document.getElementById('searchBudget')?.value;
+  const useCase = document.getElementById('searchUseCase')?.value;
+  
+  // Scroll to prebuilt section
+  document.getElementById('prebuilt')?.scrollIntoView({ behavior: 'smooth' });
+  
+  // Filter logic would go here
+  console.log('Searching:', { cpu, gpu, ram, storage, budget, useCase });
 }
-function sendBuild() {
-  var ids = ['bCPU','bGPU','bRAM','bStorage','bMobo','bPSU','bCooler','bCase','bMonitor','bKM','bAudio','bAccessories'];
-  var names = ['CPU','GPU','RAM','Storage','Motherboard','PSU','Cooler','Case','Monitor','KB+Mouse','Audio','Accessories'];
-  var msg = '\uD83D\uDD27 *New Custom PC Build Request*\n\n';
-  for(var i=0; i<ids.length; i++) {
-    var el = document.getElementById(ids[i]);
-    var text = el.options[el.selectedIndex]?.text.split('\u2014')[0]?.trim() || '-';
-    msg += names[i] + ': ' + text + '\n';
-  }
-  msg += '\n\uD83D\uDCB0 *Total: \u20B9' + document.getElementById('pbTotal').textContent + '*';
-  window.open('https://wa.me/91XXXXXXXXXX?text=' + encodeURIComponent(msg), '_blank');
-  showToast('\u2705 Build enquiry sent via WhatsApp!');
+
+function resetSearch() {
+  document.getElementById('searchCPU').value = '';
+  document.getElementById('searchGPU').value = '';
+  document.getElementById('searchRAM').value = '';
+  document.getElementById('searchStorage').value = '';
+  document.getElementById('searchBudget').value = '';
+  document.getElementById('searchUseCase').value = '';
+  document.querySelectorAll('.search-tag').forEach(t => t.classList.remove('active'));
+}
+
+// Search tag click handlers
+document.querySelectorAll('.search-tag').forEach(tag => {
+  tag.addEventListener('click', function() {
+    document.querySelectorAll('.search-tag').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+    const filter = this.dataset.filter;
+    
+    // Set use case based on tag
+    const useCaseSelect = document.getElementById('searchUseCase');
+    if (useCaseSelect) {
+      useCaseSelect.value = filter === 'popular' || filter === 'budget' ? '' : filter;
+    }
+  });
+});
+
+// Preset function
+function applyPreset(type) {
+  const presets = {
+    budget: { cpu: 'i5', gpu: 'integrated', ram: '8gb', storage: '512gb-ssd', budget: 'under-80k', useCase: '' },
+    gaming: { cpu: 'i7', gpu: 'rtx-3070', ram: '16gb', storage: '1tb-ssd', budget: '1-1.5l', useCase: 'gaming' },
+    streaming: { cpu: 'ryzen-7', gpu: 'rtx-3060', ram: '32gb', storage: '1tb-ssd', budget: '1-1.5l', useCase: 'streaming' },
+    creator: { cpu: 'ryzen-9', gpu: 'rtx-4070', ram: '32gb', storage: '2tb-hdd-512gb-ssd', budget: '1.5-2l', useCase: 'video-editing' },
+    workstation: { cpu: 'i9', gpu: 'rtx-4090', ram: '64gb', storage: '2tb-ssd', budget: 'above-2l', useCase: '3d-rendering' }
+  };
+  const p = presets[type];
+  if (!p) return;
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+  set('searchCPU', p.cpu);
+  set('searchGPU', p.gpu);
+  set('searchRAM', p.ram);
+  set('searchStorage', p.storage);
+  set('searchBudget', p.budget);
+  set('searchUseCase', p.useCase);
+  document.querySelectorAll('.search-tag').forEach(t => t.classList.remove('active'));
+  searchBuilds();
 }
 </script>
+<script src="script.js"></script>
 </body>
 </html>

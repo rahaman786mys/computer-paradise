@@ -3278,7 +3278,7 @@ function closeWaPopup() {
 
 function waCall() {
   closeWaPopup();
-  window.location.href = "tel:+9191XXXXXXXXXX";
+  window.location.href = "tel:+91XXXXXXXXXX";
 }
 
 function waMessage() {
