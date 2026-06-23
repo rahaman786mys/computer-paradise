@@ -1,3 +1,8 @@
+// ===== Mobile: hide wire & lightning =====
+if (window.innerWidth <= 1024) {
+  document.documentElement.style.setProperty('--hide-wire', '1');
+}
+
 // ===== Laptop Data =====
 const laptops = [
   { id: 1, brand: "Dell", name: "Dell Inspiron 15", ram: "8GB", storage: "512GB SSD", processor: "Intel i5 12th Gen", os: "windows", condition: "A", price: 34999, badge: "bestseller", images: [
@@ -2153,6 +2158,14 @@ function animateCounters() {
 
 // Stats mouse tracking
 document.addEventListener("DOMContentLoaded", function() {
+  if (window.innerWidth <= 1024) {
+    var wire = document.querySelector(".power-cable-svg");
+    if (wire) wire.style.display = "none";
+    var canvas = document.getElementById("lightningCanvas");
+    if (canvas) canvas.style.display = "none";
+    var sparkles = document.querySelectorAll(".sparkle-ring, .glint, .shimmer-scan");
+    sparkles.forEach(function(el) { el.style.display = "none"; });
+  }
   var statsBar = document.querySelector(".stats-bar");
   var ambient = document.getElementById("statAmbient");
   if (statsBar && ambient) {
@@ -2183,6 +2196,7 @@ function initBackTop() {
 
 // ===== Realistic Lightning VFX =====
 function initLightning() {
+  if (window.innerWidth <= 1024) return;
   const canvas = document.getElementById("lightningCanvas");
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
