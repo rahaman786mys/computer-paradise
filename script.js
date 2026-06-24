@@ -2519,7 +2519,6 @@ function initLaptopGallery() {
 // ===== Init =====
 document.addEventListener("DOMContentLoaded", () => {
   loadCart();
-  initLightning();
   initLaptopGallery();
   loadAuth();
   initSlider();
