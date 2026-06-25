@@ -1044,17 +1044,18 @@ function loadAuth() {
     const d = localStorage.getItem("cp_user");
     if (d) {
       currentUser = JSON.parse(d);
-      // Check admin session expiry (5 min persistence)
+      // Check admin session expiry (5 min from login OR 5 min from last activity)
       if (currentUser.role === "admin") {
         const loginTime = new Date(currentUser.loginTime).getTime();
+        const lastActivity = currentUser.lastActivity || loginTime;
         const now = Date.now();
         const fiveMinutes = 5 * 60 * 1000;
-        if (now - loginTime > fiveMinutes) {
-          // Session expired
+        // Session expires if more than 5 min since login AND more than 5 min since last activity
+        if ((now - loginTime > fiveMinutes) && (now - lastActivity > fiveMinutes)) {
           currentUser = null;
           localStorage.removeItem("cp_user");
         } else {
-          // Refresh lastActivity on page load
+          // Refresh lastActivity
           currentUser.lastActivity = now;
           localStorage.setItem("cp_user", JSON.stringify(currentUser));
         }
@@ -1063,6 +1064,13 @@ function loadAuth() {
   } catch(e) {}
   updateAuthUI();
 }
+
+// Re-check session when page becomes visible (mobile back button fix)
+document.addEventListener("visibilitychange", function() {
+  if (!document.hidden) {
+    loadAuth();
+  }
+});
 
 function saveAuth(phone) {
   const now = Date.now();
