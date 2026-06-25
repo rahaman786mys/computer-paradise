@@ -1679,8 +1679,10 @@ function adminListItemHTML(l, extraActions, itemStyle) {
   const devIcon = deviceIcons[l.deviceType] || "💻";
   const genTag = l.gen ? `${l.gen} · ` : "";
   const screenTag = l.screenSize ? `${l.screenSize}" · ` : "";
+  const isSelected = _adminSelected.has(l.id);
   return `
-    <div class="admin-list-item"${itemStyle ? ` style="${itemStyle}"` : ''}>
+    <div class="admin-list-item"${itemStyle ? ` style="${itemStyle}"` : ''} data-id="${l.id}">
+      <input type="checkbox" class="admin-select-cb" ${isSelected ? 'checked' : ''} onchange="toggleAdminSelect(${l.id}, this.checked)" onclick="event.stopPropagation()" style="margin-right:8px;accent-color:#d4af37;cursor:pointer">
       <div class="admin-li-img">${imgHtml}</div>
       <div class="admin-li-info">
         <div class="admin-li-name">${devIcon} ${l.brand} ${l.name}</div>
@@ -1712,7 +1714,72 @@ function renderAdminLaptopList() {
     el.innerHTML = '<div class="admin-empty">No laptops yet. Click "Add New" to create one.</div>';
     return;
   }
-  el.innerHTML = '<div class="admin-list">' + laptops.map(l => adminListItemHTML(l)).join("") + '</div>';
+  const count = _adminSelected.size;
+  const allChecked = laptops.length > 0 && count === laptops.length;
+  const toolbar = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;padding:8px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid rgba(255,255,255,0.06)">
+    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.75rem;color:rgba(255,255,255,0.6)">
+      <input type="checkbox" ${allChecked ? 'checked' : ''} onchange="toggleAdminSelectAll(this.checked)" style="accent-color:#d4af37;cursor:pointer">
+      Select All (${laptops.length})
+    </label>
+    ${count > 0 ? `<button onclick="deleteSelectedLaptops()" style="padding:4px 12px;border:none;border-radius:6px;background:rgba(244,67,54,0.25);color:#f44336;cursor:pointer;font-size:0.75rem;font-weight:600">🗑 Delete Selected (${count})</button>` : ''}
+    ${count > 0 ? `<button onclick="featureSelectedLaptops(true)" style="padding:4px 12px;border:none;border-radius:6px;background:rgba(212,175,55,0.25);color:#d4af37;cursor:pointer;font-size:0.75rem">⭐ Feature Selected</button>` : ''}
+    ${count > 0 ? `<button onclick="_adminSelected.clear();renderAdminLaptopList()" style="padding:4px 12px;border:1px solid rgba(255,255,255,0.15);border-radius:6px;background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;font-size:0.75rem">✕ Clear</button>` : ''}
+  </div>`;
+  el.innerHTML = toolbar + '<div class="admin-list">' + laptops.map(l => adminListItemHTML(l)).join("") + '</div>';
+}
+
+let _adminSelected = new Set();
+
+function toggleAdminSelect(id, checked) {
+  if (checked) _adminSelected.add(id);
+  else _adminSelected.delete(id);
+  renderAdminLaptopList();
+}
+
+function toggleAdminSelectAll(checked) {
+  if (checked) laptops.forEach(l => _adminSelected.add(l.id));
+  else _adminSelected.clear();
+  renderAdminLaptopList();
+}
+
+function deleteSelectedLaptops() {
+  if (!_adminSelected.size) return;
+  if (!confirm(`Delete ${_adminSelected.size} laptop(s)? They'll be moved to the deleted archive.`)) return;
+  const ids = Array.from(_adminSelected);
+  ids.forEach(function(id) {
+    const idx = laptops.findIndex(l => l.id === id);
+    if (idx === -1) return;
+    const deleted = laptops.splice(idx, 1)[0];
+    deletedLaptops.push(deleted);
+    if (_useFirestore) {
+      db.collection("laptops").doc(String(id)).delete().then(function() {
+        db.collection("deleted_laptops").doc(String(id)).set(deleted);
+      }).catch(function(e) { console.error("Firestore delete failed:", e); });
+    }
+  });
+  try { localStorage.setItem("cp_laptops_data", JSON.stringify(laptops)); } catch(e) {}
+  try { localStorage.setItem("cp_deleted_laptops", JSON.stringify(deletedLaptops)); } catch(e) {}
+  _adminSelected.clear();
+  renderAdminLaptopList();
+  if (document.getElementById("adminTabDeleted")) renderAdminDeletedList();
+  if (document.getElementById("laptopGrid")) renderLaptops(laptops);
+  if (document.getElementById("sliderTrack")) renderLaptops(laptops, "sliderTrack");
+  showToast(`🗑 ${ids.length} laptop(s) moved to archive`);
+}
+
+function featureSelectedLaptops(feature) {
+  if (!_adminSelected.size) return;
+  _adminSelected.forEach(function(id) {
+    const l = laptops.find(x => x.id === id);
+    if (l) l.featured = feature;
+  });
+  persistLaptops();
+  renderAdminLaptopList();
+  if (document.getElementById("laptopGrid")) renderLaptops(laptops);
+  if (document.getElementById("sliderTrack")) renderLaptops(laptops, "sliderTrack");
+  showToast(`${feature ? '⭐' : '☆'} ${_adminSelected.size} laptop(s) ${feature ? 'featured' : 'unfeatured'}`);
+  _adminSelected.clear();
+  renderAdminLaptopList();
 }
 
 function toggleFeatured(id) {
