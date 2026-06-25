@@ -3,6 +3,18 @@ if (window.innerWidth <= 1024) {
   document.documentElement.style.setProperty('--hide-wire', '1');
 }
 
+// ===== Firebase =====
+const firebaseConfig = {
+  apiKey: "AIzaSyBxkwgJJUPZFFfNKistgjIFGIgeEMWAuQY",
+  authDomain: "computer-paradise-5235b.firebaseapp.com",
+  projectId: "computer-paradise-5235b",
+  storageBucket: "computer-paradise-5235b.firebasestorage.app",
+  messagingSenderId: "226124743417",
+  appId: "1:226124743417:web:80e07aa4a98e66df9b5828"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 // ===== Laptop Data =====
 const laptops = [
   { id: 1, brand: "Dell", name: "Dell Inspiron 15", ram: "8GB", storage: "512GB SSD", processor: "Intel i5 12th Gen", os: "windows", condition: "A", price: 34999, badge: "bestseller", images: [
@@ -80,36 +92,66 @@ const badgeLabels = { bestseller: "⭐ Best Seller", new: "🔥 New Arrival", de
   } catch(e) {}
 })();
 
-// ===== Persisted Laptop Data (admin edits) =====
+// ===== Persisted Laptop Data (Firestore) =====
+let _laptopsLoaded = false;
+const _laptopListeners = [];
+
+function onLaptopsReady(cb) {
+  if (_laptopsLoaded) cb();
+  else _laptopListeners.push(cb);
+}
+
 (function loadPersistedLaptops() {
-  try {
-    const stored = localStorage.getItem("cp_laptops_data");
-    if (stored) {
-      const data = JSON.parse(stored);
-      if (Array.isArray(data)) {
-        laptops.length = 0;
-        data.forEach(l => laptops.push(l));
-      }
+  // Load from Firestore in real-time
+  db.collection("laptops").onSnapshot(function(snapshot) {
+    const data = [];
+    snapshot.forEach(function(doc) {
+      data.push({ id: parseInt(doc.id) || doc.data().id, ...doc.data() });
+    });
+    // If Firestore is empty, seed with default data
+    if (data.length === 0 && laptops.length > 0) {
+      laptops.forEach(function(l) {
+        db.collection("laptops").doc(String(l.id)).set(l);
+      });
+    } else {
+      laptops.length = 0;
+      data.forEach(function(l) { laptops.push(l); });
     }
-  } catch(e) {}
+    _laptopsLoaded = true;
+    _laptopListeners.forEach(function(cb) { cb(); });
+    _laptopListeners.length = 0;
+    // Re-render if page elements exist
+    if (document.getElementById("laptopGrid")) renderLaptops(laptops);
+    if (document.getElementById("sliderTrack")) renderLaptops(laptops, "sliderTrack");
+  });
 })();
 
 function persistLaptops() {
+  // Save each laptop to Firestore
+  laptops.forEach(function(l) {
+    db.collection("laptops").doc(String(l.id)).set(l);
+  });
+  // Also save to localStorage as backup
   localStorage.setItem("cp_laptops_data", JSON.stringify(laptops));
 }
 
-// Deleted laptops archive (for relisting)
+// Deleted laptops archive (for relisting) — Firestore
 let deletedLaptops = [];
 
 (function loadDeletedLaptops() {
-  try {
-    const data = JSON.parse(localStorage.getItem("cp_deleted_laptops"));
-    if (Array.isArray(data)) { deletedLaptops.length = 0; data.forEach(l => deletedLaptops.push(l)); }
-  } catch(e) {}
+  db.collection("deleted_laptops").onSnapshot(function(snapshot) {
+    deletedLaptops.length = 0;
+    snapshot.forEach(function(doc) {
+      deletedLaptops.push({ id: parseInt(doc.id) || doc.data().id, ...doc.data() });
+    });
+  });
 })();
 
 function persistDeletedLaptops() {
-  localStorage.setItem("cp_deleted_laptops", JSON.stringify(deletedLaptops));
+  deletedLaptops.forEach(function(l) {
+    db.collection("deleted_laptops").doc(String(l.id)).set(l);
+  });
+}
 }
 
 // ===== Orders System =====
@@ -961,6 +1003,12 @@ function loadAuth() {
 function saveAuth(phone) {
   currentUser = { phone, role: "user", loginTime: new Date().toISOString() };
   localStorage.setItem("cp_user", JSON.stringify(currentUser));
+  // Save customer to Firestore
+  db.collection("customers").doc(phone).set({
+    phone: phone,
+    loginTime: new Date().toISOString(),
+    loginCount: firebase.firestore.FieldValue.increment(1)
+  }, { merge: true });
   updateAuthUI();
 }
 
@@ -1921,6 +1969,9 @@ function deleteAdminLaptop(id) {
   if (idx === -1) return;
   const deleted = laptops.splice(idx, 1)[0];
   deletedLaptops.push(deleted);
+  // Firestore: delete from laptops, add to deleted_laptops
+  db.collection("laptops").doc(String(id)).delete();
+  db.collection("deleted_laptops").doc(String(id)).set(deleted);
   persistLaptops();
   persistDeletedLaptops();
   renderAdminLaptopList();
