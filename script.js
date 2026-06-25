@@ -1760,8 +1760,12 @@ function relistLaptop(id) {
   if (idx === -1) return;
   const item = deletedLaptops.splice(idx, 1)[0];
   laptops.push(item);
-  persistLaptops();
-  persistDeletedLaptops();
+  if (_useFirestore) {
+    db.collection("laptops").doc(String(item.id)).set(item).catch(function(e) { console.error("Firestore set failed:", e); });
+    db.collection("deleted_laptops").doc(String(item.id)).delete().catch(function(e) { console.error("Firestore delete failed:", e); });
+  }
+  try { localStorage.setItem("cp_laptops_data", JSON.stringify(laptops)); } catch(e) {}
+  try { localStorage.setItem("cp_deleted_laptops", JSON.stringify(deletedLaptops)); } catch(e) {}
   renderAdminDeletedList();
   renderAdminLaptopList();
   if (document.getElementById("adminTabMyListings")) renderAdminMyListings(); if (document.getElementById("adminTabInventory")) renderAdminInventory();
@@ -1776,7 +1780,10 @@ function permaDeleteLaptop(id) {
   const idx = deletedLaptops.findIndex(l => l.id === id);
   if (idx === -1) return;
   deletedLaptops.splice(idx, 1);
-  persistDeletedLaptops();
+  if (_useFirestore) {
+    db.collection("deleted_laptops").doc(String(id)).delete().catch(function(e) { console.error("Firestore delete failed:", e); });
+  }
+  try { localStorage.setItem("cp_deleted_laptops", JSON.stringify(deletedLaptops)); } catch(e) {}
   renderAdminDeletedList();
   showToast("🗑 Permanently deleted");
 }
@@ -1998,12 +2005,11 @@ function deleteAdminLaptop(id) {
   deletedLaptops.push(deleted);
   // Firestore: delete from laptops, add to deleted_laptops
   if (_useFirestore) {
-    try {
-      db.collection("laptops").doc(String(id)).delete();
+    db.collection("laptops").doc(String(id)).delete().then(function() {
       db.collection("deleted_laptops").doc(String(id)).set(deleted);
-    } catch(e) {}
+    }).catch(function(e) { console.error("Firestore delete failed:", e); });
   }
-  persistLaptops();
+  try { localStorage.setItem("cp_laptops_data", JSON.stringify(laptops)); } catch(e) {}
   persistDeletedLaptops();
   renderAdminLaptopList();
   if (document.getElementById("adminTabMyListings")) renderAdminMyListings(); if (document.getElementById("adminTabInventory")) renderAdminInventory();
