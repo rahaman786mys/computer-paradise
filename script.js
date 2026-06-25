@@ -1039,29 +1039,31 @@ document.addEventListener("click", (e) => {
 let currentUser = null;
 const ADMIN_PASSWORD = "Mysore@123";
 
-function loadAuth() {
+// Immediate session check on page load (before DOMContentLoaded)
+(function() {
   try {
     const d = localStorage.getItem("cp_user");
     if (d) {
       currentUser = JSON.parse(d);
-      // Check admin session expiry (5 min from login OR 5 min from last activity)
       if (currentUser.role === "admin") {
         const loginTime = new Date(currentUser.loginTime).getTime();
         const lastActivity = currentUser.lastActivity || loginTime;
         const now = Date.now();
         const fiveMinutes = 5 * 60 * 1000;
-        // Session expires if more than 5 min since login AND more than 5 min since last activity
         if ((now - loginTime > fiveMinutes) && (now - lastActivity > fiveMinutes)) {
           currentUser = null;
           localStorage.removeItem("cp_user");
         } else {
-          // Refresh lastActivity
           currentUser.lastActivity = now;
           localStorage.setItem("cp_user", JSON.stringify(currentUser));
         }
       }
     }
-  } catch(e) {}
+  } catch(e) { console.error("Auth check failed:", e); }
+})();
+
+function loadAuth() {
+  // Already checked above, just update UI
   updateAuthUI();
 }
 
