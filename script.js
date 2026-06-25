@@ -125,6 +125,8 @@ function onLaptopsReady(cb) {
       console.error("Firestore listener error:", err);
       _useFirestore = false;
       _laptopsLoaded = true;
+      _laptopListeners.forEach(function(cb) { cb(); });
+      _laptopListeners.length = 0;
     });
   } catch(e) {
     console.error("Firestore init error:", e);
@@ -138,6 +140,8 @@ function onLaptopsReady(cb) {
         if (Array.isArray(data)) { laptops.length = 0; data.forEach(function(l) { laptops.push(l); }); }
       }
     } catch(e2) {}
+    _laptopListeners.forEach(function(cb) { cb(); });
+    _laptopListeners.length = 0;
   }
 })();
 
@@ -2782,17 +2786,12 @@ document.addEventListener("DOMContentLoaded", () => {
   loadCart();
   initLaptopGallery();
   loadAuth();
-  initSlider();
   setTimeout(() => {
     typeWriter(document.getElementById("typewriterText"), "Premium refurbished laptops, desktops & accessories — quality tested, certified, and delivered with care across Mysore.", 40);
   }, 650);
-
-  // Badge typewriter
   setTimeout(function() {
     typeWriterHTML("rTypewriter", "Quality <strong>Refurbished</strong> <span class=\"ampersand\">&amp;</span> <strong>Second-Hand</strong> Laptops &amp; Desktops", 35, true, 10000);
   }, 300);
-
-  // Touch pause for brand carousels
   document.querySelectorAll(".brand-grid").forEach(g => {
     function togglePause() {
       const t = g.querySelector(".brand-track");
@@ -2801,53 +2800,51 @@ document.addEventListener("DOMContentLoaded", () => {
       t.style.animationPlayState = ps === "paused" ? "running" : "paused";
     }
     g.addEventListener("click", togglePause);
-    g.addEventListener("touchstart", function(e) {
-      // Only toggle on brief tap, not scroll
-      this._touchStart = Date.now();
-    }, { passive: true });
+    g.addEventListener("touchstart", function(e) { this._touchStart = Date.now(); }, { passive: true });
     g.addEventListener("touchend", function(e) {
       if (Date.now() - (this._touchStart || 0) < 300) togglePause();
     });
   });
+  onLaptopsReady(function() {
+    initSlider();
+    // Buy page grid
+    if (document.getElementById("laptopGrid")) {
+      renderLaptops(laptops);
 
-  // Buy page grid
-  if (document.getElementById("laptopGrid")) {
-    renderLaptops(laptops);
+      const minS = document.getElementById("filterMinSlider");
+      const maxS = document.getElementById("filterMaxSlider");
+      const minV = document.getElementById("minVal");
+      const maxV = document.getElementById("maxVal");
+      const minI = document.getElementById("filterMin");
+      const maxI = document.getElementById("filterMax");
 
-    const minS = document.getElementById("filterMinSlider");
-    const maxS = document.getElementById("filterMaxSlider");
-    const minV = document.getElementById("minVal");
-    const maxV = document.getElementById("maxVal");
-    const minI = document.getElementById("filterMin");
-    const maxI = document.getElementById("filterMax");
-
-    function updatePriceSliders() {
-      let min = parseInt(minS?.value) || 0;
-      let max = parseInt(maxS?.value) || 100000;
-      if (min > max) {
-        if (minS) minS.value = max;
-        if (maxS) maxS.value = min;
-        [min, max] = [max, min];
+      function updatePriceSliders() {
+        let min = parseInt(minS?.value) || 0;
+        let max = parseInt(maxS?.value) || 100000;
+        if (min > max) {
+          if (minS) minS.value = max;
+          if (maxS) maxS.value = min;
+          [min, max] = [max, min];
+        }
+        if (minV) minV.textContent = min.toLocaleString();
+        if (maxV) maxV.textContent = max.toLocaleString();
+        if (minI) minI.value = min;
+        if (maxI) maxI.value = max;
+        filterLaptops();
       }
-      if (minV) minV.textContent = min.toLocaleString();
-      if (maxV) maxV.textContent = max.toLocaleString();
-      if (minI) minI.value = min;
-      if (maxI) maxI.value = max;
-      filterLaptops();
-    }
 
-    minS?.addEventListener("input", updatePriceSliders);
-    maxS?.addEventListener("input", updatePriceSliders);
-    updatePriceSliders();
+      minS?.addEventListener("input", updatePriceSliders);
+      maxS?.addEventListener("input", updatePriceSliders);
+      updatePriceSliders();
 
-    ["filterBrand","filterDeviceType","filterMin","filterMax","filterSort"].forEach(id => {
-      document.getElementById(id)?.addEventListener("change", filterLaptops);
-    });
-    document.getElementById("filterMin")?.addEventListener("input", filterLaptops);
-    document.getElementById("filterMax")?.addEventListener("input", filterLaptops);
-    document.getElementById("searchInput")?.addEventListener("input", () => { filterLaptops(); showSuggestions(); });
-    const fc = document.getElementById("filterCount");
-    if (fc) fc.textContent = `${laptops.length} items`;
+      ["filterBrand","filterDeviceType","filterMin","filterMax","filterSort"].forEach(id => {
+        document.getElementById(id)?.addEventListener("change", filterLaptops);
+      });
+      document.getElementById("filterMin")?.addEventListener("input", filterLaptops);
+      document.getElementById("filterMax")?.addEventListener("input", filterLaptops);
+      document.getElementById("searchInput")?.addEventListener("input", () => { filterLaptops(); showSuggestions(); });
+      const fc = document.getElementById("filterCount");
+      if (fc) fc.textContent = `${laptops.length} items`;
 
     // Handle ?search=BrandName from brand chip clicks
     const params = new URLSearchParams(window.location.search);
@@ -2868,7 +2865,7 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = "detail.html?id=" + id;
       }
     }
-  }
+  }); // end onLaptopsReady
 
   document.getElementById("sellForm")?.addEventListener("submit", handleSellForm);
   document.getElementById("callForm")?.addEventListener("submit", handleCallRequest);
@@ -3092,7 +3089,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   initWhatsAppFloat();
-  loadDetailPage();
+  onLaptopsReady(function() { loadDetailPage(); });
   initFooterEffects();
 });
 
