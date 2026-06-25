@@ -504,7 +504,7 @@ function checkoutCart() {
   orders.push(order);
   persistOrders();
 
-  window.open("https://wa.me/91XXXXXXXXXX?text=" + encodeURIComponent(msg), "_blank");
+  window.open("https://wa.me/919916611010?text=" + encodeURIComponent(msg), "_blank");
   showToast("📤 Order sent via WhatsApp!");
 }
 
@@ -697,7 +697,7 @@ function openWindowsDesktop(id) {
     priceEl.textContent = "₹" + startPrice.toLocaleString();
   }, 30);
   document.getElementById("windowsWA").href =
-    `https://wa.me/91XXXXXXXXXX?text=${encodeURIComponent("Hi Computer Paradise, I'm interested in the " + _winLaptop.name + " (₹" + _winLaptop.price.toLocaleString() + "). Is it available?")}`;
+    `https://wa.me/919916611010?text=${encodeURIComponent("Hi Computer Paradise, I'm interested in the " + _winLaptop.name + " (₹" + _winLaptop.price.toLocaleString() + "). Is it available?")}`;
 
   // Update Add to Cart button
   const waActions = document.querySelector(".win-actions");
@@ -1278,7 +1278,7 @@ function showBillingModal() {
     <div style="font-size:0.65rem;color:rgba(255,255,255,0.4);margin-bottom:12px">Record a purchase and send invoice via WhatsApp + SMS to the buyer.</div>
     <input id="billCustomer" placeholder="Customer name *" style="width:100%;padding:8px;margin-bottom:8px;border:1px solid rgba(255,255,255,0.1);border-radius:6px;background:rgba(255,255,255,0.05);color:#fff;font-size:0.8rem">
     <input id="billPhone" placeholder="Phone number with country code (e.g. 919876543210) *" oninput="validateBillPhone(this)" style="width:100%;padding:8px;margin-bottom:4px;border:1px solid rgba(255,255,255,0.1);border-radius:6px;background:rgba(255,255,255,0.05);color:#fff;font-size:0.8rem">
-    <div style="font-size:0.6rem;color:rgba(255,255,255,0.2);margin-bottom:12px">Phone is required for WhatsApp/SMS. Use format: 91XXXXXXXXXX (without +).</div>
+    <div style="font-size:0.6rem;color:rgba(255,255,255,0.2);margin-bottom:12px">Phone is required for WhatsApp/SMS. Use format: 919916611010 (without +).</div>
     <div id="billItems"></div>
     <button onclick="addBillItemRow()" style="padding:6px 12px;border:1px solid rgba(255,255,255,0.1);border-radius:6px;background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;font-size:0.75rem;margin-bottom:12px">➕ Add another item</button>
     <div id="billTotal" style="font-size:0.85rem;color:#d4af37;font-weight:700;margin-bottom:12px">Total: ₹0</div>
@@ -1403,7 +1403,7 @@ function generateBill() {
   msg += `\n*Total MRP: ₹${totalMrp.toLocaleString()}*\n`;
   msg += `You Save: -₹${savings.toLocaleString()}\n`;
   msg += `*Final Total: ₹${totalSell.toLocaleString()}*\n\n`;
-  msg += `📍 *Computer Paradise*\n134, KT Street, Mysore\n📞 +91 XXXXXXXXXX\n\n`;
+  msg += `📍 *Computer Paradise*\n134, KT Street, Mysore\n📞 +91 99166 11010\n\n`;
   msg += `_Thank you for your purchase!_`;
 
   // Build SMS message (shorter)
@@ -1498,7 +1498,7 @@ function showInvoice(id) {
   Object.assign(m.style, { position: "fixed", inset: "0", zIndex: "99999", background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center" });
   const itemsHtml = (o.items || []).map(i => `<tr><td style="padding:4px 8px;font-size:0.75rem">${i.name} × ${i.qty}</td><td style="padding:4px 8px;text-align:right;font-size:0.75rem">₹${(i.mrp||i.price).toLocaleString()}</td><td style="padding:4px 8px;text-align:right;font-size:0.75rem">₹${(i.price * i.qty).toLocaleString()}</td></tr>`).join("");
   m.innerHTML = `<div style="background:#fff;border-radius:12px;padding:24px;max-width:400px;width:90%;max-height:90vh;overflow:auto">
-    <div style="text-align:center;margin-bottom:16px"><div style="font-size:1rem;font-weight:700;color:#000">💻 Computer Paradise</div><div style="font-size:0.65rem;color:#999">134, KT Street, Mysore · +91 XXXXXXXXXX</div></div>
+    <div style="text-align:center;margin-bottom:16px"><div style="font-size:1rem;font-weight:700;color:#000">💻 Computer Paradise</div><div style="font-size:0.65rem;color:#999">134, KT Street, Mysore · +91 99166 11010</div></div>
     <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:#666;margin-bottom:12px"><span>Order #${o.id}</span><span>${d.toLocaleDateString()}</span></div>
     <div style="font-size:0.7rem;color:#666;margin-bottom:12px">Customer: ${o.customer?.name || 'Guest'} · ${o.customer?.phone || ''}</div>
     <table style="width:100%;border-collapse:collapse">${itemsHtml}</table>
@@ -2065,7 +2065,7 @@ function sendOTP() {
   if (phone.length < 10) { showToast("⚠️ Enter a valid 10-digit number"); return; }
   generatedOTP = String(Math.floor(100000 + Math.random() * 900000));
   var msg = "🔐 New Login\nPhone: +91-" + phone + "\nOTP: " + generatedOTP;
-  window.open("https://wa.me/91XXXXXXXXXX?text=" + encodeURIComponent(msg), "_blank");
+  window.open("https://wa.me/919916611010?text=" + encodeURIComponent(msg), "_blank");
   document.getElementById("authStep1").classList.remove("active");
   document.getElementById("authStep2").classList.add("active");
   const dp = document.getElementById("authDisplayPhone"); if (dp) dp.textContent = "+91-" + phone;
@@ -2085,7 +2085,7 @@ function verifyOTP() {
     const wp = document.getElementById("welcomePhone"); if (wp) wp.textContent = "+91-" + phone;
     setTimeout(function() {
       var msg = "✅ New Customer Logged In\nPhone: +91-" + phone + "\nTime: " + new Date().toLocaleString();
-      window.open("https://wa.me/91XXXXXXXXXX?text=" + encodeURIComponent(msg), "_blank");
+      window.open("https://wa.me/919916611010?text=" + encodeURIComponent(msg), "_blank");
     }, 500);
   } else showToast("❌ Incorrect OTP");
 }
@@ -2096,7 +2096,7 @@ function resendOTP() {
   generatedOTP = String(Math.floor(100000 + Math.random() * 900000));
   const phone = document.getElementById("authStep2").dataset.phone || document.getElementById("authPhone").value;
   var msg = "🔄 OTP Resent\nPhone: +91-" + phone + "\nNew OTP: " + generatedOTP;
-  window.open("https://wa.me/91XXXXXXXXXX?text=" + encodeURIComponent(msg), "_blank");
+  window.open("https://wa.me/919916611010?text=" + encodeURIComponent(msg), "_blank");
   showToast("📤 New OTP sent");
 }
 function completeLogin() { closeAuthModal(); showToast("🎉 Welcome!"); }
@@ -2108,7 +2108,7 @@ function handleCallRequest(e) {
   const phone = (document.getElementById("callPhone")?.value || "").trim();
   if (!name || phone.length < 10) { showToast("⚠️ Enter name & phone"); return; }
   var msg = "📞 Call Request\nName: " + name + "\nPhone: +91-" + phone + "\nTime: " + new Date().toLocaleString();
-  window.open("https://wa.me/91XXXXXXXXXX?text=" + encodeURIComponent(msg), "_blank");
+  window.open("https://wa.me/919916611010?text=" + encodeURIComponent(msg), "_blank");
   showToast("✅ Call request sent!");
   const f = document.getElementById("callForm"); if (f) f.reset();
 }
@@ -2123,7 +2123,7 @@ function handleSellForm(e) {
   const y = document.getElementById("purchaseYear")?.value?.trim() || "";
   const c = document.getElementById("laptopCondition")?.value || "";
   var msg = "Hi Computer Paradise, I want to sell my laptop. Name: " + n + ", Phone: " + p + ", Brand: " + b + ", Model: " + m + ", Year: " + y + ", Condition: " + c;
-  window.open("https://wa.me/91XXXXXXXXXX?text=" + encodeURIComponent(msg), "_blank");
+  window.open("https://wa.me/919916611010?text=" + encodeURIComponent(msg), "_blank");
 }
 
 // ===== Mobile Menu =====
@@ -3070,7 +3070,7 @@ function initWhatsAppFloat() {
   </div>
   <div id="waFloatPopup" class="wa-float-popup">
     <div class="wa-popup-header">💬 Get in Touch</div>
-    <div class="wa-popup-number">📞 +91 XXXXXXXXXX</div>
+    <div class="wa-popup-number">📞 +91 99166 11010</div>
     <div class="wa-popup-item" onclick="waCall()"><span class="wa-popup-icon">📞</span> Call Computer Paradise</div>
     <div class="wa-popup-item" onclick="waMessage()"><span class="wa-popup-icon">💬</span> Message on WhatsApp</div>
   </div>`;
@@ -3096,12 +3096,12 @@ function closeWaPopup() {
 
 function waCall() {
   closeWaPopup();
-  window.location.href = "tel:+91XXXXXXXXXX";
+  window.location.href = "tel:+919916611010";
 }
 
 function waMessage() {
   closeWaPopup();
-  window.location.href = "https://wa.me/91XXXXXXXXXX?text=" + encodeURIComponent("Hi Computer Paradise! I'm interested in your laptops.");
+  window.location.href = "https://wa.me/919916611010?text=" + encodeURIComponent("Hi Computer Paradise! I'm interested in your laptops.");
 }
 
 // ===== Detail Page =====
@@ -3140,7 +3140,7 @@ function loadDetailPage() {
   document.getElementById("detailSpec").textContent = lap.specialSpec ? "✨ " + lap.specialSpec : "";
 
   // WA
-  document.getElementById("detailWA").href = "https://wa.me/91XXXXXXXXXX?text=" + encodeURIComponent("Hi Computer Paradise, I'm interested in the " + lap.name + " (₹" + lap.price.toLocaleString() + "). Is it available?");
+  document.getElementById("detailWA").href = "https://wa.me/919916611010?text=" + encodeURIComponent("Hi Computer Paradise, I'm interested in the " + lap.name + " (₹" + lap.price.toLocaleString() + "). Is it available?");
 
   // Photos
   const mainImg = document.getElementById("detailMainImg");
