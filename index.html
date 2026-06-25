@@ -621,53 +621,18 @@
 <div class="modal-overlay" id="authOverlay">
   <div class="modal">
     <button class="modal-close" onclick="closeAuthModal()">✕</button>
-
-    <!-- Step 1: Enter Phone -->
-    <div class="auth-step active" id="authStep1">
-      <div class="modal-icon">🔐</div>
-      <h2>Login / Register</h2>
-      <p>Enter your phone number to login via WhatsApp</p>
-      <div class="form-group">
-        <label>Phone Number</label>
-        <div class="auth-phone-input">
-          <span class="country-code">+91</span>
-          <input type="tel" id="authPhone" placeholder="9876543210" maxlength="10" pattern="[0-9]{10}">
-        </div>
+    <div class="modal-icon">📱</div>
+    <h2>Login / Register</h2>
+    <p>Enter your phone number to continue</p>
+    <div class="form-group">
+      <label>Phone Number</label>
+      <div class="auth-phone-input">
+        <span class="country-code">+91</span>
+        <input type="tel" id="authPhone" placeholder="9876543210" maxlength="10" pattern="[0-9]{10}">
       </div>
-      <button class="btn btn-green btn-block" id="sendOTPBtn">📤 Send OTP via WhatsApp</button>
-      <p style="font-size:0.75rem;color:var(--text-light);margin-top:10px;text-align:center;">We'll send a notification to the shop's WhatsApp</p>
     </div>
-
-    <!-- Step 2: Enter OTP -->
-    <div class="auth-step" id="authStep2">
-      <div class="modal-icon">📱</div>
-      <h2>Enter OTP</h2>
-      <p>OTP sent via WhatsApp to <strong id="authDisplayPhone"></strong></p>
-      <div class="otp-row">
-        <input type="text" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code">
-        <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
-        <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
-        <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
-        <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
-        <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
-      </div>
-      <button class="btn btn-primary btn-block" id="verifyOTPBtn">✅ Verify OTP</button>
-      <p style="text-align:center;font-size:0.8rem;margin-top:10px;">
-        Didn't receive? <a href="#" id="resendOTP" style="color:var(--accent);font-weight:600;">Resend OTP</a>
-      </p>
-    </div>
-
-    <!-- Step 3: Welcome -->
-    <div class="auth-step" id="authStep3">
-      <div class="modal-icon">🎉</div>
-      <h2>Welcome!</h2>
-      <p>You're now logged in as <strong id="welcomePhone"></strong></p>
-      <div style="background:var(--accent-light);border-radius:var(--radius-sm);padding:16px;margin-bottom:16px;">
-        <p style="font-size:0.85rem;color:var(--text);margin:0;">✅ Shop has been notified about your login</p>
-      </div>
-      <button class="btn btn-primary btn-block" id="completeLoginBtn">🚀 Start Browsing</button>
-    </div>
-
+    <button class="btn btn-green btn-block" id="sendOTPBtn">✅ Continue</button>
+    <p style="font-size:0.72rem;color:var(--text-light);margin-top:12px;text-align:center;">We'll save your number for checkout & WhatsApp</p>
   </div>
 </div>
 

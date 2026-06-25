@@ -950,7 +950,7 @@ document.addEventListener("click", (e) => {
 });
 
 // ===== Auth =====
-let currentUser = null, generatedOTP = "";
+let currentUser = null;
 const ADMIN_PASSWORD = "Mysore@123";
 
 function loadAuth() {
@@ -2051,11 +2051,7 @@ function openAuthModal() {
   const m = document.getElementById("authOverlay");
   if (!m) return;
   m.classList.add("show"); document.body.style.overflow = "hidden";
-  document.getElementById("authStep1").classList.add("active");
-  document.getElementById("authStep2").classList.remove("active");
-  document.getElementById("authStep3").classList.remove("active");
   const i = document.getElementById("authPhone"); if (i) { i.value = ""; i.focus(); }
-  generatedOTP = "";
 }
 
 function closeAuthModal() { const m = document.getElementById("authOverlay"); if (!m) return; m.classList.remove("show"); document.body.style.overflow = ""; }
@@ -2063,43 +2059,16 @@ function closeAuthModal() { const m = document.getElementById("authOverlay"); if
 function sendOTP() {
   const phone = (document.getElementById("authPhone").value || "").trim();
   if (phone.length < 10) { showToast("⚠️ Enter a valid 10-digit number"); return; }
-  generatedOTP = String(Math.floor(100000 + Math.random() * 900000));
-  var msg = "🔐 New Login\nPhone: +91-" + phone + "\nOTP: " + generatedOTP;
-  window.open("https://wa.me/919916611010?text=" + encodeURIComponent(msg), "_blank");
-  document.getElementById("authStep1").classList.remove("active");
-  document.getElementById("authStep2").classList.add("active");
-  const dp = document.getElementById("authDisplayPhone"); if (dp) dp.textContent = "+91-" + phone;
-  document.getElementById("authStep2").dataset.phone = phone;
-  setTimeout(() => { const o = document.querySelector(".otp-input"); if (o) o.focus(); }, 100);
+  saveAuth(phone);
+  closeAuthModal();
+  showToast("✅ Logged in as +91-" + phone);
 }
 
-function verifyOTP() {
-  let entered = "";
-  document.querySelectorAll(".otp-input").forEach(i => entered += i.value);
-  if (entered.length !== 6) { showToast("⚠️ Enter complete OTP"); return; }
-  if (entered === generatedOTP) {
-    const phone = document.getElementById("authStep2").dataset.phone || document.getElementById("authPhone").value;
-    saveAuth(phone);
-    document.getElementById("authStep2").classList.remove("active");
-    document.getElementById("authStep3").classList.add("active");
-    const wp = document.getElementById("welcomePhone"); if (wp) wp.textContent = "+91-" + phone;
-    setTimeout(function() {
-      var msg = "✅ New Customer Logged In\nPhone: +91-" + phone + "\nTime: " + new Date().toLocaleString();
-      window.open("https://wa.me/919916611010?text=" + encodeURIComponent(msg), "_blank");
-    }, 500);
-  } else showToast("❌ Incorrect OTP");
-}
-
-function handleOTPInput(el) { if (el.value.length >= 1) { const n = el.nextElementSibling; if (n && n.classList.contains("otp-input")) n.focus(); } }
-function handleOTPBackspace(el, e) { if (e.key === "Backspace" && !el.value.length) { const p = el.previousElementSibling; if (p && p.classList.contains("otp-input")) { p.focus(); p.value = ""; } } }
-function resendOTP() {
-  generatedOTP = String(Math.floor(100000 + Math.random() * 900000));
-  const phone = document.getElementById("authStep2").dataset.phone || document.getElementById("authPhone").value;
-  var msg = "🔄 OTP Resent\nPhone: +91-" + phone + "\nNew OTP: " + generatedOTP;
-  window.open("https://wa.me/919916611010?text=" + encodeURIComponent(msg), "_blank");
-  showToast("📤 New OTP sent");
-}
-function completeLogin() { closeAuthModal(); showToast("🎉 Welcome!"); }
+function verifyOTP() { }
+function handleOTPInput(el) { }
+function handleOTPBackspace(el, e) { }
+function resendOTP() { }
+function completeLogin() { closeAuthModal(); }
 
 // ===== Call Request =====
 function handleCallRequest(e) {
@@ -2748,21 +2717,7 @@ document.addEventListener("DOMContentLoaded", () => {
   b("loginBtn", openAuthModal);
   b("logoutBtn", logoutUser);
   b("sendOTPBtn", sendOTP);
-  b("verifyOTPBtn", verifyOTP);
-  b("resendOTP", resendOTP);
-  b("completeLoginBtn", completeLogin);
   document.getElementById("authPhone")?.addEventListener("keydown", (e) => { if (e.key === "Enter") sendOTP(); });
-
-  // OTP
-  document.querySelectorAll(".otp-input").forEach(inp => {
-    inp.addEventListener("input", () => handleOTPInput(inp));
-    inp.addEventListener("keydown", (e) => handleOTPBackspace(inp, e));
-    inp.addEventListener("paste", (e) => {
-      e.preventDefault();
-      const d = (e.clipboardData || window.clipboardData).getData("text").replace(/\D/g, "").slice(0, 6);
-      if (d.length >= 6) { document.querySelectorAll(".otp-input").forEach((el, i) => { el.value = d[i] || ""; }); document.querySelector(".otp-input:last-child")?.focus(); }
-    });
-  });
 
   // Mobile login links
   document.querySelectorAll('#mobileDrawer a[onclick*="openAuthModal"], #mobileLoginBtn').forEach(el => {
