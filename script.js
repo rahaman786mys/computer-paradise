@@ -1189,21 +1189,17 @@ function openAdminPanel() {
   document.getElementById("adminOverlay").classList.add("show");
   document.body.style.overflow = "hidden";
   switchAdminTab("list");
-  // Mobile fix: file inputs in scrollable modals need special handling
-  if (/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
-    const photosInput = document.getElementById("afPhotos");
-    if (photosInput && !photosInput._mobileFixed) {
-      photosInput._mobileFixed = true;
-      photosInput.addEventListener("touchstart", function() {
-        const modalBody = photosInput.closest(".admin-modal-body");
-        if (modalBody) { modalBody.style.overflow = "visible"; modalBody.style.webkitOverflowScrolling = "auto"; }
-      }, { passive: true });
-      photosInput.addEventListener("change", function() {
-        const modalBody = photosInput.closest(".admin-modal-body");
-        if (modalBody) { setTimeout(() => { modalBody.style.overflow = "auto"; modalBody.style.webkitOverflowScrolling = "touch"; }, 500); }
-      });
+  // Restore draft on mobile (browser may have reloaded page)
+  setTimeout(() => {
+    restoreAdminFormDraft();
+    // Auto-save on every input change
+    const form = document.getElementById("adminForm");
+    if (form && !form._draftListenerAdded) {
+      form._draftListenerAdded = true;
+      form.addEventListener("input", saveAdminFormDraft);
+      form.addEventListener("change", saveAdminFormDraft);
     }
-  }
+  }, 100);
 }
 
 function closeAdminPanel() {
@@ -1932,6 +1928,36 @@ function resetAdminForm() {
   document.getElementById("afPhotoCount").textContent = "";
   const subBtn = document.querySelector("#adminForm .btn-primary");
   if (subBtn) subBtn.textContent = "💾 Save Laptop";
+  try { localStorage.removeItem("cp_admin_form_draft"); } catch(e) {}
+}
+
+function saveAdminFormDraft() {
+  try {
+    const fields = ["afId","afBrand","afName","afScreen","afGen","afRam","afStorage","afProcessor","afMrp","afPrice","afPurchasePrice","afUnits","afOs","afDeviceType","afCondition","afBadge","afSpecialSpec","afPriority"];
+    const draft = {};
+    fields.forEach(id => { const el = document.getElementById(id); if (el) draft[id] = el.value; });
+    const feat = document.getElementById("afFeatured");
+    if (feat) draft._featured = feat.checked;
+    draft._editingId = document.getElementById("afId").value;
+    localStorage.setItem("cp_admin_form_draft", JSON.stringify(draft));
+  } catch(e) {}
+}
+
+function restoreAdminFormDraft() {
+  try {
+    const raw = localStorage.getItem("cp_admin_form_draft");
+    if (!raw) return;
+    const draft = JSON.parse(raw);
+    Object.keys(draft).forEach(key => {
+      if (key.startsWith("_")) return;
+      const el = document.getElementById(key);
+      if (el && draft[key]) el.value = draft[key];
+    });
+    const feat = document.getElementById("afFeatured");
+    if (feat && draft._featured !== undefined) feat.checked = draft._featured;
+    const subBtn = document.querySelector("#adminForm .btn-primary");
+    if (subBtn && draft._editingId) subBtn.textContent = "✏️ Update Laptop";
+  } catch(e) {}
 }
 
 function editAdminLaptop(id) {
@@ -2043,6 +2069,7 @@ function saveAdminLaptop(e) {
         db.collection("laptops").doc(String(laptopData.id)).set(laptopData).then(function() {
           if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = '✅ Uploaded!'; setTimeout(() => subBtn.innerHTML = isEdit ? "✏️ Update Laptop" : "💾 Save Laptop", 2000); }
           showToast("✅ Laptop " + (isEdit ? "updated" : "uploaded") + " successfully!", "🎉");
+          try { localStorage.removeItem("cp_admin_form_draft"); } catch(e) {}
         }).catch(function(e) {
           console.error("Firestore save failed:", e);
           if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = '❌ Failed — Retry'; setTimeout(() => subBtn.innerHTML = isEdit ? "✏️ Update Laptop" : "💾 Save Laptop", 2000); }
