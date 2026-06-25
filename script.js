@@ -86,7 +86,7 @@ const badgeLabels = { bestseller: "⭐ Best Seller", new: "🔥 New Arrival", de
     const stored = localStorage.getItem("cp_laptops_data");
     if (stored) {
       const data = JSON.parse(stored);
-      if (Array.isArray(data) && data.length) {
+      if (Array.isArray(data)) {
         laptops.length = 0;
         data.forEach(l => laptops.push(l));
       }
