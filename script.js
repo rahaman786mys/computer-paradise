@@ -1065,9 +1065,17 @@ function loadAuth() {
   updateAuthUI();
 }
 
-// Re-check session when page becomes visible (mobile back button fix)
+// Re-check session when page becomes visible (mobile back button / bfcache fix)
 document.addEventListener("visibilitychange", function() {
   if (!document.hidden) {
+    loadAuth();
+  }
+});
+
+// Handle bfcache (back-forward cache) on mobile browsers
+window.addEventListener("pageshow", function(event) {
+  if (event.persisted) {
+    // Page was restored from bfcache — re-check auth
     loadAuth();
   }
 });
