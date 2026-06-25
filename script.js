@@ -1928,7 +1928,7 @@ function resetAdminForm() {
   document.getElementById("afPhotoCount").textContent = "";
   const subBtn = document.querySelector("#adminForm .btn-primary");
   if (subBtn) subBtn.textContent = "💾 Save Laptop";
-  try { localStorage.removeItem("cp_admin_form_draft"); } catch(e) {}
+  try { localStorage.removeItem("cp_admin_form_draft"); localStorage.removeItem("cp_admin_form_photos"); } catch(e) {}
 }
 
 function saveAdminFormDraft() {
@@ -1957,6 +1957,15 @@ function restoreAdminFormDraft() {
     if (feat && draft._featured !== undefined) feat.checked = draft._featured;
     const subBtn = document.querySelector("#adminForm .btn-primary");
     if (subBtn && draft._editingId) subBtn.textContent = "✏️ Update Laptop";
+    // Show photo count from saved photos
+    try {
+      const savedPhotos = localStorage.getItem("cp_admin_form_photos");
+      if (savedPhotos) {
+        const count = JSON.parse(savedPhotos).length;
+        const photoCountEl = document.getElementById("afPhotoCount");
+        if (photoCountEl && count) photoCountEl.textContent = count + " photo(s) saved from previous session";
+      }
+    } catch(e) {}
   } catch(e) {}
 }
 
@@ -2016,7 +2025,15 @@ function saveAdminLaptop(e) {
   // Read photos as data URLs
   const loadPhotos = () => {
     return new Promise(resolve => {
-      if (!photoFiles.length) { resolve([]); return; }
+      if (!photoFiles.length) {
+        // Try to restore photos saved from previous session (mobile reload)
+        try {
+          const saved = localStorage.getItem("cp_admin_form_photos");
+          if (saved) { resolve(JSON.parse(saved)); return; }
+        } catch(e) {}
+        resolve([]);
+        return;
+      }
       const readers = [];
       Array.from(photoFiles).forEach(f => {
         const r = new FileReader();
@@ -2030,7 +2047,11 @@ function saveAdminLaptop(e) {
           enhanceImage(raw, (compressed) => {
             enhanced[i] = compressed;
             done++;
-            if (done === rawPhotos.length) resolve(enhanced);
+            if (done === rawPhotos.length) {
+              // Save to localStorage for mobile reload recovery
+              try { localStorage.setItem("cp_admin_form_photos", JSON.stringify(enhanced)); } catch(e) {}
+              resolve(enhanced);
+            }
           });
         });
       });
@@ -2069,7 +2090,7 @@ function saveAdminLaptop(e) {
         db.collection("laptops").doc(String(laptopData.id)).set(laptopData).then(function() {
           if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = '✅ Uploaded!'; setTimeout(() => subBtn.innerHTML = isEdit ? "✏️ Update Laptop" : "💾 Save Laptop", 2000); }
           showToast("✅ Laptop " + (isEdit ? "updated" : "uploaded") + " successfully!", "🎉");
-          try { localStorage.removeItem("cp_admin_form_draft"); } catch(e) {}
+          try { localStorage.removeItem("cp_admin_form_draft"); localStorage.removeItem("cp_admin_form_photos"); } catch(e) {}
         }).catch(function(e) {
           console.error("Firestore save failed:", e);
           if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = '❌ Failed — Retry'; setTimeout(() => subBtn.innerHTML = isEdit ? "✏️ Update Laptop" : "💾 Save Laptop", 2000); }
