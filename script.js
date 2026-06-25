@@ -2845,6 +2845,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("searchInput")?.addEventListener("input", () => { filterLaptops(); showSuggestions(); });
       const fc = document.getElementById("filterCount");
       if (fc) fc.textContent = `${laptops.length} items`;
+    }
 
     // Handle ?search=BrandName from brand chip clicks
     const params = new URLSearchParams(window.location.search);
