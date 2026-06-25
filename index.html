@@ -7,21 +7,27 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Computer Paradise – Mysore's Most Trusted Laptop Store</title>
-  <link rel="stylesheet" href="styles.css?v=5">
-  <style>
-    @media (max-width: 1024px) {
-      .power-cable-svg, #lightningCanvas, .sparkle-ring, .glint, .shimmer-scan { display: none !important; }
-    }
-  </style>
-  <script>
-    if (window.innerWidth <= 1024) {
-      document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.power-cable-svg, #lightningCanvas, .sparkle-ring, .glint, .shimmer-scan, .connection-spark, .plug-tip, .power-flow').forEach(function(el) { el.style.display = 'none'; });
-      });
-    }
-  </script>
+  <link rel="stylesheet" href="styles.css?v=7">
 </head>
 <body>
+
+<!-- Splash Screen -->
+<div class="splash-screen" id="splashScreen">
+  <div class="splash-content">
+    <div class="splash-laptop">
+      <div class="splash-lid"><div class="splash-screen-inner"></div></div>
+      <div class="splash-base"></div>
+    </div>
+    <div class="splash-brand">Computer Paradise</div>
+    <div class="splash-sub">Loading your experience...</div>
+    <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+  </div>
+</div>
+
+<!-- Back to Top -->
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to Top">
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+</button>
 
 <!-- Navbar -->
 <nav class="navbar">
@@ -1077,6 +1083,6 @@ document.getElementById("mobileLoginBtn")?.addEventListener("click", function(e)
   closeMenu();
 });
 </script>
-  <script src="script.js?v=10"></script>
+  <script src="script.js?v=11"></script>
 </body>
 </html>

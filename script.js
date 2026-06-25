@@ -322,8 +322,9 @@ function renderCart() {
 
   const items = Object.entries(cart).filter(([id, qty]) => qty > 0);
   if (!items.length) {
-    container.innerHTML = `<div class="cart-empty"><div class="ce-icon">🛒</div><p>Your cart is empty</p></div>`;
+    container.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🛒</div><div class="cart-empty-title">Your cart is empty</div><div class="cart-empty-sub">Browse our laptops and add your favorites!</div><a href="buy.html" class="btn btn-primary" onclick="closeCart()">Browse Laptops</a></div>`;
     if (mrpEl) mrpEl.textContent = "₹0";
+    if (saveEl) saveEl.textContent = "-₹0";
     if (finalEl) finalEl.textContent = "₹0";
     if (footer) footer.style.display = "none";
     return;
@@ -2185,13 +2186,12 @@ document.addEventListener("DOMContentLoaded", function() {
 // ===== Back to Top =====
 let _bttTimer = null;
 function initBackTop() {
-  const btn = document.getElementById("backTop");
+  const btn = document.getElementById("backToTop");
   if (!btn) return;
   window.addEventListener("scroll", () => {
     if (_bttTimer) return;
-    _bttTimer = setTimeout(() => { btn.classList.toggle("show", window.scrollY > 400); _bttTimer = null; }, 50);
+    _bttTimer = setTimeout(() => { btn.classList.toggle("visible", window.scrollY > 400); _bttTimer = null; }, 50);
   }, { passive: true });
-  btn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 }
 
 // ===== Realistic Lightning VFX =====
@@ -2675,6 +2675,12 @@ document.addEventListener("DOMContentLoaded", () => {
   updateClock(); setInterval(updateClock, 1000);
 
   initBackTop();
+
+  // Splash screen
+  setTimeout(() => {
+    const splash = document.getElementById("splashScreen");
+    if (splash) { splash.classList.add("hidden"); setTimeout(() => splash.remove(), 700); }
+  }, 2000);
 
   // Click-to-plug socket animation — fires on EVERY click (capture phase)
   // Reveal
