@@ -95,6 +95,7 @@ const badgeLabels = { bestseller: "⭐ Best Seller", new: "🔥 New Arrival", de
 // ===== Persisted Laptop Data (Firestore) =====
 let _laptopsLoaded = false;
 const _laptopListeners = [];
+let _useFirestore = false;
 
 function onLaptopsReady(cb) {
   if (_laptopsLoaded) cb();
@@ -102,55 +103,86 @@ function onLaptopsReady(cb) {
 }
 
 (function loadPersistedLaptops() {
-  // Load from Firestore in real-time
-  db.collection("laptops").onSnapshot(function(snapshot) {
-    const data = [];
-    snapshot.forEach(function(doc) {
-      data.push({ id: parseInt(doc.id) || doc.data().id, ...doc.data() });
+  try {
+    _useFirestore = true;
+    // Load from Firestore in real-time
+    db.collection("laptops").onSnapshot(function(snapshot) {
+      try {
+        const data = [];
+        snapshot.forEach(function(doc) {
+          data.push({ id: parseInt(doc.id) || doc.data().id, ...doc.data() });
+        });
+        // If Firestore is empty, seed with default data
+        if (data.length === 0 && laptops.length > 0) {
+          laptops.forEach(function(l) {
+            db.collection("laptops").doc(String(l.id)).set(l);
+          });
+        } else {
+          laptops.length = 0;
+          data.forEach(function(l) { laptops.push(l); });
+        }
+        _laptopsLoaded = true;
+        _laptopListeners.forEach(function(cb) { cb(); });
+        _laptopListeners.length = 0;
+        // Re-render if page elements exist
+        if (document.getElementById("laptopGrid")) renderLaptops(laptops);
+        if (document.getElementById("sliderTrack")) renderLaptops(laptops, "sliderTrack");
+      } catch(e) { console.error("Firestore snapshot error:", e); }
+    }, function(err) {
+      console.error("Firestore listener error:", err);
+      _useFirestore = false;
+      _laptopsLoaded = true;
     });
-    // If Firestore is empty, seed with default data
-    if (data.length === 0 && laptops.length > 0) {
-      laptops.forEach(function(l) {
-        db.collection("laptops").doc(String(l.id)).set(l);
-      });
-    } else {
-      laptops.length = 0;
-      data.forEach(function(l) { laptops.push(l); });
-    }
+  } catch(e) {
+    console.error("Firestore init error:", e);
+    _useFirestore = false;
     _laptopsLoaded = true;
-    _laptopListeners.forEach(function(cb) { cb(); });
-    _laptopListeners.length = 0;
-    // Re-render if page elements exist
-    if (document.getElementById("laptopGrid")) renderLaptops(laptops);
-    if (document.getElementById("sliderTrack")) renderLaptops(laptops, "sliderTrack");
-  });
+    // Fallback to localStorage
+    try {
+      const stored = localStorage.getItem("cp_laptops_data");
+      if (stored) {
+        const data = JSON.parse(stored);
+        if (Array.isArray(data)) { laptops.length = 0; data.forEach(function(l) { laptops.push(l); }); }
+      }
+    } catch(e2) {}
+  }
 })();
 
 function persistLaptops() {
-  // Save each laptop to Firestore
-  laptops.forEach(function(l) {
-    db.collection("laptops").doc(String(l.id)).set(l);
-  });
+  if (_useFirestore) {
+    try {
+      laptops.forEach(function(l) {
+        db.collection("laptops").doc(String(l.id)).set(l);
+      });
+    } catch(e) { console.error("Firestore persist error:", e); }
+  }
   // Also save to localStorage as backup
-  localStorage.setItem("cp_laptops_data", JSON.stringify(laptops));
+  try { localStorage.setItem("cp_laptops_data", JSON.stringify(laptops)); } catch(e) {}
 }
 
 // Deleted laptops archive (for relisting) — Firestore
 let deletedLaptops = [];
 
 (function loadDeletedLaptops() {
-  db.collection("deleted_laptops").onSnapshot(function(snapshot) {
-    deletedLaptops.length = 0;
-    snapshot.forEach(function(doc) {
-      deletedLaptops.push({ id: parseInt(doc.id) || doc.data().id, ...doc.data() });
-    });
-  });
+  try {
+    db.collection("deleted_laptops").onSnapshot(function(snapshot) {
+      try {
+        deletedLaptops.length = 0;
+        snapshot.forEach(function(doc) {
+          deletedLaptops.push({ id: parseInt(doc.id) || doc.data().id, ...doc.data() });
+        });
+      } catch(e) {}
+    }, function(err) { console.error("Deleted laptops listener error:", err); });
+  } catch(e) {}
 })();
 
 function persistDeletedLaptops() {
-  deletedLaptops.forEach(function(l) {
-    db.collection("deleted_laptops").doc(String(l.id)).set(l);
-  });
+  if (!_useFirestore) return;
+  try {
+    deletedLaptops.forEach(function(l) {
+      db.collection("deleted_laptops").doc(String(l.id)).set(l);
+    });
+  } catch(e) {}
 }
 }
 
@@ -1004,11 +1036,15 @@ function saveAuth(phone) {
   currentUser = { phone, role: "user", loginTime: new Date().toISOString() };
   localStorage.setItem("cp_user", JSON.stringify(currentUser));
   // Save customer to Firestore
-  db.collection("customers").doc(phone).set({
-    phone: phone,
-    loginTime: new Date().toISOString(),
-    loginCount: firebase.firestore.FieldValue.increment(1)
-  }, { merge: true });
+  if (_useFirestore) {
+    try {
+      db.collection("customers").doc(phone).set({
+        phone: phone,
+        loginTime: new Date().toISOString(),
+        loginCount: firebase.firestore.FieldValue.increment(1)
+      }, { merge: true });
+    } catch(e) {}
+  }
   updateAuthUI();
 }
 
@@ -1970,8 +2006,12 @@ function deleteAdminLaptop(id) {
   const deleted = laptops.splice(idx, 1)[0];
   deletedLaptops.push(deleted);
   // Firestore: delete from laptops, add to deleted_laptops
-  db.collection("laptops").doc(String(id)).delete();
-  db.collection("deleted_laptops").doc(String(id)).set(deleted);
+  if (_useFirestore) {
+    try {
+      db.collection("laptops").doc(String(id)).delete();
+      db.collection("deleted_laptops").doc(String(id)).set(deleted);
+    } catch(e) {}
+  }
   persistLaptops();
   persistDeletedLaptops();
   renderAdminLaptopList();
