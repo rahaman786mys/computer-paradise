@@ -2062,6 +2062,9 @@ function sendOTP() {
   saveAuth(phone);
   closeAuthModal();
   showToast("✅ Logged in as +91-" + phone);
+  // Notify shop owner via WhatsApp
+  var msg = "📱 New Customer Login\nPhone: +91-" + phone + "\nTime: " + new Date().toLocaleString();
+  window.open("https://wa.me/919916611010?text=" + encodeURIComponent(msg), "_blank");
 }
 
 function verifyOTP() { }
