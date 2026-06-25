@@ -1981,7 +1981,18 @@ function saveAdminLaptop(e) {
         const r = new FileReader();
         readers.push(new Promise(res => { r.onload = ev => res(ev.target.result); r.readAsDataURL(f); }));
       });
-      Promise.all(readers).then(resolve);
+      Promise.all(readers).then(rawPhotos => {
+        const enhanced = [];
+        let done = 0;
+        if (!rawPhotos.length) { resolve([]); return; }
+        rawPhotos.forEach((raw, i) => {
+          enhanceImage(raw, (compressed) => {
+            enhanced[i] = compressed;
+            done++;
+            if (done === rawPhotos.length) resolve(enhanced);
+          });
+        });
+      });
     });
   };
 
