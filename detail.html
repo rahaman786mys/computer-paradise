@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Laptop Details – Computer Paradise</title>
-  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="styles.css?v=8">
   <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore-compat.js"></script>
 </head>
@@ -114,6 +114,7 @@ document.addEventListener("DOMContentLoaded", function() {
         <div id="detailSpecs" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px"></div>
         <div class="detail-actions" style="display:flex;gap:10px;flex-wrap:wrap">
           <a id="detailWA" href="#" target="_blank" class="btn btn-primary">💬 Inquire on WhatsApp</a>
+          <button onclick="shareLaptop(parseInt(new URLSearchParams(window.location.search).get('id')))" class="btn btn-outline">🔗 Share</button>
           <a href="buy.html" class="btn btn-outline">🔍 Browse More</a>
         </div>
         <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08);font-size:0.8rem;color:#ccc;display:flex;flex-wrap:wrap;gap:8px">

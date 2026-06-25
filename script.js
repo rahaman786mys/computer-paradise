@@ -639,6 +639,7 @@ function laptopCardHTML(l) {
       <!-- Actions -->
       <div class="laptop-card-actions">
         <span class="laptop-wish ${wishClass}" onclick="event.stopPropagation();toggleWishlist(${l.id});renderLaptops(laptops,'laptopGrid');if(document.getElementById('sliderTrack'))renderLaptops(laptops,'sliderTrack')">${wishlist.indexOf(l.id) > -1 ? '♥' : '♡'}</span>
+        <span class="laptop-share" onclick="event.stopPropagation();shareLaptop(${l.id})" title="Share" style="cursor:pointer;font-size:0.85rem;color:rgba(255,255,255,0.4);transition:color 0.2s">🔗</span>
         <label class="laptop-compare-label" onclick="event.stopPropagation()">
           <input type="checkbox" class="laptop-compare-cb" data-id="${l.id}" onchange="toggleCompare(${l.id},this.checked)">
           <span>⇄</span>
@@ -775,6 +776,15 @@ function openWindowsDesktop(id) {
       waActions.appendChild(acBtn);
     }
     acBtn.onclick = () => { addToCart(_winLaptop.id); };
+
+    let shareBtn = waActions.querySelector(".win-share-btn");
+    if (!shareBtn) {
+      shareBtn = document.createElement("button");
+      shareBtn.className = "btn btn-secondary win-share-btn";
+      shareBtn.innerHTML = "🔗 Share";
+      waActions.appendChild(shareBtn);
+    }
+    shareBtn.onclick = () => { shareLaptop(_winLaptop.id); };
   }
 
   renderWinPhotos();
@@ -1673,6 +1683,22 @@ function showQRCode(id) {
   m.addEventListener("click", e => { if (e.target === m) m.remove(); });
 }
 
+function shareLaptop(id) {
+  const l = laptops.find(x => x.id === id);
+  if (!l) return;
+  const url = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, "/") + "detail.html?id=" + id;
+  const text = `💻 ${l.brand} ${l.name}\n⚡ ${l.processor} · ${l.ram} · ${l.storage}\n💰 ₹${l.price.toLocaleString()}\n\n🔗 ${url}`;
+  if (navigator.share) {
+    navigator.share({ title: l.brand + " " + l.name + " – Computer Paradise", text: text, url: url }).catch(() => {});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => showToast("🔗 Link copied to clipboard!", "✅")).catch(() => {
+      prompt("Copy this link:", text);
+    });
+  } else {
+    prompt("Copy this link:", text);
+  }
+}
+
 function adminListItemHTML(l, extraActions, itemStyle) {
   const imgHtml = l.images.length ? `<img src="${l.images[0]}" alt="">` : "💻";
   const deviceIcons = { laptop: "💻", desktop: "🖥️", tablet: "📱", other: "📦" };
@@ -1700,6 +1726,7 @@ function adminListItemHTML(l, extraActions, itemStyle) {
         <span style="font-size:0.55rem;color:rgba(255,255,255,0.15)">${l.priority || 0}</span>
       </div>
       <div class="admin-li-actions">
+        <button class="admin-li-btn" onclick="shareLaptop(${l.id})" title="Share Link" style="background:rgba(0,120,212,0.2);color:#4fc3f7">🔗</button>
         <button class="admin-li-btn" onclick="showQRCode(${l.id})" title="Scan Code" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5)">📱</button>
         ${extraActions || `<button class="admin-li-btn edit" onclick="editAdminLaptop(${l.id})">✏️</button>
         <button class="admin-li-btn del" onclick="deleteAdminLaptop(${l.id})">🗑</button>`}
@@ -1949,7 +1976,8 @@ function saveAdminLaptop(e) {
 
   loadPhotos().then(photos => {
     let laptopData;
-    if (id && laptops.find(x => x.id === id)) {
+    const isEdit = id && laptops.find(x => x.id === id);
+    if (isEdit) {
       // Edit existing
       const l = laptops.find(x => x.id === id);
       l.brand = brand; l.name = name; l.ram = ram; l.storage = storage;
@@ -1960,7 +1988,6 @@ function saveAdminLaptop(e) {
       l.featured = featured; l.priority = priority;
       if (photos.length) l.images = photos;
       laptopData = l;
-      showToast("✅ Laptop updated");
     } else {
       // Add new
       const maxId = laptops.reduce((m, x) => Math.max(m, x.id), 0);
@@ -1972,19 +1999,26 @@ function saveAdminLaptop(e) {
         images: photos.length ? photos : []
       };
       laptops.push(laptopData);
-      showToast("✅ Laptop added");
     }
+    // Show uploading animation
+    const subBtn = document.querySelector("#adminForm .btn-primary");
+    if (subBtn) { subBtn.disabled = true; subBtn.innerHTML = '<span class="upload-spinner"></span> Uploading...'; }
+    showToast("⬆️ Uploading laptop...", "⏳");
     // Write directly to Firestore first
     if (_useFirestore) {
       db.collection("laptops").doc(String(laptopData.id)).set(laptopData).then(function() {
-        // Firestore write succeeded — onSnapshot will update the array
+        if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = '✅ Uploaded!'; setTimeout(() => subBtn.innerHTML = isEdit ? "✏️ Update Laptop" : "💾 Save Laptop", 2000); }
+        showToast("✅ Laptop " + (isEdit ? "updated" : "uploaded") + " successfully!", "🎉");
       }).catch(function(e) {
         console.error("Firestore save failed:", e);
-        // Fallback: save to localStorage
+        if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = '❌ Failed — Retry'; setTimeout(() => subBtn.innerHTML = isEdit ? "✏️ Update Laptop" : "💾 Save Laptop", 2000); }
+        showToast("❌ Upload failed. Saved locally.", "⚠️");
         try { localStorage.setItem("cp_laptops_data", JSON.stringify(laptops)); } catch(e2) {}
       });
     } else {
       try { localStorage.setItem("cp_laptops_data", JSON.stringify(laptops)); } catch(e) {}
+      if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = '✅ Saved locally'; setTimeout(() => subBtn.innerHTML = isEdit ? "✏️ Update Laptop" : "💾 Save Laptop", 2000); }
+      showToast("✅ Saved locally (offline mode)", "💾");
     }
     resetAdminForm();
     renderAdminLaptopList();
