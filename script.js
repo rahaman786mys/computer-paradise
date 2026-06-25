@@ -951,7 +951,7 @@ document.addEventListener("click", (e) => {
 
 // ===== Auth =====
 let currentUser = null, generatedOTP = "";
-const ADMIN_PASSWORD = "admin123";
+const ADMIN_PASSWORD = "Mysore@123";
 
 function loadAuth() {
   try { const d = localStorage.getItem("cp_user"); if (d) currentUser = JSON.parse(d); } catch(e) {}
