@@ -112,15 +112,8 @@ function onLaptopsReady(cb) {
         snapshot.forEach(function(doc) {
           data.push({ id: parseInt(doc.id) || doc.data().id, ...doc.data() });
         });
-        // If Firestore is empty, seed with default data
-        if (data.length === 0 && laptops.length > 0) {
-          laptops.forEach(function(l) {
-            db.collection("laptops").doc(String(l.id)).set(l);
-          });
-        } else {
-          laptops.length = 0;
-          data.forEach(function(l) { laptops.push(l); });
-        }
+        laptops.length = 0;
+        data.forEach(function(l) { laptops.push(l); });
         _laptopsLoaded = true;
         _laptopListeners.forEach(function(cb) { cb(); });
         _laptopListeners.length = 0;
