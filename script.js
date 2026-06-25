@@ -1997,58 +1997,73 @@ function saveAdminLaptop(e) {
   };
 
   loadPhotos().then(photos => {
-    let laptopData;
     const isEdit = id && laptops.find(x => x.id === id);
-    if (isEdit) {
-      // Edit existing
-      const l = laptops.find(x => x.id === id);
-      l.brand = brand; l.name = name; l.ram = ram; l.storage = storage;
-      l.processor = processor; l.mrp = mrp; l.price = price; l.purchasePrice = purchasePrice; l.units = units;
-      l.screenSize = screenSize; l.gen = gen; l.specialSpec = specialSpec;
-      l.os = os;
-      l.deviceType = deviceType; l.condition = condition; l.badge = badge;
-      l.featured = featured; l.priority = priority;
-      if (photos.length) l.images = photos;
-      laptopData = l;
-    } else {
-      // Add new
-      const maxId = laptops.reduce((m, x) => Math.max(m, x.id), 0);
-      laptopData = {
-        id: maxId + 1,
-        brand, name, ram, storage, processor, os, condition, price, badge: badge || "",
-        mrp, purchasePrice, units, screenSize, gen, specialSpec,
-        deviceType, featured, priority, adminCreated: true,
-        images: photos.length ? photos : []
-      };
-      laptops.push(laptopData);
+    function proceedWithImages(finalImages) {
+      let laptopData;
+      if (isEdit) {
+        const l = laptops.find(x => x.id === id);
+        l.brand = brand; l.name = name; l.ram = ram; l.storage = storage;
+        l.processor = processor; l.mrp = mrp; l.price = price; l.purchasePrice = purchasePrice; l.units = units;
+        l.screenSize = screenSize; l.gen = gen; l.specialSpec = specialSpec;
+        l.os = os;
+        l.deviceType = deviceType; l.condition = condition; l.badge = badge;
+        l.featured = featured; l.priority = priority;
+        l.images = finalImages;
+        laptopData = l;
+      } else {
+        const maxId = laptops.reduce((m, x) => Math.max(m, x.id), 0);
+        laptopData = {
+          id: maxId + 1,
+          brand, name, ram, storage, processor, os, condition, price, badge: badge || "",
+          mrp, purchasePrice, units, screenSize, gen, specialSpec,
+          deviceType, featured, priority, adminCreated: true,
+          images: finalImages
+        };
+        laptops.push(laptopData);
+      }
+      const subBtn = document.querySelector("#adminForm .btn-primary");
+      if (subBtn) { subBtn.disabled = true; subBtn.innerHTML = '<span class="upload-spinner"></span> Uploading...'; }
+      showToast("⬆️ Uploading laptop...", "⏳");
+      if (_useFirestore) {
+        db.collection("laptops").doc(String(laptopData.id)).set(laptopData).then(function() {
+          if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = '✅ Uploaded!'; setTimeout(() => subBtn.innerHTML = isEdit ? "✏️ Update Laptop" : "💾 Save Laptop", 2000); }
+          showToast("✅ Laptop " + (isEdit ? "updated" : "uploaded") + " successfully!", "🎉");
+        }).catch(function(e) {
+          console.error("Firestore save failed:", e);
+          if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = '❌ Failed — Retry'; setTimeout(() => subBtn.innerHTML = isEdit ? "✏️ Update Laptop" : "💾 Save Laptop", 2000); }
+          showToast("❌ Upload failed. Saved locally.", "⚠️");
+          try { localStorage.setItem("cp_laptops_data", JSON.stringify(laptops)); } catch(e2) {}
+        });
+      } else {
+        try { localStorage.setItem("cp_laptops_data", JSON.stringify(laptops)); } catch(e) {}
+        if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = '✅ Saved locally'; setTimeout(() => subBtn.innerHTML = isEdit ? "✏️ Update Laptop" : "💾 Save Laptop", 2000); }
+        showToast("✅ Saved locally (offline mode)", "💾");
+      }
+      resetAdminForm();
+      renderAdminLaptopList();
+      if (document.getElementById("adminTabMyListings")) renderAdminMyListings(); if (document.getElementById("adminTabInventory")) renderAdminInventory();
+      if (document.getElementById("laptopGrid")) renderLaptops(laptops);
+      if (document.getElementById("sliderTrack")) renderLaptops(laptops, "sliderTrack");
     }
-    // Show uploading animation
-    const subBtn = document.querySelector("#adminForm .btn-primary");
-    if (subBtn) { subBtn.disabled = true; subBtn.innerHTML = '<span class="upload-spinner"></span> Uploading...'; }
-    showToast("⬆️ Uploading laptop...", "⏳");
-    // Write directly to Firestore first
-    if (_useFirestore) {
-      db.collection("laptops").doc(String(laptopData.id)).set(laptopData).then(function() {
-        if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = '✅ Uploaded!'; setTimeout(() => subBtn.innerHTML = isEdit ? "✏️ Update Laptop" : "💾 Save Laptop", 2000); }
-        showToast("✅ Laptop " + (isEdit ? "updated" : "uploaded") + " successfully!", "🎉");
-      }).catch(function(e) {
-        console.error("Firestore save failed:", e);
-        if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = '❌ Failed — Retry'; setTimeout(() => subBtn.innerHTML = isEdit ? "✏️ Update Laptop" : "💾 Save Laptop", 2000); }
-        showToast("❌ Upload failed. Saved locally.", "⚠️");
-        try { localStorage.setItem("cp_laptops_data", JSON.stringify(laptops)); } catch(e2) {}
-      });
+
+    if (photos.length) {
+      proceedWithImages(photos);
+    } else if (isEdit) {
+      // No new photos selected — compress existing images to fit Firestore 1MB limit
+      const existing = laptops.find(x => x.id === id);
+      if (existing && existing.images && existing.images.length) {
+        let compressed = [];
+        let done = 0;
+        existing.images.forEach((raw, i) => {
+          enhanceImage(raw, (c) => { compressed[i] = c; done++; if (done === existing.images.length) proceedWithImages(compressed); });
+        });
+      } else {
+        proceedWithImages(existing ? existing.images || [] : []);
+      }
     } else {
-      try { localStorage.setItem("cp_laptops_data", JSON.stringify(laptops)); } catch(e) {}
-      if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = '✅ Saved locally'; setTimeout(() => subBtn.innerHTML = isEdit ? "✏️ Update Laptop" : "💾 Save Laptop", 2000); }
-      showToast("✅ Saved locally (offline mode)", "💾");
+      proceedWithImages([]);
     }
-    resetAdminForm();
-    renderAdminLaptopList();
-    if (document.getElementById("adminTabMyListings")) renderAdminMyListings(); if (document.getElementById("adminTabInventory")) renderAdminInventory();
-    
-    // Re-render main grid if on buy page
-    if (document.getElementById("laptopGrid")) renderLaptops(laptops);
-    if (document.getElementById("sliderTrack")) renderLaptops(laptops, "sliderTrack");
+    return false;
   });
   return false;
 }
