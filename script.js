@@ -1948,6 +1948,7 @@ function saveAdminLaptop(e) {
   };
 
   loadPhotos().then(photos => {
+    let laptopData;
     if (id && laptops.find(x => x.id === id)) {
       // Edit existing
       const l = laptops.find(x => x.id === id);
@@ -1958,20 +1959,33 @@ function saveAdminLaptop(e) {
       l.deviceType = deviceType; l.condition = condition; l.badge = badge;
       l.featured = featured; l.priority = priority;
       if (photos.length) l.images = photos;
+      laptopData = l;
       showToast("✅ Laptop updated");
     } else {
       // Add new
       const maxId = laptops.reduce((m, x) => Math.max(m, x.id), 0);
-      laptops.push({
+      laptopData = {
         id: maxId + 1,
         brand, name, ram, storage, processor, os, condition, price, badge: badge || "",
         mrp, purchasePrice, units, screenSize, gen, specialSpec,
         deviceType, featured, priority, adminCreated: true,
         images: photos.length ? photos : []
-      });
+      };
+      laptops.push(laptopData);
       showToast("✅ Laptop added");
     }
-    persistLaptops();
+    // Write directly to Firestore first
+    if (_useFirestore) {
+      db.collection("laptops").doc(String(laptopData.id)).set(laptopData).then(function() {
+        // Firestore write succeeded — onSnapshot will update the array
+      }).catch(function(e) {
+        console.error("Firestore save failed:", e);
+        // Fallback: save to localStorage
+        try { localStorage.setItem("cp_laptops_data", JSON.stringify(laptops)); } catch(e2) {}
+      });
+    } else {
+      try { localStorage.setItem("cp_laptops_data", JSON.stringify(laptops)); } catch(e) {}
+    }
     resetAdminForm();
     renderAdminLaptopList();
     if (document.getElementById("adminTabMyListings")) renderAdminMyListings(); if (document.getElementById("adminTabInventory")) renderAdminInventory();
