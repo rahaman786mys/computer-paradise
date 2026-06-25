@@ -1189,6 +1189,21 @@ function openAdminPanel() {
   document.getElementById("adminOverlay").classList.add("show");
   document.body.style.overflow = "hidden";
   switchAdminTab("list");
+  // Mobile fix: file inputs in scrollable modals need special handling
+  if (/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
+    const photosInput = document.getElementById("afPhotos");
+    if (photosInput && !photosInput._mobileFixed) {
+      photosInput._mobileFixed = true;
+      photosInput.addEventListener("touchstart", function() {
+        const modalBody = photosInput.closest(".admin-modal-body");
+        if (modalBody) { modalBody.style.overflow = "visible"; modalBody.style.webkitOverflowScrolling = "auto"; }
+      }, { passive: true });
+      photosInput.addEventListener("change", function() {
+        const modalBody = photosInput.closest(".admin-modal-body");
+        if (modalBody) { setTimeout(() => { modalBody.style.overflow = "auto"; modalBody.style.webkitOverflowScrolling = "touch"; }, 500); }
+      });
+    }
+  }
 }
 
 function closeAdminPanel() {
