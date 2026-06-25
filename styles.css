@@ -351,6 +351,53 @@
 .search-suggestions .ss-empty { padding: 24px 16px; text-align: center; font-size: 0.85rem; color: rgba(255,255,255,0.35); display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .search-suggestions .ss-empty::before { content: "🔍"; font-size: 1.4rem; opacity: 0.5; }
 
+/* ========== Admin Login Modal ========== */
+.admin-login-overlay .admin-login-modal {
+  max-width: 380px;
+  text-align: center;
+  padding: 32px 28px;
+}
+.admin-login-modal h2 {
+  margin: 0 0 6px;
+  font-size: 1.3rem;
+  color: #fff;
+}
+.admin-login-modal p {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.45);
+  margin: 0 0 16px;
+}
+.admin-login-modal .modal-icon {
+  font-size: 2.2rem;
+  margin-bottom: 12px;
+}
+.admin-login-modal .modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.4);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+.admin-login-modal .modal-close:hover {
+  color: #fff;
+}
+.admin-login-modal .btn-outline {
+  border-color: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.6);
+  padding: 10px 16px;
+}
+.admin-login-modal .btn-outline:hover {
+  border-color: rgba(212,175,55,0.35);
+  color: #d4af37;
+}
+/* Google button container */
+#googleSignInBtn div {
+  margin: 0 auto;
+}
+
 .sc-ico {
   display: inline-flex;
   align-items: center;

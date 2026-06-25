@@ -988,18 +988,104 @@ function updateAuthUI() {
 }
 
 // ===== Admin Login (secret — double-click logo) =====
+// --- Google Auth Config (fill in your values) ---
+const GOOGLE_CLIENT_ID = "";  // TODO: paste your Google Client ID
+const ADMIN_EMAILS = [""];    // TODO: add allowed admin emails, e.g. ["you@gmail.com"]
+
+let _adminLoginModal = null;
 function openAdminLogin() {
+  // If no Google Client ID configured, fall back to password
+  if (!GOOGLE_CLIENT_ID || !ADMIN_EMAILS[0]) {
+    openAdminPasswordLogin();
+    return;
+  }
+  // Show the admin login modal
+  if (!_adminLoginModal) createAdminLoginModal();
+  _adminLoginModal.classList.add("show");
+}
+
+function closeAdminLoginModal() {
+  if (_adminLoginModal) _adminLoginModal.classList.remove("show");
+}
+
+function openAdminPasswordLogin() {
   const pwd = prompt("🔐 Admin Login\n\nEnter admin password:");
   if (pwd === null) return;
   if (pwd === ADMIN_PASSWORD) {
-    currentUser = { role: "admin", phone: "Admin", loginTime: new Date().toISOString() };
-    localStorage.setItem("cp_user", JSON.stringify(currentUser));
-    updateAuthUI();
-    showToast("👑 Admin logged in");
-    openAdminPanel();
+    loginAsAdmin("Admin");
   } else {
     showToast("❌ Incorrect password");
   }
+}
+
+function loginAsAdmin(name) {
+  currentUser = { role: "admin", phone: name, loginTime: new Date().toISOString() };
+  localStorage.setItem("cp_user", JSON.stringify(currentUser));
+  updateAuthUI();
+  showToast("👑 Admin logged in");
+  closeAdminLoginModal();
+  openAdminPanel();
+}
+
+function handleGoogleCredential(response) {
+  try {
+    const payload = JSON.parse(atob(response.credential.split(".")[1]));
+    const email = payload.email;
+    if (ADMIN_EMAILS.includes(email)) {
+      loginAsAdmin(email);
+    } else {
+      showToast("❌ Not authorized: " + email);
+    }
+  } catch (e) {
+    showToast("❌ Google auth failed");
+  }
+}
+
+function createAdminLoginModal() {
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay admin-login-overlay";
+  overlay.innerHTML = `
+    <div class="modal admin-login-modal">
+      <button class="modal-close" onclick="closeAdminLoginModal()">✕</button>
+      <div class="modal-icon">🔐</div>
+      <h2>Admin Login</h2>
+      <p>Sign in with your Google account to access the admin panel</p>
+      <div id="googleSignInBtn" style="display:flex;justify-content:center;margin:20px 0;"></div>
+      <div style="text-align:center;margin:12px 0;color:rgba(255,255,255,0.2);font-size:0.75rem;">or</div>
+      <button class="btn btn-outline btn-block" onclick="closeAdminLoginModal();openAdminPasswordLogin();" style="font-size:0.8rem;">🔑 Use Password Instead</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) closeAdminLoginModal(); });
+  _adminLoginModal = overlay;
+
+  // Load Google Identity Services
+  if (typeof google !== "undefined" && google.accounts) {
+    renderGoogleBtn();
+  } else {
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.onload = renderGoogleBtn;
+    document.head.appendChild(script);
+  }
+}
+
+function renderGoogleBtn() {
+  if (typeof google === "undefined" || !google.accounts || !GOOGLE_CLIENT_ID) return;
+  const container = document.getElementById("googleSignInBtn");
+  if (!container) return;
+  container.innerHTML = "";
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleGoogleCredential,
+    auto_select: false
+  });
+  google.accounts.id.renderButton(container, {
+    theme: "outline",
+    size: "large",
+    width: 280,
+    text: "signin_with"
+  });
 }
 
 // ===== Admin Panel =====
@@ -2643,13 +2729,17 @@ document.addEventListener("DOMContentLoaded", () => {
   let _logoClickTimer = null;
   if (navLogo) {
     navLogo.addEventListener("click", (e) => {
-      if (_logoClickTimer) { clearTimeout(_logoClickTimer); _logoClickTimer = null; return; }
-      _logoClickTimer = setTimeout(() => { _logoClickTimer = null; }, 350);
-    });
-    navLogo.addEventListener("dblclick", (e) => {
       e.preventDefault();
-      if (_logoClickTimer) { clearTimeout(_logoClickTimer); _logoClickTimer = null; }
-      openAdminLogin();
+      if (_logoClickTimer) {
+        clearTimeout(_logoClickTimer);
+        _logoClickTimer = null;
+        openAdminLogin();
+        return;
+      }
+      _logoClickTimer = setTimeout(() => {
+        _logoClickTimer = null;
+        window.location.href = navLogo.getAttribute("href");
+      }, 300);
     });
   }
 

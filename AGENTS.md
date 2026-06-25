@@ -3,7 +3,9 @@ Stack: Vanilla HTML/CSS/JS
 Pages: index.html, about.html, buy.html, sell.html, contact.html
 Shared files: script.js, styles.css
 Data: localStorage (cp_laptops_data, cp_cart, cp_user, cp_laptop_images, cp_deleted_laptops, cp_orders, cp_coupons, cp_wishlist, cp_repairs)
-Admin: double-click logo, password Mysore@123
+Admin: double-click logo, Google auth (primary) or password Mysore@123 (fallback)
+- Google Client ID & admin emails configured in script.js (GOOGLE_CLIENT_ID, ADMIN_EMAILS)
+- If no Google Client ID set, falls back to password prompt
 
 ## Admin Panel
 - Tabs: All, My Listings, Add New, Deleted, Inventory, Sales, Customers, Repairs
