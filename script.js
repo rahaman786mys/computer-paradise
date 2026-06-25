@@ -879,17 +879,24 @@ function setupUpload() {
   });
 }
 
-// Auto image enhancement — removes blur, fixes lighting, sharpens
+// Auto image enhancement — resizes, removes blur, fixes lighting, sharpens
 function enhanceImage(dataUrl, callback) {
   const img = new Image();
   img.onload = function() {
+    // Resize to max 800px to keep under Firestore 1MB limit
+    let w = img.width, h = img.height;
+    const maxDim = 800;
+    if (w > maxDim || h > maxDim) {
+      if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+      else { w = Math.round(w * maxDim / h); h = maxDim; }
+    }
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
-    canvas.width = img.width;
-    canvas.height = img.height;
+    canvas.width = w;
+    canvas.height = h;
 
-    // Draw original
-    ctx.drawImage(img, 0, 0);
+    // Draw original (resized)
+    ctx.drawImage(img, 0, 0, w, h);
 
     // Get pixel data
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -964,7 +971,7 @@ function enhanceImage(dataUrl, callback) {
       ctx.putImageData(sharpData, 0, 0);
     }
 
-    callback(canvas.toDataURL("image/jpeg", 0.92));
+    callback(canvas.toDataURL("image/jpeg", 0.5));
   };
   img.src = dataUrl;
 }
