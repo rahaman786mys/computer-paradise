@@ -184,7 +184,6 @@ function persistDeletedLaptops() {
     });
   } catch(e) {}
 }
-}
 
 // ===== Orders System =====
 let orders = [];
