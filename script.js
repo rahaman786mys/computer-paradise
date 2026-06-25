@@ -2638,11 +2638,20 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === e.currentTarget) closeAdminPanel();
   });
 
-  // Secret admin login: double-click logo
-  document.querySelector(".nav-logo")?.addEventListener("dblclick", (e) => {
-    e.preventDefault();
-    openAdminLogin();
-  });
+  // Secret admin login: double-click logo (with click delay to allow dblclick)
+  const navLogo = document.querySelector(".nav-logo");
+  let _logoClickTimer = null;
+  if (navLogo) {
+    navLogo.addEventListener("click", (e) => {
+      if (_logoClickTimer) { clearTimeout(_logoClickTimer); _logoClickTimer = null; return; }
+      _logoClickTimer = setTimeout(() => { _logoClickTimer = null; }, 350);
+    });
+    navLogo.addEventListener("dblclick", (e) => {
+      e.preventDefault();
+      if (_logoClickTimer) { clearTimeout(_logoClickTimer); _logoClickTimer = null; }
+      openAdminLogin();
+    });
+  }
 
   // Auth buttons
   const b = (id, fn) => document.getElementById(id)?.addEventListener("click", fn);
