@@ -1060,12 +1060,50 @@ const ADMIN_PASSWORD = "Mysore@123";
       }
     }
   } catch(e) { console.error("Auth check failed:", e); }
+  // Force UI update immediately
+  if (typeof updateAuthUI === 'function') updateAuthUI();
 })();
 
 function loadAuth() {
-  // Already checked above, just update UI
+  // Re-check and update UI
+  try {
+    const d = localStorage.getItem("cp_user");
+    if (d) {
+      const user = JSON.parse(d);
+      if (user.role === "admin") {
+        const loginTime = new Date(user.loginTime).getTime();
+        const lastActivity = user.lastActivity || loginTime;
+        const now = Date.now();
+        const fiveMinutes = 5 * 60 * 1000;
+        if ((now - loginTime > fiveMinutes) && (now - lastActivity > fiveMinutes)) {
+          currentUser = null;
+          localStorage.removeItem("cp_user");
+        } else {
+          currentUser = user;
+          currentUser.lastActivity = now;
+          localStorage.setItem("cp_user", JSON.stringify(currentUser));
+        }
+      } else {
+        currentUser = user;
+      }
+    }
+  } catch(e) { currentUser = null; }
   updateAuthUI();
 }
+
+// Keep admin session alive: refresh timestamp every 2 minutes
+setInterval(function() {
+  try {
+    const d = localStorage.getItem("cp_user");
+    if (d) {
+      const user = JSON.parse(d);
+      if (user.role === "admin") {
+        user.lastActivity = Date.now();
+        localStorage.setItem("cp_user", JSON.stringify(user));
+      }
+    }
+  } catch(e) {}
+}, 120000); // 2 minutes
 
 // Re-check session when page becomes visible (mobile back button / bfcache fix)
 document.addEventListener("visibilitychange", function() {
