@@ -1040,12 +1040,33 @@ let currentUser = null;
 const ADMIN_PASSWORD = "Mysore@123";
 
 function loadAuth() {
-  try { const d = localStorage.getItem("cp_user"); if (d) currentUser = JSON.parse(d); } catch(e) {}
+  try {
+    const d = localStorage.getItem("cp_user");
+    if (d) {
+      currentUser = JSON.parse(d);
+      // Check admin session expiry (5 min persistence)
+      if (currentUser.role === "admin") {
+        const loginTime = new Date(currentUser.loginTime).getTime();
+        const now = Date.now();
+        const fiveMinutes = 5 * 60 * 1000;
+        if (now - loginTime > fiveMinutes) {
+          // Session expired
+          currentUser = null;
+          localStorage.removeItem("cp_user");
+        } else {
+          // Refresh lastActivity on page load
+          currentUser.lastActivity = now;
+          localStorage.setItem("cp_user", JSON.stringify(currentUser));
+        }
+      }
+    }
+  } catch(e) {}
   updateAuthUI();
 }
 
 function saveAuth(phone) {
-  currentUser = { phone, role: "user", loginTime: new Date().toISOString() };
+  const now = Date.now();
+  currentUser = { phone, role: "user", loginTime: new Date().toISOString(), lastActivity: now };
   localStorage.setItem("cp_user", JSON.stringify(currentUser));
   // Save customer to Firestore
   if (_useFirestore) {
@@ -1061,6 +1082,14 @@ function saveAuth(phone) {
 }
 
 function logoutUser() { currentUser = null; localStorage.removeItem("cp_user"); updateAuthUI(); showToast("👋 Logged out"); }
+
+function adminLogout() {
+  currentUser = null;
+  localStorage.removeItem("cp_user");
+  updateAuthUI();
+  closeAdminPanel();
+  showToast("👋 Admin logged out");
+}
 
 function updateAuthUI() {
   const btn = document.getElementById("loginBtn"), ind = document.getElementById("userIndicator"), ph = document.getElementById("userPhone"), av = document.getElementById("userAvatar");
@@ -1115,7 +1144,8 @@ function openAdminPasswordLogin() {
 }
 
 function loginAsAdmin(name) {
-  currentUser = { role: "admin", phone: name, loginTime: new Date().toISOString() };
+  const now = Date.now();
+  currentUser = { role: "admin", phone: name, loginTime: new Date().toISOString(), lastActivity: now };
   localStorage.setItem("cp_user", JSON.stringify(currentUser));
   updateAuthUI();
   showToast("👑 Admin logged in");
@@ -3562,4 +3592,35 @@ function detailLightboxNav(dir) {
       window.location.href = "detail.html?id=" + id;
     }
   }
+})();
+
+// ===== Admin Session Inactivity Timeout (15 min) =====
+(function() {
+  const INACTIVITY_TIMEOUT = 15 * 60 * 1000; // 15 minutes
+  let inactivityTimer = null;
+
+  function resetInactivityTimer() {
+    if (!currentUser || currentUser.role !== "admin") return;
+    // Update lastActivity
+    currentUser.lastActivity = Date.now();
+    try { localStorage.setItem("cp_user", JSON.stringify(currentUser)); } catch(e) {}
+    // Reset timer
+    if (inactivityTimer) clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(function() {
+      // Auto-logout after 15 min inactivity
+      currentUser = null;
+      localStorage.removeItem("cp_user");
+      updateAuthUI();
+      showToast("⏰ Session expired due to inactivity");
+    }, INACTIVITY_TIMEOUT);
+  }
+
+  // Listen for user activity
+  document.addEventListener("click", resetInactivityTimer);
+  document.addEventListener("touchstart", resetInactivityTimer);
+  document.addEventListener("keydown", resetInactivityTimer);
+  document.addEventListener("scroll", resetInactivityTimer);
+
+  // Initial timer setup after page load
+  setTimeout(resetInactivityTimer, 1000);
 })();
