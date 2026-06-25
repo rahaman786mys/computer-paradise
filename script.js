@@ -1150,7 +1150,15 @@ function adminLogout() {
 function updateAuthUI() {
   const btn = document.getElementById("loginBtn"), ind = document.getElementById("userIndicator"), ph = document.getElementById("userPhone"), av = document.getElementById("userAvatar");
   const adminBtn = document.getElementById("adminPanelBtn");
+  
+  // Retry if DOM not ready yet (mobile bfcache issue)
+  if ((!btn || !ind) && currentUser && currentUser.role === "admin") {
+    setTimeout(updateAuthUI, 100);
+    return;
+  }
+  
   if (!btn || !ind) return;
+  
   if (currentUser) {
     btn.style.display = "none"; ind.classList.add("show");
     if (ph) {
@@ -1167,6 +1175,16 @@ function updateAuthUI() {
     if (adminBtn) adminBtn.style.display = "none";
   }
 }
+
+// Retry updateAuthUI multiple times on page load (mobile bfcache fix)
+(function retryAuthUI() {
+  if (currentUser && currentUser.role === "admin") {
+    updateAuthUI();
+    setTimeout(retryAuthUI, 200);
+    setTimeout(retryAuthUI, 500);
+    setTimeout(retryAuthUI, 1000);
+  }
+})();
 
 // ===== Admin Login (secret — double-click logo) =====
 // --- Google Auth Config (fill in your values) ---
