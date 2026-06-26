@@ -1139,14 +1139,6 @@ function saveAuth(phone) {
 
 function logoutUser() { currentUser = null; localStorage.removeItem("cp_user"); updateAuthUI(); showToast("👋 Logged out"); }
 
-function adminLogout() {
-  currentUser = null;
-  localStorage.removeItem("cp_user");
-  updateAuthUI();
-  closeAdminPanel();
-  showToast("👋 Admin logged out");
-}
-
 function updateAuthUI() {
   const btn = document.getElementById("loginBtn"), ind = document.getElementById("userIndicator"), ph = document.getElementById("userPhone"), av = document.getElementById("userAvatar");
   const adminBtn = document.getElementById("adminPanelBtn");
@@ -1222,10 +1214,9 @@ function loginAsAdmin(name) {
   currentUser = { role: "admin", phone: name, loginTime: new Date().toISOString(), lastActivity: now };
   localStorage.setItem("cp_user", JSON.stringify(currentUser));
   updateAuthUI();
-  showToast("👑 Admin logged in - Opening admin panel...");
+  showToast("👑 Admin logged in");
   closeAdminLoginModal();
-  // Open admin panel in NEW window/tab
-  window.open("admin.html", "_blank", "width=1200,height=900");
+  openAdminPanel();
 }
 
 function handleGoogleCredential(response) {
