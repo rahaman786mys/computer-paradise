@@ -849,7 +849,7 @@
           <div class="af-row">
             <div class="af-group">
               <label>Photos (will replace all current photos)</label>
-                <input type="file" id="afPhotos" accept="image/*" multiple>
+                <input type="file" id="afPhotos" accept="image/*" multiple onchange="handlePhotoSelect(this)">
                 <small id="afPhotoCount"></small><small style="color:rgba(255,255,255,0.3)"> (max 10 photos)</small>
                 <div id="afPhotoPreview" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"></div>
             </div>
@@ -1012,7 +1012,7 @@ document.getElementById("mobileLoginBtn")?.addEventListener("click", function(e)
   closeMenu();
 });
 </script>
-  <script src="script.js?v=53"></script>
+  <script src="script.js?v=54"></script>
   <script>if(typeof initBannerUpload==='function') initBannerUpload(); if(typeof loadBannerPhoto==='function') loadBannerPhoto();</script>
 </body>
 </html>
