@@ -1222,9 +1222,10 @@ function loginAsAdmin(name) {
   currentUser = { role: "admin", phone: name, loginTime: new Date().toISOString(), lastActivity: now };
   localStorage.setItem("cp_user", JSON.stringify(currentUser));
   updateAuthUI();
-  showToast("👑 Admin logged in");
+  showToast("👑 Admin logged in - Opening admin panel...");
   closeAdminLoginModal();
-  openAdminPanel();
+  // Open admin panel in NEW window/tab
+  window.open("admin.html", "_blank", "width=1200,height=900");
 }
 
 function handleGoogleCredential(response) {

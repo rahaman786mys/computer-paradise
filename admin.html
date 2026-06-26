@@ -6,35 +6,28 @@
   <title>Admin Panel - Computer Paradise</title>
   <link rel="stylesheet" href="styles.css?v=8">
   <style>
-    body { margin: 0; padding: 0; background: #0a0a0a; }
-    .admin-container { max-width: 1400px; margin: 0 auto; padding: 20px; }
-    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; background: #1a1a1a; border-radius: 12px; }
-    .admin-header h1 { margin: 0; color: #d4af37; font-size: 1.5rem; }
-    .logout-btn { padding: 8px 16px; background: rgba(255,100,100,0.15); border: 1px solid rgba(255,100,100,0.3); border-radius: 6px; color: #ff6464; cursor: pointer; font-size: 0.9rem; }
-    .admin-content { background: #1a1a1a; border-radius: 12px; padding: 20px; min-height: 500px; }
-    .unauthorized { text-align: center; padding: 50px; color: #666; }
-    .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-    .admin-tab { padding: 10px 16px; background: #2a2a2a; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; cursor: pointer; font-size: 0.9rem; }
-    .admin-tab.active { background: #d4af37; border-color: #d4af37; color: #000; }
+    body { margin: 0; padding: 0; background: #0a0a0a; overflow-y: auto; }
+    .admin-wrapper { max-width: 1400px; margin: 0 auto; padding: 20px; }
+    .admin-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px 20px; background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%); border-radius: 12px; border: 1px solid rgba(212,175,55,0.2); }
+    .admin-top-bar h1 { margin: 0; color: #d4af37; font-size: 1.4rem; font-weight: 700; }
+    .admin-actions { display: flex; gap: 10px; }
+    .btn-logout { padding: 8px 16px; background: rgba(255,80,80,0.15); border: 1px solid rgba(255,80,80,0.4); border-radius: 6px; color: #ff5050; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; }
+    .btn-logout:hover { background: rgba(255,80,80,0.25); transform: translateY(-1px); }
+    .admin-main { background: #1a1a1a; border-radius: 12px; padding: 20px; min-height: 60vh; border: 1px solid rgba(255,255,255,0.05); }
+    .unauthorized { text-align: center; padding: 80px 20px; color: #666; }
+    .unauthorized h2 { color: #d4af37; margin-bottom: 10px; }
   </style>
 </head>
 <body>
-  <div class="admin-container">
-    <div class="admin-header">
-      <h1>🛠 Admin Panel - Computer Paradise</h1>
-      <button class="logout-btn" onclick="adminLogout()">🚪 Logout</button>
-    </div>
-    <div class="admin-content">
-      <div class="admin-tabs" id="adminTabs">
-        <button class="admin-tab active" onclick="switchAdminTab('list')">📋 All Laptops</button>
-        <button class="admin-tab" onclick="switchAdminTab('mylistings')">📋 My Listings</button>
-        <button class="admin-tab" onclick="switchAdminTab('add')">➕ Add New</button>
-        <button class="admin-tab" onclick="switchAdminTab('deleted')">🗑 Deleted</button>
-        <button class="admin-tab" onclick="switchAdminTab('inventory')">📊 Inventory</button>
-        <button class="admin-tab" onclick="switchAdminTab('sales')">💰 Sales</button>
-        <button class="admin-tab" onclick="switchAdminTab('customers')">👥 Customers</button>
+  <div class="admin-wrapper">
+    <div class="admin-top-bar">
+      <h1>🛠 Admin Panel</h1>
+      <div class="admin-actions">
+        <button class="btn-logout" onclick="adminLogout()">🚪 Logout</button>
       </div>
-      <div id="adminPanelBody">Loading...</div>
+    </div>
+    <div class="admin-main" id="adminMain">
+      <div style="text-align:center;padding:40px;color:#444">Loading admin panel...</div>
     </div>
   </div>
 
@@ -43,7 +36,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
   
   <script>
-    // Firebase config
+    // Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyBxkwgJJUPZFFfNKistgjIFGIgeEMWAuQY",
       authDomain: "computer-paradise-5235b.firebaseapp.com",
@@ -52,40 +45,33 @@
       messagingSenderId: "226124743417",
       appId: "1:226124743417:web:80e07aa4a98e66df9b5828"
     };
-    
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    
-    // Auth check
-    const ADMIN_PASSWORD = "Mysore@123";
+
+    // Admin session
     let currentUser = null;
-    let laptops = [];
-    let _useFirestore = true;
+    const ADMIN_PASSWORD = "Mysore@123";
     
-    function checkAdminAuth() {
+    function checkAuth() {
       try {
         const d = localStorage.getItem("cp_user");
-        if (d) {
-          currentUser = JSON.parse(d);
-          if (currentUser.role === "admin") {
-            const loginTime = new Date(currentUser.loginTime).getTime();
-            const lastActivity = currentUser.lastActivity || loginTime;
-            const now = Date.now();
-            const fiveMinutes = 5 * 60 * 1000;
-            if ((now - loginTime > fiveMinutes) && (now - lastActivity > fiveMinutes)) {
-              localStorage.removeItem("cp_user");
-              window.location.href = "index.html";
-              return false;
-            }
-            currentUser.lastActivity = now;
-            localStorage.setItem("cp_user", JSON.stringify(currentUser));
-            return true;
-          }
+        if (!d) throw new Error("No user");
+        currentUser = JSON.parse(d);
+        if (currentUser.role !== "admin") throw new Error("Not admin");
+        
+        const loginTime = new Date(currentUser.loginTime).getTime();
+        const lastActivity = currentUser.lastActivity || loginTime;
+        const now = Date.now();
+        const fiveMinutes = 5 * 60 * 1000;
+        
+        if ((now - loginTime > fiveMinutes) && (now - lastActivity > fiveMinutes)) {
+          localStorage.removeItem("cp_user");
+          throw new Error("Session expired");
         }
-        window.location.href = "index.html";
-        return false;
+        
+        currentUser.lastActivity = now;
+        localStorage.setItem("cp_user", JSON.stringify(currentUser));
+        return true;
       } catch(e) {
         window.location.href = "index.html";
         return false;
@@ -94,205 +80,330 @@
     
     function adminLogout() {
       localStorage.removeItem("cp_user");
+      window.close();
       window.location.href = "index.html";
     }
     
     // Keep session alive
-    setInterval(function() {
+    setInterval(() => {
       try {
         const d = localStorage.getItem("cp_user");
         if (d) {
-          const user = JSON.parse(d);
-          if (user.role === "admin") {
-            user.lastActivity = Date.now();
-            localStorage.setItem("cp_user", JSON.stringify(user));
+          const u = JSON.parse(d);
+          if (u.role === "admin") {
+            u.lastActivity = Date.now();
+            localStorage.setItem("cp_user", JSON.stringify(u));
           }
         }
       } catch(e) {}
     }, 120000);
     
-    // Toast notification
     function showToast(msg, icon="ℹ️") {
       const t = document.createElement("div");
-      t.style.cssText = "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.9);color:#fff;padding:12px 24px;border-radius:8px;z-index:99999;font-size:0.9rem;box-shadow:0 4px 20px rgba(0,0,0,0.3)";
+      t.style.cssText = "position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.95);color:#fff;padding:14px 28px;border-radius:10px;z-index:99999;font-size:0.95rem;box-shadow:0 8px 30px rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1)";
       t.innerHTML = `${icon} ${msg}`;
       document.body.appendChild(t);
-      setTimeout(() => { t.style.opacity="0"; setTimeout(()=>t.remove(),300); }, 3000);
+      setTimeout(() => { t.style.transition="opacity 0.3s"; t.style.opacity="0"; setTimeout(()=>t.remove(),300); }, 3000);
     }
-    
-    // Switch admin tab
+
+    // Admin functions (copied from script.js)
+    let laptops = [];
+    let _useFirestore = true;
+    let _adminSelected = new Set();
+
     function switchAdminTab(tab) {
-      document.querySelectorAll(".admin-tab").forEach(t => t.classList.remove("active"));
-      const tabMap = { "list": 0, "mylistings": 1, "add": 2, "deleted": 3, "inventory": 4, "sales": 5, "customers": 6 };
+      document.querySelectorAll(".admin-tab")?.forEach(t => t.classList.remove("active"));
       const tabs = document.querySelectorAll(".admin-tab");
-      if (tabs[tabMap[tab]]) tabs[tabMap[tab]].classList.add("active");
+      const tabIdx = { list:0, mylistings:1, add:2, deleted:3, inventory:4, sales:5, customers:6 }[tab];
+      if (tabs[tabIdx]) tabs[tabIdx].classList.add("active");
       
-      const body = document.getElementById("adminPanelBody");
+      const main = document.getElementById("adminMain");
       if (tab === "list") renderAdminLaptopList();
+      else if (tab === "mylistings") { showToast("My Listings coming soon"); renderAdminLaptopList(); }
       else if (tab === "add") showAdminAddForm();
-      else if (tab === "deleted") renderAdminDeletedList();
-      else body.innerHTML = "<p>Coming soon...</p>";
+      else if (tab === "deleted") renderAdminDeleted();
+      else if (tab === "inventory") { showToast("Inventory coming soon"); main.innerHTML = "<p>Inventory dashboard</p>"; }
+      else if (tab === "sales") { showToast("Sales coming soon"); main.innerHTML = "<p>Sales dashboard</p>"; }
+      else if (tab === "customers") { showToast("Customers coming soon"); main.innerHTML = "<p>Customer list</p>"; }
     }
-    
-    // Render laptop list
+
     function renderAdminLaptopList() {
-      const body = document.getElementById("adminPanelBody");
-      body.innerHTML = "<p>Loading laptops...</p>";
+      const main = document.getElementById("adminMain");
+      main.innerHTML = "<div style='text-align:center;padding:40px;color:#555'>Loading laptops...</div>";
       
-      db.collection("laptops").onSnapshot(function(snapshot) {
+      _adminSelected.clear();
+      
+      db.collection("laptops").orderBy("priority", "desc").onSnapshot(snap => {
         laptops = [];
-        snapshot.forEach(doc => {
-          laptops.push(doc.data());
-        });
+        snap.forEach(doc => laptops.push({ id: parseInt(doc.id) || doc.data().id, ...doc.data() }));
         
         if (laptops.length === 0) {
-          body.innerHTML = "<p style='text-align:center;color:#666;padding:50px;'>📭 No laptops found. Add one!</p>";
+          main.innerHTML = "<div style='text-align:center;padding:60px;color:#555'>📭 No laptops. Add one!</div>";
           return;
         }
         
-        let html = "<div style='display:grid;gap:15px;'>";
+        let html = `<div style='display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap'>
+          <button onclick='deleteSelectedLaptops()' style='padding:8px 14px;background:rgba(244,67,54,0.2);border:1px solid rgba(244,67,54,0.4);border-radius:6px;color:#ff5252;cursor:pointer'>🗑 Delete Selected</button>
+          <button onclick='featureSelectedLaptops()' style='padding:8px 14px;background:rgba(255,215,0,0.2);border:1px solid rgba(255,215,0,0.4);border-radius:6px;color:#ffd700;cursor:pointer'>⭐ Feature Selected</button>
+        </div><div style='display:grid;gap:12px'>`;
+        
         laptops.forEach(l => {
-          html += `
-            <div style="background:#2a2a2a;border-radius:12px;padding:15px;display:flex;justify-content:space-between;align-items:center">
-              <div>
-                <div style="font-weight:700;color:#d4af37">${l.name}</div>
-                <div style="color:#888;font-size:0.85rem">${l.brand} • ${l.ram} • ${l.storage}</div>
-                <div style="color:#4caf50;font-weight:600">₹${l.price.toLocaleString()}</div>
-              </div>
-              <div style="display:flex;gap:8px">
-                <button onclick="editAdminLaptop(${l.id})" style="padding:8px 12px;background:#2196f3;border:none;border-radius:6px;color:#fff;cursor:pointer">✏️</button>
-                <button onclick="deleteAdminLaptop(${l.id})" style="padding:8px 12px;background:#f44336;border:none;border-radius:6px;color:#fff;cursor:pointer">🗑</button>
+          const checked = _adminSelected.has(l.id) ? "checked" : "";
+          html += `<div style='background:linear-gradient(135deg,#252525 0%,#1e1e1e 100%);border-radius:10px;padding:16px;display:grid;grid-template-columns:40px 1fr auto;gap:12px;align-items:center;border:1px solid rgba(255,255,255,0.06)'>
+            <input type='checkbox' value='${l.id}' ${checked} onchange='toggleAdminSelect(this)' style='width:20px;height:20px;cursor:pointer'>
+            <div>
+              <div style='font-weight:700;color:#d4af37;font-size:1.05rem'>${l.name}</div>
+              <div style='color:#777;font-size:0.85rem;margin:4px 0'>${l.brand} • ${l.ram} • ${l.storage} • ${l.processor || "N/A"}</div>
+              <div style='display:flex;gap:15px;margin-top:8px;font-size:0.85rem'>
+                <span style='color:#888'>MRP: ₹${(l.mrp||0).toLocaleString()}</span>
+                <span style='color:#4caf50;font-weight:600'>₹${(l.price||0).toLocaleString()}</span>
+                ${l.featured ? "<span style='color:#ffd700'>⭐ Featured</span>" : ""}
               </div>
             </div>
-          `;
+            <div style='display:flex;gap:6px'>
+              <button onclick='editAdminLaptop(${l.id})' title='Edit' style='width:36px;height:36px;border:none;border-radius:6px;background:rgba(33,150,243,0.2);color:#2196f3;cursor:pointer;font-size:1rem'>✏️</button>
+              <button onclick='deleteAdminLaptop(${l.id})' title='Delete' style='width:36px;height:36px;border:none;border-radius:6px;background:rgba(244,67,54,0.2);color:#f44336;cursor:pointer;font-size:1rem'>🗑</button>
+            </div>
+          </div>`;
         });
         html += "</div>";
-        body.innerHTML = html;
+        main.innerHTML = html;
       });
     }
-    
-    // Show add form
-    function showAdminAddForm() {
-      const body = document.getElementById("adminPanelBody");
-      body.innerHTML = `
-        <form id="adminForm" onsubmit="return saveAdminLaptop(event)" style="max-width:600px;margin:0 auto">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px">
-            <input type="text" id="afBrand" placeholder="Brand" required style="width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff">
-            <input type="text" id="afName" placeholder="Model Name" required style="width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff">
-            <input type="text" id="afRam" placeholder="RAM" required style="width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff">
-            <input type="text" id="afStorage" placeholder="Storage" required style="width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff">
-            <input type="number" id="afMrp" placeholder="MRP (₹)" required style="width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff">
-            <input type="number" id="afPrice" placeholder="Selling Price (₹)" required style="width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff">
-          </div>
-          <input type="file" id="afPhotos" accept="image/*" multiple multiple style="width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;margin-bottom:15px">
-          <button type="submit" style="width:100%;padding:14px;background:#d4af37;border:none;border-radius:8px;color:#000;font-weight:700;cursor:pointer">💾 Save Laptop</button>
-        </form>
-      `;
+
+    function toggleAdminSelect(cb) {
+      const id = parseInt(cb.value);
+      if (cb.checked) _adminSelected.add(id);
+      else _adminSelected.delete(id);
     }
-    
-    // Edit laptop
+
+    function deleteSelectedLaptops() {
+      if (_adminSelected.size === 0) { showToast("No laptops selected"); return; }
+      if (!confirm(`Delete ${_adminSelected.size} laptop(s)?`)) return;
+      _adminSelected.forEach(id => deleteAdminLaptop(id, true));
+      _adminSelected.clear();
+    }
+
+    function featureSelectedLaptops() {
+      if (_adminSelected.size === 0) { showToast("No laptops selected"); return; }
+      _adminSelected.forEach(id => {
+        const l = laptops.find(x => x.id === id);
+        if (l) {
+          l.featured = true;
+          db.collection("laptops").doc(String(id)).set(l, { merge: true });
+        }
+      });
+      showToast("✅ Featured updated");
+    }
+
+    function deleteAdminLaptop(id, silent=false) {
+      if (!silent && !confirm("Delete this laptop?")) return;
+      db.collection("laptops").doc(String(id)).get().then(doc => {
+        if (doc.exists) {
+          const data = doc.data();
+          db.collection("deleted_laptops").doc(String(id)).set({ ...data, deletedAt: new Date().toISOString() });
+          db.collection("laptops").doc(String(id)).delete();
+          if (!silent) showToast("✅ Deleted");
+        }
+      });
+    }
+
     function editAdminLaptop(id) {
       const l = laptops.find(x => x.id === id);
       if (!l) return;
-      document.getElementById("afBrand").value = l.brand;
-      document.getElementById("afName").value = l.name;
-      document.getElementById("afRam").value = l.ram;
-      document.getElementById("afStorage").value = l.storage;
+      document.getElementById("afId").value = l.id;
+      document.getElementById("afBrand").value = l.brand || "";
+      document.getElementById("afName").value = l.name || "";
+      document.getElementById("afScreen").value = l.screenSize || "";
+      document.getElementById("afGen").value = l.gen || "";
+      document.getElementById("afRam").value = l.ram || "";
+      document.getElementById("afStorage").value = l.storage || "";
+      document.getElementById("afProcessor").value = l.processor || "";
       document.getElementById("afMrp").value = l.mrp || "";
-      document.getElementById("afPrice").value = l.price;
-      showAdminAddForm();
+      document.getElementById("afPrice").value = l.price || "";
+      document.getElementById("afPurchasePrice").value = l.purchasePrice || "";
+      document.getElementById("afUnits").value = l.units || 1;
+      document.getElementById("afOs").value = l.os || "windows";
+      document.getElementById("afDeviceType").value = l.deviceType || "laptop";
+      document.getElementById("afCondition").value = l.condition || "A";
+      document.getElementById("afBadge").value = l.badge || "";
+      document.getElementById("afSpecialSpec").value = l.specialSpec || "";
+      document.getElementById("afFeatured").checked = l.featured || false;
+      document.getElementById("afPriority").value = l.priority || 0;
+      document.getElementById("afPhotoCount").textContent = `${l.images?.length || 0} current photo(s)`;
+      const btn = document.querySelector("#adminForm .btn-primary");
+      if (btn) btn.textContent = "✏️ Update Laptop";
+      switchAdminTab("add");
+      document.getElementById("adminForm")?.scrollIntoView({ behavior: "smooth" });
     }
-    
-    // Delete laptop
-    function deleteAdminLaptop(id) {
-      if (!confirm("Delete this laptop?")) return;
-      db.collection("laptops").doc(String(id)).delete().then(() => {
-        showToast("✅ Laptop deleted");
-      }).catch(e => {
-        console.error(e);
-        showToast("❌ Delete failed");
-      });
+
+    function showAdminAddForm() {
+      const main = document.getElementById("adminMain");
+      main.innerHTML = `
+        <form id="adminForm" onsubmit="return saveAdminLaptop(event)" style='max-width:700px;margin:0 auto'>
+          <div style='display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px'>
+            <div><label style='display:block;margin-bottom:6px;color:#aaa;font-size:0.85rem'>Brand *</label><input type="text" id="afBrand" required style='width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.95rem'></div>
+            <div><label style='display:block;margin-bottom:6px;color:#aaa;font-size:0.85rem'>Model Name *</label><input type="text" id="afName" required style='width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.95rem'></div>
+            <div><label style='display:block;margin-bottom:6px;color:#aaa;font-size:0.85rem'>Screen Size</label><input type="text" id="afScreen" placeholder="e.g. 15.6 inch" style='width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.95rem'></div>
+            <div><label style='display:block;margin-bottom:6px;color:#aaa;font-size:0.85rem'>Generation</label><input type="text" id="afGen" placeholder="e.g. 11th Gen" style='width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.95rem'></div>
+            <div><label style='display:block;margin-bottom:6px;color:#aaa;font-size:0.85rem'>RAM *</label><input type="text" id="afRam" required placeholder="e.g. 8GB" style='width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.95rem'></div>
+            <div><label style='display:block;margin-bottom:6px;color:#aaa;font-size:0.85rem'>Storage *</label><input type="text" id="afStorage" required placeholder="e.g. 256GB SSD" style='width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.95rem'></div>
+            <div><label style='display:block;margin-bottom:6px;color:#aaa;font-size:0.85rem'>Processor</label><input type="text" id="afProcessor" placeholder="e.g. i5-1135G7" style='width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.95rem'></div>
+            <div><label style='display:block;margin-bottom:6px;color:#aaa;font-size:0.85rem'>OS</label><select id="afOs" style='width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.95rem'><option value="windows">Windows</option><option value="macOS">macOS</option><option value="linux">Linux</option></select></div>
+            <div><label style='display:block;margin-bottom:6px;color:#aaa;font-size:0.85rem'>Device Type</label><select id="afDeviceType" style='width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.95rem'><option value="laptop">Laptop</option><option value="desktop">Desktop</option><option value="tablet">Tablet</option></select></div>
+            <div><label style='display:block;margin-bottom:6px;color:#aaa;font-size:0.85rem'>Condition</label><select id="afCondition" style='width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.95rem'><option value="A">A - Like New</option><option value="B">B - Good</option><option value="C">C - Fair</option></select></div>
+            <div><label style='display:block;margin-bottom:6px;color:#aaa;font-size:0.85rem'>Badge</label><select id="afBadge" style='width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.95rem'><option value="">None</option><option value="New">New</option><option value="Refurbished">Refurbished</option><option value="Clearance">Clearance</option></select></div>
+            <div><label style='display:block;margin-bottom:6px;color:#aaa;font-size:0.85rem'>Special Specs</label><input type="text" id="afSpecialSpec" placeholder="e.g. Touchscreen, Backlit KB" style='width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.95rem'></div>
+            <div><label style='display:block;margin-bottom:6px;color:#aaa;font-size:0.85rem'>MRP (₹) *</label><input type="number" id="afMrp" required style='width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.95rem'></div>
+            <div><label style='display:block;margin-bottom:6px;color:#aaa;font-size:0.85rem'>Selling Price (₹) *</label><input type="number" id="afPrice" required style='width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.95rem'></div>
+            <div><label style='display:block;margin-bottom:6px;color:#aaa;font-size:0.85rem'>Purchase Price (₹)</label><input type="number" id="afPurchasePrice" style='width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.95rem'></div>
+            <div><label style='display:block;margin-bottom:6px;color:#aaa;font-size:0.85rem'>Units</label><input type="number" id="afUnits" value="1" min="1" style='width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.95rem'></div>
+            <div><label style='display:block;margin-bottom:6px;color:#aaa;font-size:0.85rem'>Priority</label><input type="number" id="afPriority" value="0" min="0" style='width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.95rem'></div>
+            <div style='display:flex;align-items:center;gap:10px'><label style='display:flex;align-items:center;gap:8px;color:#aaa;font-size:0.9rem'><input type="checkbox" id="afFeatured" style='width:18px;height:18px'> ⭐ Featured Listing</label></div>
+          </div>
+          <div style='margin:20px 0;padding:20px;background:#252525;border-radius:10px'>
+            <label style='display:block;margin-bottom:10px;color:#aaa;font-size:0.9rem'>📸 Photos (will replace all current photos)</label>
+            <input type="file" id="afPhotos" accept="image/*" multiple style='width:100%;padding:12px;background:#1a1a1a;border:1px dashed rgba(255,255,255,0.2);border-radius:8px;color:#fff;cursor:pointer'>
+            <div id="afPhotoCount" style='margin-top:10px;color:#666;font-size:0.85rem'></div>
+          </div>
+          <div style='display:flex;gap:12px'>
+            <button type="submit" class="btn-primary" style='flex:1;padding:14px;background:linear-gradient(135deg,#d4af37 0%,#c9a227 100%);border:none;border-radius:8px;color:#000;font-weight:700;cursor:pointer;font-size:1rem'>💾 Save Laptop</button>
+            <button type="button" onclick="resetAdminForm()" style='padding:14px 24px;background:#333;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;cursor:pointer'>↺ Reset</button>
+          </div>
+        </form>
+      `;
     }
-    
-    // Save laptop
-    function saveAdminLaptop(e) {
+
+    function resetAdminForm() {
+      document.getElementById("adminForm")?.reset();
+      document.getElementById("afId").value = "";
+      document.getElementById("afPhotoCount").textContent = "";
+      const btn = document.querySelector("#adminForm .btn-primary");
+      if (btn) btn.textContent = "💾 Save Laptop";
+    }
+
+    async function saveAdminLaptop(e) {
       e.preventDefault();
+      const subBtn = document.querySelector("#adminForm .btn-primary");
+      const originalText = subBtn.textContent;
+      subBtn.disabled = true;
+      subBtn.innerHTML = '<span style="display:inline-block;animation:spin 1s linear infinite">⏳</span> Uploading...';
+      
+      const id = parseInt(document.getElementById("afId").value) || 0;
       const brand = document.getElementById("afBrand").value;
       const name = document.getElementById("afName").value;
       const ram = document.getElementById("afRam").value;
       const storage = document.getElementById("afStorage").value;
+      const processor = document.getElementById("afProcessor").value;
       const mrp = parseInt(document.getElementById("afMrp").value);
       const price = parseInt(document.getElementById("afPrice").value);
+      const purchasePrice = parseInt(document.getElementById("afPurchasePrice").value) || 0;
+      const units = parseInt(document.getElementById("afUnits").value) || 1;
+      const screenSize = document.getElementById("afScreen").value;
+      const gen = document.getElementById("afGen").value;
+      const specialSpec = document.getElementById("afSpecialSpec").value;
+      const os = document.getElementById("afOs").value;
+      const deviceType = document.getElementById("afDeviceType").value;
+      const condition = document.getElementById("afCondition").value;
+      const badge = document.getElementById("afBadge").value;
+      const featured = document.getElementById("afFeatured").checked;
+      const priority = parseInt(document.getElementById("afPriority").value) || 0;
+      
+      // Read photos
+      const photoFiles = document.getElementById("afPhotos").files;
+      let images = [];
+      if (photoFiles.length > 0) {
+        const readers = [];
+        Array.from(photoFiles).forEach(f => {
+          readers.push(new Promise(res => {
+            const r = new FileReader();
+            r.onload = ev => res(ev.target.result);
+            r.readAsDataURL(f);
+          }));
+        });
+        images = await Promise.all(readers);
+      }
       
       const laptopData = {
-        brand, name, ram, storage, mrp, price,
-        id: Date.now(),
-        images: [],
-        screenSize: "", gen: "", processor: "", os: "windows",
-        condition: "A", deviceType: "laptop", featured: false, priority: 0,
-        purchasePrice: 0, units: 1, specialSpec: "", badge: ""
+        id, brand, name, ram, storage, processor, mrp, price, purchasePrice, units,
+        screenSize, gen, specialSpec, os, deviceType, condition, badge, featured, priority,
+        images: images.length ? images : (id ? (laptops.find(x => x.id === id)?.images || []) : []),
+        adminCreated: true,
+        updatedAt: new Date().toISOString()
       };
       
-      showToast("⬆️ Saving...");
-      db.collection("laptops").doc(String(laptopData.id)).set(laptopData).then(() => {
-        showToast("✅ Saved!");
+      try {
+        if (id && laptops.find(x => x.id === id)) {
+          // Update existing
+          await db.collection("laptops").doc(String(id)).set(laptopData, { merge: true });
+          showToast("✅ Laptop updated!");
+        } else {
+          // Add new
+          const newId = id || (Math.max(...laptops.map(l => l.id), 0) + 1);
+          laptopData.id = newId;
+          await db.collection("laptops").doc(String(newId)).set(laptopData);
+          showToast("✅ Laptop added!");
+        }
+        resetAdminForm();
         switchAdminTab("list");
-      }).catch(e => {
-        console.error(e);
-        showToast("❌ Save failed");
-      });
+      } catch(err) {
+        console.error(err);
+        showToast("❌ Save failed: " + err.message);
+      }
+      
+      subBtn.disabled = false;
+      subBtn.textContent = originalText;
       return false;
     }
-    
-    // Render deleted list
-    function renderAdminDeletedList() {
-      const body = document.getElementById("adminPanelBody");
-      body.innerHTML = "<p>Loading deleted laptops...</p>";
+
+    function renderAdminDeleted() {
+      const main = document.getElementById("adminMain");
+      main.innerHTML = "<div style='text-align:center;padding:40px;color:#555'>Loading deleted...</div>";
       
-      db.collection("deleted_laptops").onSnapshot(function(snapshot) {
+      db.collection("deleted_laptops").orderBy("deletedAt", "desc").onSnapshot(snap => {
         const deleted = [];
-        snapshot.forEach(doc => deleted.push({ id: doc.id, ...doc.data() }));
+        snap.forEach(doc => deleted.push({ id: doc.id, ...doc.data() }));
         
         if (deleted.length === 0) {
-          body.innerHTML = "<p style='text-align:center;color:#666;padding:50px;'>🗑 No deleted laptops</p>";
+          main.innerHTML = "<div style='text-align:center;padding:60px;color:#555'>🗑 No deleted laptops</div>";
           return;
         }
         
-        let html = "<div style='display:grid;gap:15px;'>";
+        let html = "<div style='display:grid;gap:12px'>";
         deleted.forEach(l => {
-          html += `
-            <div style="background:#2a2a2a;border-radius:12px;padding:15px;display:flex;justify-content:space-between;align-items:center">
-              <div>
-                <div style="font-weight:700;color:#d4af37">${l.name}</div>
-                <div style="color:#888;font-size:0.85rem">${l.brand}</div>
-              </div>
-              <button onclick="relistLaptop('${l.id}')" style="padding:8px 12px;background:#4caf50;border:none;border-radius:6px;color:#fff;cursor:pointer">↺ Relist</button>
+          html += `<div style='background:#252525;border-radius:10px;padding:16px;display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(255,255,255,0.06)'>
+            <div>
+              <div style='font-weight:700;color:#d4af37'>${l.name}</div>
+              <div style='color:#777;font-size:0.85rem;margin:4px 0'>${l.brand}</div>
+              <div style='color:#666;font-size:0.75rem;margin-top:4px'>Deleted: ${new Date(l.deletedAt).toLocaleString()}</div>
             </div>
-          `;
+            <button onclick='relistLaptop(\"${l.id}\")' style='padding:10px 16px;background:rgba(76,175,80,0.2);border:1px solid rgba(76,175,80,0.4);border-radius:6px;color:#4caf50;cursor:pointer;font-weight:600'>↺ Relist</button>
+          </div>`;
         });
         html += "</div>";
-        body.innerHTML = html;
+        main.innerHTML = html;
       });
     }
-    
-    // Relist laptop
+
     function relistLaptop(docId) {
       db.collection("deleted_laptops").doc(docId).get().then(doc => {
-        if (doc.exists) {
-          const data = doc.data();
-          delete data.id;
-          db.collection("laptops").doc(String(data.id || Date.now())).set(data).then(() => {
-            db.collection("deleted_laptops").doc(docId).delete();
-            showToast("✅ Relisted!");
-          });
-        }
+        if (!doc.exists) return;
+        const data = doc.data();
+        const id = data.id || Date.now();
+        delete data.id;
+        delete data.deletedAt;
+        db.collection("laptops").doc(String(id)).set({ ...data, id }).then(() => {
+          db.collection("deleted_laptops").doc(docId).delete();
+          showToast("✅ Relisted!");
+        });
       });
     }
-    
-    // Check auth and initialize
-    if (checkAdminAuth()) {
-      setTimeout(() => switchAdminTab("list"), 100);
+
+    // Initialize
+    if (checkAuth()) {
+      switchAdminTab("list");
     }
   </script>
+  <style>@keyframes spin{to{transform:rotate(360deg);}}</style>
 </body>
 </html>
