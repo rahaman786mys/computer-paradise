@@ -14,6 +14,7 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const storage = firebase.storage();
 
 // ===== Laptop Data =====
 const laptops = [
@@ -881,13 +882,13 @@ function setupUpload() {
 }
 
 // Auto image enhancement — resizes, removes blur, fixes lighting, sharpens
-function enhanceImage(dataUrl, callback) {
+function enhanceImage(dataUrl, callback, _retry) {
   const img = new Image();
   img.onerror = function() { callback(dataUrl); };
   img.onload = function() {
     try {
       let w = img.width, h = img.height;
-      const maxDim = 500;
+      const maxDim = 800;
       if (w > maxDim || h > maxDim) {
         if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
         else { w = Math.round(w * maxDim / h); h = maxDim; }
@@ -895,7 +896,7 @@ function enhanceImage(dataUrl, callback) {
       const canvas = document.createElement("canvas");
       canvas.width = w; canvas.height = h;
       canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-      callback(canvas.toDataURL("image/jpeg", 0.5));
+      callback(canvas.toDataURL("image/jpeg", _retry ? 0.45 : 0.65));
     } catch(e) { callback(dataUrl); }
   };
   img.src = dataUrl;
@@ -2215,20 +2216,57 @@ function saveAdminLaptop(e) {
 
   if (!brand || !name || !ram || !storage || !processor || !mrp || !price) { showToast("⚠️ Please fill all required fields"); return; }
 
-  // Read photos as data URLs
+  function doRetrySave(data, imgs, edit, btn) {
+    data.images = imgs;
+    if (edit) { var l = laptops.find(x => x.id === data.id); if (l) l.images = imgs; }
+    db.collection("laptops").doc(String(data.id)).set(data).then(function() {
+      showToast("✅ Laptop " + (edit ? "updated" : "uploaded") + " (compressed)", "🎉");
+      try { localStorage.removeItem("cp_admin_form_draft"); localStorage.removeItem("cp_admin_form_photos"); } catch(e) {}
+      if (btn) { btn.disabled = false; btn.innerHTML = '✅ Uploaded!'; setTimeout(() => btn.innerHTML = edit ? "✏️ Update Laptop" : "💾 Save Laptop", 2000); }
+    }).catch(function(e) {
+      console.error("Retry save also failed:", e);
+      showToast("❌ Upload failed. Saved locally.", "⚠️");
+      try { localStorage.setItem("cp_laptops_data", JSON.stringify(laptops)); } catch(e2) {}
+      if (btn) { btn.disabled = false; btn.innerHTML = '❌ Failed'; setTimeout(() => btn.innerHTML = edit ? "✏️ Update Laptop" : "💾 Save Laptop", 2000); }
+    });
+  }
+
+  function uploadToStorage(dataUrl, path) {
+    return new Promise(function(resolve, reject) {
+      var arr = dataUrl.split(",");
+      var mime = arr[0].match(/:(.*?);/)[1];
+      var bstr = atob(arr[1]);
+      var n = bstr.length;
+      var u8 = new Uint8Array(n);
+      while (n--) u8[n] = bstr.charCodeAt(n);
+      var blob = new Blob([u8], { type: mime });
+      var ref = storage.ref(path);
+      ref.put(blob).then(function() { return ref.getDownloadURL(); }).then(resolve).catch(reject);
+    });
+  }
+
+  // Read photos — upload to Firebase Storage for full quality
   const loadPhotos = () => {
     return new Promise(resolve => {
       if (!photoFiles.length) {
         if (_editingExistingImages.length) {
-          var allDone = 0;
-          var total = _editingExistingImages.length;
-          var result = [];
-          if (total === 0) { resolve([]); return; }
+          var alreadyUrls = _editingExistingImages.every(function(s) { return s && !s.startsWith("data:"); });
+          if (alreadyUrls) { resolve(_editingExistingImages); return; }
+          var laptopId = id || Date.now();
+          var uploaded = [];
+          var upDone = 0;
           _editingExistingImages.forEach(function(src, i) {
-            enhanceImage(src, function(compressed) {
-              result[i] = compressed;
-              allDone++;
-              if (allDone === total) resolve(result);
+            if (src && !src.startsWith("data:")) { uploaded[i] = src; upDone++; if (upDone === _editingExistingImages.length) resolve(uploaded); return; }
+            var path = "laptops/" + laptopId + "/photo_" + i + "_" + Date.now() + ".jpg";
+            uploadToStorage(src, path).then(function(url) {
+              uploaded[i] = url;
+              upDone++;
+              if (upDone === _editingExistingImages.length) resolve(uploaded);
+            }).catch(function(e) {
+              console.error("Storage upload failed:", e);
+              uploaded[i] = src;
+              upDone++;
+              if (upDone === _editingExistingImages.length) resolve(uploaded);
             });
           });
           return;
@@ -2240,23 +2278,29 @@ function saveAdminLaptop(e) {
         resolve([]);
         return;
       }
+      var laptopId = id || Date.now();
       const readers = [];
       Array.from(photoFiles).forEach(f => {
         const r = new FileReader();
         readers.push(new Promise(res => { r.onload = ev => res(ev.target.result); r.readAsDataURL(f); }));
       });
       Promise.all(readers).then(rawPhotos => {
-        const enhanced = [];
-        let done = 0;
         if (!rawPhotos.length) { resolve([]); return; }
+        var uploaded = [];
+        var upDone = 0;
         rawPhotos.forEach((raw, i) => {
-          enhanceImage(raw, (compressed) => {
-            enhanced[i] = compressed;
-            done++;
-            if (done === rawPhotos.length) {
-              try { localStorage.setItem("cp_admin_form_photos", JSON.stringify(enhanced)); } catch(e) {}
-              resolve(enhanced);
-            }
+          var path = "laptops/" + laptopId + "/photo_" + i + "_" + Date.now() + ".jpg";
+          uploadToStorage(raw, path).then(function(url) {
+            uploaded[i] = url;
+            upDone++;
+            if (upDone === rawPhotos.length) resolve(uploaded);
+          }).catch(function(e) {
+            console.error("Storage upload failed:", e);
+            enhanceImage(raw, function(compressed) {
+              uploaded[i] = compressed;
+              upDone++;
+              if (upDone === rawPhotos.length) resolve(uploaded);
+            });
           });
         });
       });
@@ -2299,9 +2343,18 @@ function saveAdminLaptop(e) {
           try { localStorage.removeItem("cp_admin_form_draft"); localStorage.removeItem("cp_admin_form_photos"); } catch(e) {}
         }).catch(function(e) {
           console.error("Firestore save failed:", e);
-          if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = '❌ Failed — Retry'; setTimeout(() => subBtn.innerHTML = isEdit ? "✏️ Update Laptop" : "💾 Save Laptop", 2000); }
-          showToast("❌ Upload failed. Saved locally.", "⚠️");
-          try { localStorage.setItem("cp_laptops_data", JSON.stringify(laptops)); } catch(e2) {}
+          if (e.message && e.message.includes("size")) {
+            showToast("⚠️ Photos too large, re-compressing...", "⏳");
+            var recompressed = [];
+            var rDone = 0;
+            finalImages.forEach(function(src, i) {
+              enhanceImage(src, function(smaller) { recompressed[i] = smaller; rDone++; if (rDone === finalImages.length) doRetrySave(laptopData, recompressed, isEdit, subBtn); }, true);
+            });
+          } else {
+            showToast("❌ Upload failed. Saved locally.", "⚠️");
+            try { localStorage.setItem("cp_laptops_data", JSON.stringify(laptops)); } catch(e2) {}
+            if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = '❌ Failed'; setTimeout(() => subBtn.innerHTML = isEdit ? "✏️ Update Laptop" : "💾 Save Laptop", 2000); }
+          }
         });
       } else {
         try { localStorage.setItem("cp_laptops_data", JSON.stringify(laptops)); } catch(e) {}
