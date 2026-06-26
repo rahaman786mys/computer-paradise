@@ -6267,18 +6267,24 @@
 /* Admin form */
 #adminForm { display: flex; flex-direction: column; gap: 12px; }
 .af-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.af-group { display: flex; flex-direction: column; gap: 4px; }
+.af-row:has(> .af-group:nth-child(3)) { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.af-group { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .af-group label { font-size: 0.7rem; font-weight: 600; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.5px; }
 .af-group input, .af-group select {
   padding: 9px 12px; border-radius: 8px;
   border: 1px solid rgba(255,255,255,0.08);
   background: rgba(255,255,255,0.04); color: #fff;
   font-size: 0.85rem; outline: none; transition: border 0.2s;
+  width: 100%; box-sizing: border-box;
 }
 .af-group input:focus, .af-group select:focus { border-color: rgba(212,175,55,0.3); }
 .af-group input::placeholder { color: rgba(255,255,255,0.15); }
 .af-group select option { background: #222; color: #fff; }
 .af-group small { font-size: 0.65rem; color: rgba(255,255,255,0.2); }
+@media (max-width: 600px) {
+  .af-row { grid-template-columns: 1fr 1fr !important; }
+  .af-row:has(> .af-group:nth-child(3)) { grid-template-columns: 1fr 1fr !important; }
+}
 .af-btns { display: flex; gap: 10px; margin-top: 4px; }
 #adminForm .btn { padding: 10px 24px; font-size: 0.85rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
 #adminForm .btn-primary { background: var(--accent); color: #000; border: none; }
