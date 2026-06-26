@@ -3264,8 +3264,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const b = (id, fn) => document.getElementById(id)?.addEventListener("click", fn);
   b("loginBtn", openAuthModal);
   b("logoutBtn", logoutUser);
-  b("sendOTPBtn", sendOTP);
-  document.getElementById("authPhone")?.addEventListener("keydown", (e) => { if (e.key === "Enter") sendOTP(); });
+  b("sendOTPBtn", handlePhoneSubmit);
+  document.getElementById("authPhone")?.addEventListener("keydown", (e) => { if (e.key === "Enter") handlePhoneSubmit(); });
 
   // Mobile login links
   document.querySelectorAll('#mobileDrawer a[onclick*="openAuthModal"], #mobileLoginBtn').forEach(el => {
