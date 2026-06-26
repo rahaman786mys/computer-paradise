@@ -2145,6 +2145,7 @@ function editAdminLaptop(id) {
   }, 50);
 }
 
+var _selectedPhotoIdx = -1;
 function renderEditPhotoPreview() {
   var preview = document.getElementById("afPhotoPreview");
   if (!preview) return;
@@ -2152,12 +2153,14 @@ function renderEditPhotoPreview() {
   _editingExistingImages.forEach(function(src, i) {
     if (!src || typeof src !== "string" || src.length < 10) return;
     var wrap = document.createElement("div");
-    wrap.className = "photo-thumb-item";
-    wrap.draggable = true;
-    wrap.dataset.idx = i;
-    wrap.style.cssText = "position:relative;width:76px;height:90px;flex-shrink:0;cursor:grab;transition:transform 0.15s,opacity 0.15s";
+    wrap.style.cssText = "position:relative;width:76px;height:90px;flex-shrink:0;cursor:pointer;transition:transform 0.15s";
     var imgWrap = document.createElement("div");
-    imgWrap.style.cssText = "width:76px;height:76px;border-radius:8px;overflow:hidden;border:2px solid rgba(255,255,255,0.12);position:relative";
+    var isSelected = _selectedPhotoIdx === i;
+    imgWrap.style.cssText = "width:76px;height:76px;border-radius:8px;overflow:hidden;border:2px solid " + (isSelected ? "#d4af37" : i === 0 ? "rgba(212,175,55,0.4)" : "rgba(255,255,255,0.12)") + ";position:relative;transition:border-color 0.15s";
+    if (isSelected) {
+      imgWrap.style.boxShadow = "0 0 12px rgba(212,175,55,0.4)";
+      imgWrap.style.transform = "scale(1.05)";
+    }
     var img = document.createElement("img");
     img.src = src;
     img.style.cssText = "width:100%;height:100%;object-fit:cover";
@@ -2169,10 +2172,11 @@ function renderEditPhotoPreview() {
     // Delete button
     var del = document.createElement("button");
     del.innerHTML = "✕";
-    del.style.cssText = "position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(244,67,54,0.85);color:#fff;border:none;font-size:0.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;z-index:2";
+    del.style.cssText = "position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(244,67,54,0.85);color:#fff;border:none;font-size:0.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;z-index:3";
     del.title = "Remove photo " + (i + 1);
     del.onclick = function(e) {
       e.stopPropagation();
+      _selectedPhotoIdx = -1;
       _editingExistingImages.splice(i, 1);
       renderEditPhotoPreview();
     };
@@ -2180,50 +2184,38 @@ function renderEditPhotoPreview() {
     imgWrap.appendChild(num);
     imgWrap.appendChild(del);
     wrap.appendChild(imgWrap);
-    // Drag hint
+    // Hint
     var hint = document.createElement("div");
     hint.textContent = i === 0 ? "1st = banner" : "";
     hint.style.cssText = "font-size:0.5rem;color:" + (i === 0 ? "#d4af37" : "rgba(255,255,255,0.2)") + ";text-align:center;margin-top:2px;white-space:nowrap;min-height:12px";
     wrap.appendChild(hint);
-    // Drag events
-    wrap.addEventListener("dragstart", function(e) {
-      wrap.style.opacity = "0.4";
-      wrap.style.transform = "scale(0.95)";
-      e.dataTransfer.effectAllowed = "move";
-      e.dataTransfer.setData("text/plain", i);
-    });
-    wrap.addEventListener("dragend", function() {
-      wrap.style.opacity = "1";
-      wrap.style.transform = "scale(1)";
-      document.querySelectorAll(".photo-thumb-item").forEach(function(el) {
-        el.style.borderLeft = "";
-        el.style.borderRight = "";
-      });
-    });
-    wrap.addEventListener("dragover", function(e) {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = "move";
-      wrap.style.borderLeft = "2px solid #d4af37";
-    });
-    wrap.addEventListener("dragleave", function() {
-      wrap.style.borderLeft = "";
-    });
-    wrap.addEventListener("drop", function(e) {
-      e.preventDefault();
-      wrap.style.borderLeft = "";
-      var fromIdx = parseInt(e.dataTransfer.getData("text/plain"));
-      var toIdx = i;
-      if (fromIdx === toIdx) return;
-      var item = _editingExistingImages.splice(fromIdx, 1)[0];
-      _editingExistingImages.splice(toIdx, 0, item);
-      renderEditPhotoPreview();
-    });
+    // Tap to select / swap
+    wrap.onclick = function(e) {
+      if (e.target === del || e.target.closest("button")) return;
+      if (_selectedPhotoIdx === -1) {
+        // First tap: select
+        _selectedPhotoIdx = i;
+        renderEditPhotoPreview();
+      } else if (_selectedPhotoIdx === i) {
+        // Tap same: deselect
+        _selectedPhotoIdx = -1;
+        renderEditPhotoPreview();
+      } else {
+        // Second tap: swap
+        var temp = _editingExistingImages[_selectedPhotoIdx];
+        _editingExistingImages[_selectedPhotoIdx] = _editingExistingImages[i];
+        _editingExistingImages[i] = temp;
+        _selectedPhotoIdx = -1;
+        renderEditPhotoPreview();
+      }
+    };
     preview.appendChild(wrap);
   });
   var countEl = document.getElementById("afPhotoCount");
   if (countEl) {
     if (!_editingExistingImages.length) countEl.textContent = "No photos — select files to upload";
-    else countEl.textContent = _editingExistingImages.length + "/10 photos — drag to reorder, 1st = banner";
+    else if (_selectedPhotoIdx >= 0) countEl.textContent = "Tap another photo to swap with #" + (_selectedPhotoIdx + 1) + " — or tap same to cancel";
+    else countEl.textContent = _editingExistingImages.length + "/10 photos — tap 2 photos to swap, 1st = banner";
   }
 }
 

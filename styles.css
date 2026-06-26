@@ -9694,21 +9694,11 @@
 .search-empty-title { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
 .search-empty-sub { font-size: 0.78rem; color: var(--text-light); }
 
-/* ========== Photo Drag & Drop ========== */
+/* ========== Photo Preview ========== */
 #afPhotoPreview {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
   padding: 4px 0;
   min-height: 40px;
-}
-.photo-thumb-item {
-  user-select: none;
-  -webkit-user-select: none;
-}
-.photo-thumb-item:active {
-  cursor: grabbing;
-}
-.photo-thumb-item.drag-over {
-  border-left: 2px solid #d4af37 !important;
 }
