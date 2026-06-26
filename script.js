@@ -2103,6 +2103,7 @@ function editAdminLaptop(id) {
   if (!l) return;
   try { localStorage.removeItem("cp_admin_form_draft"); localStorage.removeItem("cp_admin_form_photos"); } catch(e) {}
   _editingExistingImages = l.images || [];
+  console.log("editAdminLaptop id=" + id + ": " + _editingExistingImages.length + " images, images type=" + typeof l.images + ", isArray=" + Array.isArray(l.images));
   switchAdminTab("add");
   setTimeout(function() {
     document.getElementById("afId").value = l.id;
@@ -2133,14 +2134,17 @@ function editAdminLaptop(id) {
 
 function renderEditPhotoPreview() {
   var preview = document.getElementById("afPhotoPreview");
-  if (!preview) return;
+  if (!preview) { console.warn("afPhotoPreview element not found"); return; }
   preview.innerHTML = "";
+  console.log("renderEditPhotoPreview: " + _editingExistingImages.length + " images");
   _editingExistingImages.forEach(function(src, i) {
+    if (!src || typeof src !== "string" || src.length < 10) { console.warn("Invalid image at index " + i); return; }
     var wrap = document.createElement("div");
     wrap.style.cssText = "position:relative;width:72px;height:72px;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.1)";
     var img = document.createElement("img");
     img.src = src;
     img.style.cssText = "width:100%;height:100%;object-fit:cover";
+    img.onerror = function() { wrap.style.background = "rgba(244,67,54,0.2)"; img.style.display = "none"; };
     var del = document.createElement("button");
     del.innerHTML = "✕";
     del.style.cssText = "position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(244,67,54,0.85);color:#fff;border:none;font-size:0.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0";
