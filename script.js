@@ -2092,25 +2092,18 @@ function renderEditPhotoPreview() {
   if (!preview) return;
   preview.innerHTML = "";
   _editingExistingImages.forEach(function(src, i) {
-    if (!src || typeof src !== "string" || src.length < 10) return;
     var wrap = document.createElement("div");
     wrap.style.cssText = "position:relative;width:76px;height:90px;flex-shrink:0;cursor:pointer;transition:transform 0.15s";
     var imgWrap = document.createElement("div");
     var isSelected = _selectedPhotoIdx === i;
-    imgWrap.style.cssText = "width:76px;height:76px;border-radius:8px;overflow:hidden;border:2px solid " + (isSelected ? "#d4af37" : i === 0 ? "rgba(212,175,55,0.4)" : "rgba(255,255,255,0.12)") + ";position:relative;transition:border-color 0.15s";
+    imgWrap.style.cssText = "width:76px;height:76px;border-radius:8px;overflow:hidden;border:2px solid " + (isSelected ? "#d4af37" : i === 0 ? "rgba(212,175,55,0.4)" : "rgba(255,255,255,0.12)") + ";position:relative;transition:border-color 0.15s;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.05)";
     if (isSelected) {
       imgWrap.style.boxShadow = "0 0 12px rgba(212,175,55,0.4)";
       imgWrap.style.transform = "scale(1.05)";
     }
-    var img = document.createElement("img");
-    img.src = src;
-    img.style.cssText = "width:100%;height:100%;object-fit:cover";
-    img.onerror = function() { imgWrap.style.background = "rgba(244,67,54,0.2)"; img.style.display = "none"; };
-    // Number badge
     var num = document.createElement("span");
     num.textContent = i + 1;
-    num.style.cssText = "position:absolute;top:2px;left:2px;background:rgba(0,0,0,0.7);color:#d4af37;font-size:0.65rem;font-weight:800;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:2;border:1px solid rgba(212,175,55,0.4);pointer-events:none";
-    // Delete button
+    num.style.cssText = "font-size:1.4rem;font-weight:800;color:" + (isSelected ? "#d4af37" : "rgba(255,255,255,0.5)") + ";pointer-events:none";
     var del = document.createElement("button");
     del.innerHTML = "✕";
     del.style.cssText = "position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(244,67,54,0.85);color:#fff;border:none;font-size:0.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;z-index:3";
@@ -2123,16 +2116,13 @@ function renderEditPhotoPreview() {
       delete _editingImageSources[removed];
       renderEditPhotoPreview();
     };
-    imgWrap.appendChild(img);
     imgWrap.appendChild(num);
     imgWrap.appendChild(del);
     wrap.appendChild(imgWrap);
-    // Hint
     var hint = document.createElement("div");
     hint.textContent = i === 0 ? "1st = banner" : "";
     hint.style.cssText = "font-size:0.5rem;color:" + (i === 0 ? "#d4af37" : "rgba(255,255,255,0.2)") + ";text-align:center;margin-top:2px;white-space:nowrap;min-height:12px";
     wrap.appendChild(hint);
-    // Tap to select / swap — works on mobile and desktop
     var _tapHandled = false;
     function handleTap(e) {
       if (e.target === del || e.target.closest("button")) return;
