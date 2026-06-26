@@ -1299,10 +1299,27 @@ function openAdminPanel() {
       if (photoInput) {
         photoInput.addEventListener("change", function() {
           if (photoInput.files.length) {
-            var preview = document.getElementById("afPhotoPreview");
-            if (preview) preview.innerHTML = "";
-            _editingExistingImages = [];
-            document.getElementById("afPhotoCount").textContent = photoInput.files.length + " new photo(s) selected";
+            var readers = [];
+            Array.from(photoInput.files).forEach(function(f) {
+              var r = new FileReader();
+              readers.push(new Promise(function(res) { r.onload = function(ev) { res(ev.target.result); }; r.readAsDataURL(f); }));
+            });
+            Promise.all(readers).then(function(rawPhotos) {
+              var enhanced = [];
+              var done = 0;
+              rawPhotos.forEach(function(raw, i) {
+                enhanceImage(raw, function(compressed) {
+                  enhanced[i] = compressed;
+                  done++;
+                  if (done === rawPhotos.length) {
+                    _editingExistingImages = _editingExistingImages.concat(enhanced);
+                    renderEditPhotoPreview();
+                    document.getElementById("afPhotoCount").textContent = _editingExistingImages.length + " photo(s) total";
+                  }
+                });
+              });
+            });
+            photoInput.value = "";
           }
         });
       }
@@ -2110,26 +2127,36 @@ function editAdminLaptop(id) {
     document.getElementById("afPhotoCount").textContent = l.images.length + " current photo(s) — select new files to replace";
     const subBtn = document.querySelector("#adminForm .btn-primary");
     if (subBtn) subBtn.textContent = "✏️ Update Laptop";
-    var preview = document.getElementById("afPhotoPreview");
-    if (preview) {
-      preview.innerHTML = "";
-      if (l.images && l.images.length) {
-        l.images.forEach(function(src) {
-          var wrap = document.createElement("div");
-          wrap.style.cssText = "position:relative;width:72px;height:72px;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.1)";
-          var img = document.createElement("img");
-          img.src = src;
-          img.style.cssText = "width:100%;height:100%;object-fit:cover";
-          var badge = document.createElement("span");
-          badge.textContent = "saved";
-          badge.style.cssText = "position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.6);color:#66bb6a;font-size:0.5rem;text-align:center;padding:1px 0";
-          wrap.appendChild(img);
-          wrap.appendChild(badge);
-          preview.appendChild(wrap);
-        });
-      }
-    }
+    renderEditPhotoPreview();
   }, 50);
+}
+
+function renderEditPhotoPreview() {
+  var preview = document.getElementById("afPhotoPreview");
+  if (!preview) return;
+  preview.innerHTML = "";
+  _editingExistingImages.forEach(function(src, i) {
+    var wrap = document.createElement("div");
+    wrap.style.cssText = "position:relative;width:72px;height:72px;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.1)";
+    var img = document.createElement("img");
+    img.src = src;
+    img.style.cssText = "width:100%;height:100%;object-fit:cover";
+    var del = document.createElement("button");
+    del.innerHTML = "✕";
+    del.style.cssText = "position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(244,67,54,0.85);color:#fff;border:none;font-size:0.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0";
+    del.title = "Remove photo";
+    del.onclick = function(e) {
+      e.stopPropagation();
+      _editingExistingImages.splice(i, 1);
+      renderEditPhotoPreview();
+      document.getElementById("afPhotoCount").textContent = _editingExistingImages.length + " photo(s) remaining";
+    };
+    wrap.appendChild(img);
+    wrap.appendChild(del);
+    preview.appendChild(wrap);
+  });
+  var countEl = document.getElementById("afPhotoCount");
+  if (countEl && !_editingExistingImages.length) countEl.textContent = "No photos — select files to upload";
 }
 
 function saveAdminLaptop(e) {
