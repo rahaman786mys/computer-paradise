@@ -337,6 +337,15 @@
       </span>
     </div>
     <div class="hero-subtitle">✨ Mysore's Most Trusted Laptop Store Since 2016</div>
+    <!-- Admin Banner Upload -->
+    <div id="adminBannerWrap" style="display:none;margin-top:16px">
+      <div id="bannerPreviewWrap" style="max-width:600px;margin:0 auto 10px;border-radius:12px;overflow:hidden;display:none">
+        <img id="bannerPreviewImg" src="" style="width:100%;max-height:250px;object-fit:cover;display:block">
+      </div>
+      <button onclick="document.getElementById('bannerFileInput').click()" style="background:rgba(212,175,55,0.15);border:1px dashed rgba(212,175,55,0.4);color:#d4af37;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:0.78rem;font-weight:600">📸 Upload Banner Photo</button>
+      <input type="file" id="bannerFileInput" accept="image/*" style="display:none" onchange="handleBannerUpload(this)">
+      <div id="bannerUploadStatus" style="font-size:0.7rem;color:rgba(255,255,255,0.4);margin-top:6px"></div>
+    </div>
     <div class="hero-tagline-wrapper">
       <span class="tagline-shimmer">Premium Refurbished · Unbeatable Value · Expert Service</span>
     </div>
@@ -841,7 +850,7 @@
             <div class="af-group">
               <label>Photos (will replace all current photos)</label>
                 <input type="file" id="afPhotos" accept="image/*" multiple>
-                <small id="afPhotoCount"></small>
+                <small id="afPhotoCount"></small><small style="color:rgba(255,255,255,0.3)"> (max 10 photos)</small>
                 <div id="afPhotoPreview" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"></div>
             </div>
           </div>
@@ -1003,6 +1012,7 @@ document.getElementById("mobileLoginBtn")?.addEventListener("click", function(e)
   closeMenu();
 });
 </script>
-  <script src="script.js?v=46"></script>
+  <script src="script.js?v=47"></script>
+  <script>if(typeof initBannerUpload==='function') initBannerUpload(); if(typeof loadBannerPhoto==='function') loadBannerPhoto();</script>
 </body>
 </html>

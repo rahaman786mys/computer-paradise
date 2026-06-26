@@ -1299,8 +1299,19 @@ function openAdminPanel() {
       if (photoInput) {
         photoInput.addEventListener("change", function() {
           if (photoInput.files.length) {
+            var maxPhotos = 10;
+            var remaining = maxPhotos - _editingExistingImages.length;
+            if (remaining <= 0) {
+              showToast("⚠️ Maximum 10 photos allowed. Remove some first.");
+              photoInput.value = "";
+              return;
+            }
+            var filesToProcess = Array.from(photoInput.files).slice(0, remaining);
+            if (photoInput.files.length > remaining) {
+              showToast("⚠️ Only " + remaining + " more photo(s) allowed. Added " + remaining + " of " + photoInput.files.length);
+            }
             var readers = [];
-            Array.from(photoInput.files).forEach(function(f) {
+            filesToProcess.forEach(function(f) {
               var r = new FileReader();
               readers.push(new Promise(function(res) { r.onload = function(ev) { res(ev.target.result); }; r.readAsDataURL(f); }));
             });
@@ -1312,7 +1323,7 @@ function openAdminPanel() {
                   enhanced[i] = compressed;
                   done++;
                   if (done === rawPhotos.length) {
-                    _editingExistingImages = _editingExistingImages.concat(enhanced);
+                    _editingExistingImages = _editingExistingImages.concat(enhanced).slice(0, maxPhotos);
                     renderEditPhotoPreview();
                     document.getElementById("afPhotoCount").textContent = _editingExistingImages.length + " photo(s) total";
                   }
@@ -2227,6 +2238,7 @@ function saveAdminLaptop(e) {
   };
 
   loadPhotos().then(photos => {
+    const cappedPhotos = photos.slice(0, 10);
     const isEdit = id && laptops.find(x => x.id === id);
     function proceedWithImages(finalImages) {
       let laptopData;
@@ -2278,7 +2290,7 @@ function saveAdminLaptop(e) {
     }
 
     if (photos.length) {
-      proceedWithImages(photos);
+      proceedWithImages(cappedPhotos);
     } else if (isEdit) {
       // No new photos selected — compress existing images to fit Firestore 1MB limit
       const existing = laptops.find(x => x.id === id);
@@ -3932,3 +3944,74 @@ function detailLightboxNav(dir) {
   // Initial timer setup after page load
   setTimeout(resetInactivityTimer, 1000);
 })();
+
+// ========== BANNER PHOTO UPLOAD (Admin) ==========
+function initBannerUpload() {
+  var wrap = document.getElementById("adminBannerWrap");
+  if (!wrap) return;
+  var user = null;
+  try { user = JSON.parse(localStorage.getItem("cp_user")); } catch(e) {}
+  var isAdmin = user && user.isAdmin;
+  if (!isAdmin) { wrap.style.display = "none"; return; }
+  wrap.style.display = "block";
+  // Load existing banner
+  if (_useFirestore && typeof db !== "undefined") {
+    db.collection("settings").doc("site").get().then(function(doc) {
+      if (doc.exists && doc.data().bannerUrl) {
+        var pw = document.getElementById("bannerPreviewWrap");
+        var pi = document.getElementById("bannerPreviewImg");
+        if (pw && pi) { pi.src = doc.data().bannerUrl; pw.style.display = "block"; }
+      }
+    }).catch(function() {});
+  }
+  // Prompt admin on every visit
+  setTimeout(function() {
+    if (confirm("📸 Upload a new banner photo for the front page?\n\nClick OK to upload, Cancel to skip.")) {
+      document.getElementById("bannerFileInput").click();
+    }
+  }, 2000);
+}
+
+function handleBannerUpload(input) {
+  if (!input.files || !input.files.length) return;
+  var status = document.getElementById("bannerUploadStatus");
+  var f = input.files[0];
+  if (f.size > 5 * 1024 * 1024) { if (status) status.textContent = "⚠️ Max 5MB allowed"; return; }
+  if (status) status.textContent = "⬆️ Uploading...";
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    enhanceImage(ev.target.result, function(compressed) {
+      if (_useFirestore && typeof db !== "undefined") {
+        db.collection("settings").doc("site").set({ bannerUrl: compressed }, { merge: true }).then(function() {
+          var pw = document.getElementById("bannerPreviewWrap");
+          var pi = document.getElementById("bannerPreviewImg");
+          if (pw && pi) { pi.src = compressed; pw.style.display = "block"; }
+          if (status) status.textContent = "✅ Banner updated!";
+          showToast("✅ Banner photo updated!", "🎉");
+        }).catch(function(e) {
+          console.error("Banner save failed:", e);
+          if (status) status.textContent = "❌ Upload failed. Try again.";
+        });
+      } else {
+        try { localStorage.setItem("cp_banner", compressed); } catch(e) {}
+        var pw = document.getElementById("bannerPreviewWrap");
+        var pi = document.getElementById("bannerPreviewImg");
+        if (pw && pi) { pi.src = compressed; pw.style.display = "block"; }
+        if (status) status.textContent = "✅ Banner saved locally!";
+      }
+    });
+  };
+  reader.readAsDataURL(f);
+  input.value = "";
+}
+
+function loadBannerPhoto() {
+  if (_useFirestore && typeof db !== "undefined") {
+    db.collection("settings").doc("site").get().then(function(doc) {
+      if (doc.exists && doc.data().bannerUrl) {
+        var slide = document.querySelector(".screen-gallery .slide.active");
+        if (slide) slide.src = doc.data().bannerUrl;
+      }
+    }).catch(function() {});
+  }
+}
