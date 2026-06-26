@@ -6279,13 +6279,13 @@
 }
 .af-group input:focus, .af-group select:focus { border-color: rgba(212,175,55,0.3); }
 .af-group input::placeholder { color: rgba(255,255,255,0.15); }
-.af-group textarea {
-  padding: 9px 12px; border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.04); color: #fff;
-  font-size: 0.85rem; outline: none; transition: border 0.2s;
-  width: 100%; box-sizing: border-box;
-  resize: vertical; min-height: 160px; font-family: inherit; line-height: 1.5;
+.af-group textarea, #adminForm textarea {
+  padding: 9px 12px !important; border-radius: 8px !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  background: rgba(255,255,255,0.04) !important; color: #fff !important;
+  font-size: 0.85rem !important; outline: none !important; transition: border 0.2s !important;
+  width: 100% !important; box-sizing: border-box !important;
+  resize: vertical !important; min-height: 160px !important; font-family: inherit !important; line-height: 1.5 !important; height: auto !important;
 }
 .af-group textarea:focus { border-color: rgba(212,175,55,0.3); }
 .af-group textarea::placeholder { color: rgba(255,255,255,0.15); }
