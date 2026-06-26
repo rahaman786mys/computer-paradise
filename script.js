@@ -2069,6 +2069,7 @@ function restoreAdminFormDraft() {
 function editAdminLaptop(id) {
   const l = laptops.find(x => x.id === id);
   if (!l) return;
+  switchAdminTab("add");
   document.getElementById("afId").value = l.id;
   document.getElementById("afBrand").value = l.brand;
   document.getElementById("afName").value = l.name;
@@ -2091,7 +2092,6 @@ function editAdminLaptop(id) {
   document.getElementById("afPhotoCount").textContent = `${l.images.length} current photo(s)`;
   const subBtn = document.querySelector("#adminForm .btn-primary");
   if (subBtn) subBtn.textContent = "✏️ Update Laptop";
-  switchAdminTab("add");
 }
 
 function saveAdminLaptop(e) {
