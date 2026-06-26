@@ -1224,8 +1224,7 @@ function loginAsAdmin(name) {
   updateAuthUI();
   showToast("👑 Admin logged in");
   closeAdminLoginModal();
-  // Open admin page in NEW tab so back button stays on main site
-  window.open("admin.html", "_blank");
+  openAdminPanel();
 }
 
 function handleGoogleCredential(response) {
