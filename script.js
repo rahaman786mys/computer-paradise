@@ -2115,7 +2115,7 @@ function editAdminLaptop(id) {
   if (!l) return;
   if (_adminDraftTimer) { clearTimeout(_adminDraftTimer); _adminDraftTimer = null; }
   try { localStorage.removeItem("cp_admin_form_draft"); localStorage.removeItem("cp_admin_form_photos"); } catch(e) {}
-  _editingExistingImages = l.images || [];
+  _editingExistingImages = (l.images || []).slice(0, 10);
   console.log("editAdminLaptop id=" + id + ": " + _editingExistingImages.length + " images, images type=" + typeof l.images + ", isArray=" + Array.isArray(l.images));
   switchAdminTab("add", true);
   setTimeout(function() {
@@ -2153,14 +2153,24 @@ function renderEditPhotoPreview() {
   _editingExistingImages.forEach(function(src, i) {
     if (!src || typeof src !== "string" || src.length < 10) { console.warn("Invalid image at index " + i); return; }
     var wrap = document.createElement("div");
-    wrap.style.cssText = "position:relative;width:72px;height:72px;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.1)";
+    wrap.style.cssText = "position:relative;width:80px;height:90px;border-radius:8px;overflow:visible;border:1px solid " + (i === 0 ? "rgba(212,175,55,0.6)" : "rgba(255,255,255,0.1)") + ";flex-shrink:0";
+    var imgWrap = document.createElement("div");
+    imgWrap.style.cssText = "width:80px;height:72px;border-radius:8px;overflow:hidden;position:relative";
     var img = document.createElement("img");
     img.src = src;
     img.style.cssText = "width:100%;height:100%;object-fit:cover";
-    img.onerror = function() { wrap.style.background = "rgba(244,67,54,0.2)"; img.style.display = "none"; };
+    img.onerror = function() { imgWrap.style.background = "rgba(244,67,54,0.2)"; img.style.display = "none"; };
+    // Star badge for main photo
+    if (i === 0) {
+      var starBadge = document.createElement("span");
+      starBadge.textContent = "⭐ MAIN";
+      starBadge.style.cssText = "position:absolute;top:2px;left:2px;background:rgba(212,175,55,0.9);color:#000;font-size:0.5rem;font-weight:700;padding:1px 5px;border-radius:4px;z-index:2";
+      imgWrap.appendChild(starBadge);
+    }
+    // Delete button
     var del = document.createElement("button");
     del.innerHTML = "✕";
-    del.style.cssText = "position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(244,67,54,0.85);color:#fff;border:none;font-size:0.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0";
+    del.style.cssText = "position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(244,67,54,0.85);color:#fff;border:none;font-size:0.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;z-index:2";
     del.title = "Remove photo";
     del.onclick = function(e) {
       e.stopPropagation();
@@ -2168,12 +2178,64 @@ function renderEditPhotoPreview() {
       renderEditPhotoPreview();
       document.getElementById("afPhotoCount").textContent = _editingExistingImages.length + " photo(s) remaining";
     };
-    wrap.appendChild(img);
-    wrap.appendChild(del);
+    imgWrap.appendChild(img);
+    imgWrap.appendChild(del);
+    wrap.appendChild(imgWrap);
+    // Bottom controls row
+    var controls = document.createElement("div");
+    controls.style.cssText = "display:flex;justify-content:center;gap:2px;margin-top:3px";
+    // Move left
+    if (i > 0) {
+      var leftBtn = document.createElement("button");
+      leftBtn.textContent = "◀";
+      leftBtn.style.cssText = "background:rgba(255,255,255,0.08);border:none;color:rgba(255,255,255,0.5);font-size:0.55rem;width:20px;height:18px;border-radius:3px;cursor:pointer;padding:0";
+      leftBtn.title = "Move left";
+      leftBtn.onclick = function(e) {
+        e.stopPropagation();
+        var temp = _editingExistingImages[i];
+        _editingExistingImages[i] = _editingExistingImages[i - 1];
+        _editingExistingImages[i - 1] = temp;
+        renderEditPhotoPreview();
+      };
+      controls.appendChild(leftBtn);
+    }
+    // Set main (star)
+    if (i > 0) {
+      var starBtn = document.createElement("button");
+      starBtn.textContent = "⭐";
+      starBtn.style.cssText = "background:rgba(212,175,55,0.15);border:none;color:#d4af37;font-size:0.6rem;width:20px;height:18px;border-radius:3px;cursor:pointer;padding:0";
+      starBtn.title = "Set as main/banner photo";
+      starBtn.onclick = function(e) {
+        e.stopPropagation();
+        var item = _editingExistingImages.splice(i, 1)[0];
+        _editingExistingImages.unshift(item);
+        renderEditPhotoPreview();
+      };
+      controls.appendChild(starBtn);
+    }
+    // Move right
+    if (i < _editingExistingImages.length - 1) {
+      var rightBtn = document.createElement("button");
+      rightBtn.textContent = "▶";
+      rightBtn.style.cssText = "background:rgba(255,255,255,0.08);border:none;color:rgba(255,255,255,0.5);font-size:0.55rem;width:20px;height:18px;border-radius:3px;cursor:pointer;padding:0";
+      rightBtn.title = "Move right";
+      rightBtn.onclick = function(e) {
+        e.stopPropagation();
+        var temp = _editingExistingImages[i];
+        _editingExistingImages[i] = _editingExistingImages[i + 1];
+        _editingExistingImages[i + 1] = temp;
+        renderEditPhotoPreview();
+      };
+      controls.appendChild(rightBtn);
+    }
+    wrap.appendChild(controls);
     preview.appendChild(wrap);
   });
   var countEl = document.getElementById("afPhotoCount");
-  if (countEl && !_editingExistingImages.length) countEl.textContent = "No photos — select files to upload";
+  if (countEl) {
+    if (!_editingExistingImages.length) countEl.textContent = "No photos — select files to upload";
+    else countEl.textContent = _editingExistingImages.length + " photo(s) — 1st is main/banner";
+  }
 }
 
 function saveAdminLaptop(e) {
