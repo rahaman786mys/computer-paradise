@@ -482,8 +482,9 @@ document.addEventListener("DOMContentLoaded", function() {
           <div class="af-row">
             <div class="af-group">
               <label>Photos (will replace all current photos)</label>
-              <input type="file" id="afPhotos" accept="image/*" multiple>
-              <small id="afPhotoCount"></small>
+                <input type="file" id="afPhotos" accept="image/*" multiple>
+                <small id="afPhotoCount"></small>
+                <div id="afPhotoPreview" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"></div>
             </div>
           </div>
           <div class="af-btns">
@@ -665,6 +666,6 @@ document.addEventListener("DOMContentLoaded", function() {
   </div>
 </footer>
 
-<script src="script.js?v=41"></script>
+<script src="script.js?v=42"></script>
 </body>
 </html>

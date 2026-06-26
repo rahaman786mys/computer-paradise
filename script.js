@@ -1295,6 +1295,17 @@ function openAdminPanel() {
       form._draftListenerAdded = true;
       form.addEventListener("input", saveAdminFormDraft);
       form.addEventListener("change", saveAdminFormDraft);
+      var photoInput = document.getElementById("afPhotos");
+      if (photoInput) {
+        photoInput.addEventListener("change", function() {
+          if (photoInput.files.length) {
+            var preview = document.getElementById("afPhotoPreview");
+            if (preview) preview.innerHTML = "";
+            _editingExistingImages = [];
+            document.getElementById("afPhotoCount").textContent = photoInput.files.length + " new photo(s) selected";
+          }
+        });
+      }
     }
   }, 100);
 }
@@ -1874,6 +1885,7 @@ function renderAdminLaptopList() {
   el.innerHTML = toolbar + '<div class="admin-list">' + laptops.map(l => adminListItemHTML(l)).join("") + '</div>';
 }
 
+let _editingExistingImages = [];
 let _adminSelected = new Set();
 
 function toggleAdminSelect(id, checked) {
@@ -2023,6 +2035,9 @@ function resetAdminForm() {
   document.getElementById("afPriority").value = "0";
   document.getElementById("afPhotos").value = "";
   document.getElementById("afPhotoCount").textContent = "";
+  var preview = document.getElementById("afPhotoPreview");
+  if (preview) preview.innerHTML = "";
+  _editingExistingImages = [];
   const subBtn = document.querySelector("#adminForm .btn-primary");
   if (subBtn) subBtn.textContent = "💾 Save Laptop";
   try { localStorage.removeItem("cp_admin_form_draft"); localStorage.removeItem("cp_admin_form_photos"); } catch(e) {}
@@ -2069,10 +2084,9 @@ function restoreAdminFormDraft() {
 function editAdminLaptop(id) {
   const l = laptops.find(x => x.id === id);
   if (!l) return;
-  // Clear any saved draft so it won't interfere
   try { localStorage.removeItem("cp_admin_form_draft"); localStorage.removeItem("cp_admin_form_photos"); } catch(e) {}
+  _editingExistingImages = l.images || [];
   switchAdminTab("add");
-  // Small delay to ensure resetAdminForm from switchAdminTab completes first
   setTimeout(function() {
     document.getElementById("afId").value = l.id;
     document.getElementById("afBrand").value = l.brand;
@@ -2093,9 +2107,28 @@ function editAdminLaptop(id) {
     document.getElementById("afSpecialSpec").value = l.specialSpec || "";
     document.getElementById("afFeatured").checked = l.featured || false;
     document.getElementById("afPriority").value = l.priority || 0;
-    document.getElementById("afPhotoCount").textContent = `${l.images.length} current photo(s)`;
+    document.getElementById("afPhotoCount").textContent = l.images.length + " current photo(s) — select new files to replace";
     const subBtn = document.querySelector("#adminForm .btn-primary");
     if (subBtn) subBtn.textContent = "✏️ Update Laptop";
+    var preview = document.getElementById("afPhotoPreview");
+    if (preview) {
+      preview.innerHTML = "";
+      if (l.images && l.images.length) {
+        l.images.forEach(function(src) {
+          var wrap = document.createElement("div");
+          wrap.style.cssText = "position:relative;width:72px;height:72px;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.1)";
+          var img = document.createElement("img");
+          img.src = src;
+          img.style.cssText = "width:100%;height:100%;object-fit:cover";
+          var badge = document.createElement("span");
+          badge.textContent = "saved";
+          badge.style.cssText = "position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.6);color:#66bb6a;font-size:0.5rem;text-align:center;padding:1px 0";
+          wrap.appendChild(img);
+          wrap.appendChild(badge);
+          preview.appendChild(wrap);
+        });
+      }
+    }
   }, 50);
 }
 
@@ -2128,11 +2161,11 @@ function saveAdminLaptop(e) {
   const loadPhotos = () => {
     return new Promise(resolve => {
       if (!photoFiles.length) {
-        // Try to restore photos saved from previous session (mobile reload)
         try {
           const saved = localStorage.getItem("cp_admin_form_photos");
           if (saved) { resolve(JSON.parse(saved)); return; }
         } catch(e) {}
+        if (_editingExistingImages.length) { resolve(_editingExistingImages); return; }
         resolve([]);
         return;
       }
