@@ -883,111 +883,23 @@ function setupUpload() {
 // Auto image enhancement — resizes, removes blur, fixes lighting, sharpens
 function enhanceImage(dataUrl, callback) {
   const img = new Image();
-  img.onerror = function() {
-    console.warn("enhanceImage: failed to load image, using raw");
-    callback(dataUrl);
-  };
+  img.onerror = function() { callback(dataUrl); };
   img.onload = function() {
     try {
-    // Resize to max 800px to keep under Firestore 1MB limit
-    let w = img.width, h = img.height;
-    const maxDim = 800;
-    if (w > maxDim || h > maxDim) {
-      if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
-      else { w = Math.round(w * maxDim / h); h = maxDim; }
-    }
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    canvas.width = w;
-    canvas.height = h;
-
-    // Draw original (resized)
-    ctx.drawImage(img, 0, 0, w, h);
-
-    // Get pixel data
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const pixels = imageData.data;
-
-    // 1. Auto levels — stretch histogram per channel
-    let minR = 255, maxR = 0, minG = 255, maxG = 0, minB = 255, maxB = 0;
-    for (let i = 0; i < pixels.length; i += 4) {
-      if (pixels[i] < minR) minR = pixels[i];
-      if (pixels[i] > maxR) maxR = pixels[i];
-      if (pixels[i+1] < minG) minG = pixels[i+1];
-      if (pixels[i+1] > maxG) maxG = pixels[i+1];
-      if (pixels[i+2] < minB) minB = pixels[i+2];
-      if (pixels[i+2] > maxB) maxB = pixels[i+2];
-    }
-    const rangeR = maxR - minR || 1;
-    const rangeG = maxG - minG || 1;
-    const rangeB = maxB - minB || 1;
-
-    // 2. Apply gentle S-curve contrast + histogram stretch + slight sharpening
-    const contrast = 1.12;
-    const brightness = 8;
-    const sharpen = 0.3;
-
-    // First pass: levels + contrast + brightness
-    for (let i = 0; i < pixels.length; i += 4) {
-      // Stretch
-      let r = (pixels[i] - minR) / rangeR * 255;
-      let g = (pixels[i+1] - minG) / rangeG * 255;
-      let b = (pixels[i+2] - minB) / rangeB * 255;
-
-      // Contrast (S-curve)
-      r = 128 + (r - 128) * contrast;
-      g = 128 + (g - 128) * contrast;
-      b = 128 + (b - 128) * contrast;
-
-      // Brightness
-      r += brightness;
-      g += brightness;
-      b += brightness;
-
-      pixels[i] = Math.max(0, Math.min(255, r));
-      pixels[i+1] = Math.max(0, Math.min(255, g));
-      pixels[i+2] = Math.max(0, Math.min(255, b));
-    }
-
-    ctx.putImageData(imageData, 0, 0);
-
-    // 3. Unsharp mask (simplified) — second pass with neighboring pixels
-    if (canvas.width > 100 && canvas.height > 100) {
-      const sharpData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const sp = sharpData.data;
-      const w = canvas.width;
-      const h = canvas.height;
-
-      for (let y = 1; y < h - 1; y++) {
-        for (let x = 1; x < w - 1; x++) {
-          const i = (y * w + x) * 4;
-          for (let c = 0; c < 3; c++) {
-            const idx = i + c;
-            // Simple sharpen: original + (original - blurred) * amount
-            const blurred = (
-              sp[((y-1)*w + x-1)*4 + c] + sp[((y-1)*w + x)*4 + c] + sp[((y-1)*w + x+1)*4 + c] +
-              sp[(y*w + x-1)*4 + c] + sp[(y*w + x)*4 + c] + sp[(y*w + x+1)*4 + c] +
-              sp[((y+1)*w + x-1)*4 + c] + sp[((y+1)*w + x)*4 + c] + sp[((y+1)*w + x+1)*4 + c]
-            ) / 9;
-            const sharpVal = sp[idx] + (sp[idx] - blurred) * sharpen;
-            sp[idx] = Math.max(0, Math.min(255, sharpVal));
-          }
-        }
+      let w = img.width, h = img.height;
+      const maxDim = 500;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+        else { w = Math.round(w * maxDim / h); h = maxDim; }
       }
-      ctx.putImageData(sharpData, 0, 0);
-    }
-
-    callback(canvas.toDataURL("image/jpeg", 0.5));
-  } catch(e) {
-    console.warn("enhanceImage: canvas error, using raw", e);
-    callback(dataUrl);
-  }
+      const canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+      callback(canvas.toDataURL("image/jpeg", 0.5));
+    } catch(e) { callback(dataUrl); }
   };
   img.src = dataUrl;
-  // Safety timeout — if image never loads, use raw after 5s
-  setTimeout(function() {
-    if (!img.complete) { console.warn("enhanceImage: timeout, using raw"); callback(dataUrl); }
-  }, 5000);
+  setTimeout(function() { if (!img.complete) callback(dataUrl); }, 5000);
 }
 
 // ===== Filter =====
@@ -1298,29 +1210,38 @@ function renderGoogleBtn() {
 let _adminDraftTimer = null;
 
 function handlePhotoSelect(input) {
-  console.log("handlePhotoSelect called, files:", input.files.length);
   if (!input.files.length) return;
   var maxPhotos = 10;
   var remaining = maxPhotos - _editingExistingImages.length;
-  if (remaining <= 0) {
-    showToast("Max 10 photos allowed.");
-    input.value = "";
-    return;
-  }
+  if (remaining <= 0) { showToast("Max 10 photos."); input.value = ""; return; }
   var filesToProcess = Array.from(input.files).slice(0, remaining);
-  showToast("Processing " + filesToProcess.length + " photo(s)...", "⏳");
+  showToast("Processing...", "⏳");
   var pending = filesToProcess.length;
   filesToProcess.forEach(function(f) {
     var reader = new FileReader();
     reader.onload = function(ev) {
-      _editingExistingImages.push(ev.target.result);
-      pending--;
-      if (pending === 0) {
-        _editingExistingImages = _editingExistingImages.slice(0, maxPhotos);
-        renderEditPhotoPreview();
-        var countEl = document.getElementById("afPhotoCount");
-        if (countEl) countEl.textContent = _editingExistingImages.length + " photo(s) total";
-        showToast("Added " + filesToProcess.length + " photo(s)!", "✅");
+      var raw = ev.target.result;
+      var img = new Image();
+      img.onload = function() {
+        var w = img.width, h = img.height;
+        if (w > 500 || h > 500) { if (w > h) { h = Math.round(h * 500 / w); w = 500; } else { w = Math.round(w * 500 / h); h = 500; } }
+        var c = document.createElement("canvas");
+        c.width = w; c.height = h;
+        c.getContext("2d").drawImage(img, 0, 0, w, h);
+        _editingExistingImages.push(c.toDataURL("image/jpeg", 0.5));
+        done();
+      };
+      img.onerror = function() { _editingExistingImages.push(raw); done(); };
+      img.src = raw;
+      function done() {
+        pending--;
+        if (pending === 0) {
+          _editingExistingImages = _editingExistingImages.slice(0, maxPhotos);
+          renderEditPhotoPreview();
+          var countEl = document.getElementById("afPhotoCount");
+          if (countEl) countEl.textContent = _editingExistingImages.length + " photo(s) total";
+          showToast("Added " + filesToProcess.length + " photo(s)!", "✅");
+        }
       }
     };
     reader.readAsDataURL(f);
@@ -2120,34 +2041,47 @@ function editAdminLaptop(id) {
   if (!l) return;
   if (_adminDraftTimer) { clearTimeout(_adminDraftTimer); _adminDraftTimer = null; }
   try { localStorage.removeItem("cp_admin_form_draft"); localStorage.removeItem("cp_admin_form_photos"); } catch(e) {}
-  _editingExistingImages = (l.images || []).slice(0, 10);
-  console.log("editAdminLaptop id=" + id + ": " + _editingExistingImages.length + " images, images type=" + typeof l.images + ", isArray=" + Array.isArray(l.images));
-  switchAdminTab("add", true);
-  setTimeout(function() {
-    document.getElementById("afId").value = l.id;
-    document.getElementById("afBrand").value = l.brand;
-    document.getElementById("afName").value = l.name;
-    document.getElementById("afScreen").value = l.screenSize || "";
-    document.getElementById("afGen").value = l.gen || "";
-    document.getElementById("afRam").value = l.ram;
-    document.getElementById("afStorage").value = l.storage;
-    document.getElementById("afProcessor").value = l.processor;
-    document.getElementById("afMrp").value = l.mrp || Math.round(l.price * 1.35);
-    document.getElementById("afPrice").value = l.price;
-    document.getElementById("afPurchasePrice").value = l.purchasePrice || "";
-    document.getElementById("afUnits").value = l.units || 1;
-    document.getElementById("afOs").value = l.os;
-    document.getElementById("afDeviceType").value = l.deviceType || "laptop";
-    document.getElementById("afCondition").value = l.condition;
-    document.getElementById("afBadge").value = l.badge || "";
-    document.getElementById("afSpecialSpec").value = l.specialSpec || "";
-    document.getElementById("afFeatured").checked = l.featured || false;
-    document.getElementById("afPriority").value = l.priority || 0;
-    document.getElementById("afPhotoCount").textContent = l.images.length + " current photo(s) — select new files to replace";
-    const subBtn = document.querySelector("#adminForm .btn-primary");
-    if (subBtn) subBtn.textContent = "✏️ Update Laptop";
-    renderEditPhotoPreview();
-  }, 50);
+  var rawImages = (l.images || []).slice(0, 10);
+  _editingExistingImages = [];
+  var pending = rawImages.length;
+  if (pending === 0) { doEdit(); } else {
+    rawImages.forEach(function(src, i) {
+      enhanceImage(src, function(compressed) {
+        _editingExistingImages[i] = compressed;
+        pending--;
+        if (pending === 0) doEdit();
+      });
+    });
+  }
+  function doEdit() {
+    console.log("editAdminLaptop id=" + id + ": " + _editingExistingImages.length + " images compressed");
+    switchAdminTab("add", true);
+    setTimeout(function() {
+      document.getElementById("afId").value = l.id;
+      document.getElementById("afBrand").value = l.brand;
+      document.getElementById("afName").value = l.name;
+      document.getElementById("afScreen").value = l.screenSize || "";
+      document.getElementById("afGen").value = l.gen || "";
+      document.getElementById("afRam").value = l.ram;
+      document.getElementById("afStorage").value = l.storage;
+      document.getElementById("afProcessor").value = l.processor;
+      document.getElementById("afMrp").value = l.mrp || Math.round(l.price * 1.35);
+      document.getElementById("afPrice").value = l.price;
+      document.getElementById("afPurchasePrice").value = l.purchasePrice || "";
+      document.getElementById("afUnits").value = l.units || 1;
+      document.getElementById("afOs").value = l.os;
+      document.getElementById("afDeviceType").value = l.deviceType || "laptop";
+      document.getElementById("afCondition").value = l.condition;
+      document.getElementById("afBadge").value = l.badge || "";
+      document.getElementById("afSpecialSpec").value = l.specialSpec || "";
+      document.getElementById("afFeatured").checked = l.featured || false;
+      document.getElementById("afPriority").value = l.priority || 0;
+      document.getElementById("afPhotoCount").textContent = _editingExistingImages.length + " current photo(s) — select new files to replace";
+      const subBtn = document.querySelector("#adminForm .btn-primary");
+      if (subBtn) subBtn.textContent = "✏️ Update Laptop";
+      renderEditPhotoPreview();
+    }, 50);
+  }
 }
 
 var _selectedPhotoIdx = -1;
