@@ -1230,28 +1230,33 @@ function blobUrlToDataUrl(blobUrl) {
 }
 
 function resetEditingImages() {
-  _editingExistingImages.forEach(function(url) {
-    if (url && url.startsWith("blob:")) { try { URL.revokeObjectURL(url); } catch(e) {} }
-  });
   _editingExistingImages = [];
   _editingImageSources = {};
 }
 
 function handlePhotoSelect(input) {
   if (!input.files.length) return;
+  if (!_editingExistingImages) _editingExistingImages = [];
   var maxPhotos = 10;
   var remaining = maxPhotos - _editingExistingImages.length;
   if (remaining <= 0) { showToast("Max 10 photos."); input.value = ""; return; }
   var filesToProcess = Array.from(input.files).slice(0, remaining);
+  var pending = filesToProcess.length;
   filesToProcess.forEach(function(f) {
-    var blobUrl = URL.createObjectURL(f);
-    _editingExistingImages.push(blobUrl);
-    _editingImageSources[blobUrl] = f;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      _editingExistingImages.push(ev.target.result);
+      pending--;
+      if (pending === 0) {
+        _editingExistingImages = _editingExistingImages.slice(0, maxPhotos);
+        renderEditPhotoPreview();
+        var countEl = document.getElementById("afPhotoCount");
+        if (countEl) countEl.textContent = _editingExistingImages.length + " photo(s) total";
+        showToast("Added " + filesToProcess.length + " photo(s)!", "✅");
+      }
+    };
+    reader.readAsDataURL(f);
   });
-  renderEditPhotoPreview();
-  var countEl = document.getElementById("afPhotoCount");
-  if (countEl) countEl.textContent = _editingExistingImages.length + " photo(s) total";
-  showToast("Added " + filesToProcess.length + " photo(s)!", "✅");
   input.value = "";
 }
 
@@ -2048,16 +2053,9 @@ function editAdminLaptop(id) {
   if (!l) return;
   if (_adminDraftTimer) { clearTimeout(_adminDraftTimer); _adminDraftTimer = null; }
   try { localStorage.removeItem("cp_admin_form_draft"); localStorage.removeItem("cp_admin_form_photos"); } catch(e) {}
-  _editingExistingImages = [];
+  _editingExistingImages = (l.images || []).slice(0, 10);
   _editingImageSources = {};
-  (l.images || []).slice(0, 10).forEach(function(dataUrl) {
-    if (!dataUrl || typeof dataUrl !== "string" || dataUrl.length < 10) return;
-    var blob = dataUrlToBlob(dataUrl);
-    var blobUrl = URL.createObjectURL(blob);
-    _editingExistingImages.push(blobUrl);
-    _editingImageSources[blobUrl] = dataUrl;
-  });
-  console.log("editAdminLaptop id=" + id + ": " + _editingExistingImages.length + " images as blob URLs");
+  console.log("editAdminLaptop id=" + id + ": " + _editingExistingImages.length + " images");
   switchAdminTab("add", true);
   setTimeout(function() {
     document.getElementById("afId").value = l.id;
@@ -2119,9 +2117,7 @@ function renderEditPhotoPreview() {
     del.onclick = function(e) {
       e.stopPropagation();
       _selectedPhotoIdx = -1;
-      var removed = _editingExistingImages.splice(i, 1)[0];
-      if (removed && removed.startsWith("blob:")) { try { URL.revokeObjectURL(removed); } catch(e) {} }
-      delete _editingImageSources[removed];
+      _editingExistingImages.splice(i, 1);
       renderEditPhotoPreview();
     };
     imgWrap.appendChild(img);
@@ -2219,22 +2215,11 @@ function saveAdminLaptop(e) {
 
   if (!brand || !name || !ram || !storage || !processor || !mrp || !price) { showToast("⚠️ Please fill all required fields"); return; }
 
-  // Read photos as data URLs — converts blob URLs back to data URLs for Firestore
+  // Read photos as data URLs
   const loadPhotos = () => {
     return new Promise(resolve => {
       if (!photoFiles.length) {
-        if (_editingExistingImages.length) {
-          var conversions = _editingExistingImages.map(function(src) {
-            if (src && src.startsWith("blob:")) {
-              var source = _editingImageSources[src];
-              if (source && typeof source === "string" && source.startsWith("data:")) return Promise.resolve(source);
-              return blobUrlToDataUrl(src);
-            }
-            return Promise.resolve(src);
-          });
-          Promise.all(conversions).then(resolve);
-          return;
-        }
+        if (_editingExistingImages.length) { resolve(_editingExistingImages); return; }
         try {
           const saved = localStorage.getItem("cp_admin_form_photos");
           if (saved) { resolve(JSON.parse(saved)); return; }
