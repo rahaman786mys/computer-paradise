@@ -2219,7 +2219,20 @@ function saveAdminLaptop(e) {
   const loadPhotos = () => {
     return new Promise(resolve => {
       if (!photoFiles.length) {
-        if (_editingExistingImages.length) { resolve(_editingExistingImages); return; }
+        if (_editingExistingImages.length) {
+          var allDone = 0;
+          var total = _editingExistingImages.length;
+          var result = [];
+          if (total === 0) { resolve([]); return; }
+          _editingExistingImages.forEach(function(src, i) {
+            enhanceImage(src, function(compressed) {
+              result[i] = compressed;
+              allDone++;
+              if (allDone === total) resolve(result);
+            });
+          });
+          return;
+        }
         try {
           const saved = localStorage.getItem("cp_admin_form_photos");
           if (saved) { resolve(JSON.parse(saved)); return; }
