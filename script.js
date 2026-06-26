@@ -2087,13 +2087,16 @@ function editAdminLaptop(id) {
 }
 
 var _selectedPhotoIdx = -1;
+var _dragPhotoIdx = -1;
 function renderEditPhotoPreview() {
   var preview = document.getElementById("afPhotoPreview");
   if (!preview) return;
   preview.innerHTML = "";
   _editingExistingImages.forEach(function(src, i) {
     var wrap = document.createElement("div");
-    wrap.style.cssText = "position:relative;width:76px;height:90px;flex-shrink:0;cursor:pointer;transition:transform 0.15s";
+    wrap.style.cssText = "position:relative;width:76px;height:90px;flex-shrink:0;cursor:grab;transition:transform 0.15s";
+    wrap.draggable = true;
+    wrap.dataset.idx = i;
     var imgWrap = document.createElement("div");
     var isSelected = _selectedPhotoIdx === i;
     imgWrap.style.cssText = "width:76px;height:76px;border-radius:8px;overflow:hidden;border:2px solid " + (isSelected ? "#d4af37" : i === 0 ? "rgba(212,175,55,0.4)" : "rgba(255,255,255,0.12)") + ";position:relative;transition:border-color 0.15s;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.05)";
@@ -2103,7 +2106,12 @@ function renderEditPhotoPreview() {
     }
     var num = document.createElement("span");
     num.textContent = i + 1;
-    num.style.cssText = "font-size:1.4rem;font-weight:800;color:" + (isSelected ? "#d4af37" : "rgba(255,255,255,0.5)") + ";pointer-events:none";
+    num.style.cssText = "font-size:1.4rem;font-weight:800;color:" + (isSelected ? "#d4af37" : "rgba(255,255,255,0.5)") + ";pointer-events:none;position:absolute;z-index:1";
+    var img = document.createElement("img");
+    img.src = src;
+    img.style.cssText = "width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0";
+    img.onload = function() { num.style.display = "none"; };
+    img.onerror = function() { img.style.display = "none"; };
     var del = document.createElement("button");
     del.innerHTML = "✕";
     del.style.cssText = "position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(244,67,54,0.85);color:#fff;border:none;font-size:0.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;z-index:3";
@@ -2116,6 +2124,7 @@ function renderEditPhotoPreview() {
       delete _editingImageSources[removed];
       renderEditPhotoPreview();
     };
+    imgWrap.appendChild(img);
     imgWrap.appendChild(num);
     imgWrap.appendChild(del);
     wrap.appendChild(imgWrap);
@@ -2123,6 +2132,35 @@ function renderEditPhotoPreview() {
     hint.textContent = i === 0 ? "1st = banner" : "";
     hint.style.cssText = "font-size:0.5rem;color:" + (i === 0 ? "#d4af37" : "rgba(255,255,255,0.2)") + ";text-align:center;margin-top:2px;white-space:nowrap;min-height:12px";
     wrap.appendChild(hint);
+    wrap.addEventListener("dragstart", function(e) {
+      _dragPhotoIdx = i;
+      wrap.style.opacity = "0.4";
+      e.dataTransfer.effectAllowed = "move";
+    });
+    wrap.addEventListener("dragend", function() {
+      wrap.style.opacity = "1";
+      _dragPhotoIdx = -1;
+      document.querySelectorAll("#afPhotoPreview > div").forEach(function(el) { el.style.borderLeft = ""; });
+    });
+    wrap.addEventListener("dragover", function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      wrap.style.borderLeft = "3px solid #d4af37";
+    });
+    wrap.addEventListener("dragleave", function() {
+      wrap.style.borderLeft = "";
+    });
+    wrap.addEventListener("drop", function(e) {
+      e.preventDefault();
+      wrap.style.borderLeft = "";
+      var fromIdx = _dragPhotoIdx;
+      var toIdx = i;
+      if (fromIdx === toIdx || fromIdx < 0) return;
+      var item = _editingExistingImages.splice(fromIdx, 1)[0];
+      _editingExistingImages.splice(toIdx, 0, item);
+      _selectedPhotoIdx = -1;
+      renderEditPhotoPreview();
+    });
     var _tapHandled = false;
     function handleTap(e) {
       if (e.target === del || e.target.closest("button")) return;
@@ -2152,7 +2190,7 @@ function renderEditPhotoPreview() {
   if (countEl) {
     if (!_editingExistingImages.length) countEl.textContent = "No photos — select files to upload";
     else if (_selectedPhotoIdx >= 0) countEl.textContent = "Tap another photo to swap with #" + (_selectedPhotoIdx + 1) + " — or tap same to cancel";
-    else countEl.textContent = _editingExistingImages.length + "/10 photos — tap 2 photos to swap, 1st = banner";
+    else countEl.textContent = _editingExistingImages.length + "/10 photos — drag to reorder (PC) or tap 2 to swap (phone)";
   }
 }
 
