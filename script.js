@@ -2147,94 +2147,49 @@ function editAdminLaptop(id) {
 
 function renderEditPhotoPreview() {
   var preview = document.getElementById("afPhotoPreview");
-  if (!preview) { console.warn("afPhotoPreview element not found"); return; }
+  if (!preview) return;
   preview.innerHTML = "";
-  console.log("renderEditPhotoPreview: " + _editingExistingImages.length + " images");
   _editingExistingImages.forEach(function(src, i) {
-    if (!src || typeof src !== "string" || src.length < 10) { console.warn("Invalid image at index " + i); return; }
+    if (!src || typeof src !== "string" || src.length < 10) return;
     var wrap = document.createElement("div");
-    wrap.style.cssText = "position:relative;width:80px;height:90px;border-radius:8px;overflow:visible;border:1px solid " + (i === 0 ? "rgba(212,175,55,0.6)" : "rgba(255,255,255,0.1)") + ";flex-shrink:0";
+    wrap.style.cssText = "position:relative;width:76px;height:90px;flex-shrink:0";
     var imgWrap = document.createElement("div");
-    imgWrap.style.cssText = "width:80px;height:72px;border-radius:8px;overflow:hidden;position:relative";
+    imgWrap.style.cssText = "width:76px;height:76px;border-radius:8px;overflow:hidden;border:2px solid rgba(255,255,255,0.12);position:relative";
     var img = document.createElement("img");
     img.src = src;
     img.style.cssText = "width:100%;height:100%;object-fit:cover";
     img.onerror = function() { imgWrap.style.background = "rgba(244,67,54,0.2)"; img.style.display = "none"; };
-    // Star badge for main photo
-    if (i === 0) {
-      var starBadge = document.createElement("span");
-      starBadge.textContent = "⭐ MAIN";
-      starBadge.style.cssText = "position:absolute;top:2px;left:2px;background:rgba(212,175,55,0.9);color:#000;font-size:0.5rem;font-weight:700;padding:1px 5px;border-radius:4px;z-index:2";
-      imgWrap.appendChild(starBadge);
-    }
+    // Number badge
+    var num = document.createElement("span");
+    num.textContent = i + 1;
+    num.style.cssText = "position:absolute;top:2px;left:2px;background:rgba(0,0,0,0.7);color:#d4af37;font-size:0.65rem;font-weight:800;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:2;border:1px solid rgba(212,175,55,0.4)";
     // Delete button
     var del = document.createElement("button");
     del.innerHTML = "✕";
     del.style.cssText = "position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(244,67,54,0.85);color:#fff;border:none;font-size:0.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;z-index:2";
-    del.title = "Remove photo";
+    del.title = "Remove photo " + (i + 1);
     del.onclick = function(e) {
       e.stopPropagation();
       _editingExistingImages.splice(i, 1);
       renderEditPhotoPreview();
-      document.getElementById("afPhotoCount").textContent = _editingExistingImages.length + " photo(s) remaining";
     };
     imgWrap.appendChild(img);
+    imgWrap.appendChild(num);
     imgWrap.appendChild(del);
     wrap.appendChild(imgWrap);
-    // Bottom controls row
-    var controls = document.createElement("div");
-    controls.style.cssText = "display:flex;justify-content:center;gap:2px;margin-top:3px";
-    // Move left
-    if (i > 0) {
-      var leftBtn = document.createElement("button");
-      leftBtn.textContent = "◀";
-      leftBtn.style.cssText = "background:rgba(255,255,255,0.08);border:none;color:rgba(255,255,255,0.5);font-size:0.55rem;width:20px;height:18px;border-radius:3px;cursor:pointer;padding:0";
-      leftBtn.title = "Move left";
-      leftBtn.onclick = function(e) {
-        e.stopPropagation();
-        var temp = _editingExistingImages[i];
-        _editingExistingImages[i] = _editingExistingImages[i - 1];
-        _editingExistingImages[i - 1] = temp;
-        renderEditPhotoPreview();
-      };
-      controls.appendChild(leftBtn);
+    // Hint text
+    if (i === 0) {
+      var hint = document.createElement("div");
+      hint.textContent = "1st = banner";
+      hint.style.cssText = "font-size:0.5rem;color:#d4af37;text-align:center;margin-top:2px;white-space:nowrap";
+      wrap.appendChild(hint);
     }
-    // Set main (star)
-    if (i > 0) {
-      var starBtn = document.createElement("button");
-      starBtn.textContent = "⭐";
-      starBtn.style.cssText = "background:rgba(212,175,55,0.15);border:none;color:#d4af37;font-size:0.6rem;width:20px;height:18px;border-radius:3px;cursor:pointer;padding:0";
-      starBtn.title = "Set as main/banner photo";
-      starBtn.onclick = function(e) {
-        e.stopPropagation();
-        var item = _editingExistingImages.splice(i, 1)[0];
-        _editingExistingImages.unshift(item);
-        renderEditPhotoPreview();
-      };
-      controls.appendChild(starBtn);
-    }
-    // Move right
-    if (i < _editingExistingImages.length - 1) {
-      var rightBtn = document.createElement("button");
-      rightBtn.textContent = "▶";
-      rightBtn.style.cssText = "background:rgba(255,255,255,0.08);border:none;color:rgba(255,255,255,0.5);font-size:0.55rem;width:20px;height:18px;border-radius:3px;cursor:pointer;padding:0";
-      rightBtn.title = "Move right";
-      rightBtn.onclick = function(e) {
-        e.stopPropagation();
-        var temp = _editingExistingImages[i];
-        _editingExistingImages[i] = _editingExistingImages[i + 1];
-        _editingExistingImages[i + 1] = temp;
-        renderEditPhotoPreview();
-      };
-      controls.appendChild(rightBtn);
-    }
-    wrap.appendChild(controls);
     preview.appendChild(wrap);
   });
   var countEl = document.getElementById("afPhotoCount");
   if (countEl) {
     if (!_editingExistingImages.length) countEl.textContent = "No photos — select files to upload";
-    else countEl.textContent = _editingExistingImages.length + " photo(s) — 1st is main/banner";
+    else countEl.textContent = _editingExistingImages.length + "/10 photos — 1st photo = banner";
   }
 }
 
@@ -4013,7 +3968,7 @@ function initBannerUpload() {
   if (!wrap) return;
   var user = null;
   try { user = JSON.parse(localStorage.getItem("cp_user")); } catch(e) {}
-  var isAdmin = user && user.isAdmin;
+  var isAdmin = user && (user.isAdmin || user.role === "admin");
   if (!isAdmin) { wrap.style.display = "none"; return; }
   wrap.style.display = "block";
   // Load existing banner
@@ -4026,12 +3981,6 @@ function initBannerUpload() {
       }
     }).catch(function() {});
   }
-  // Prompt admin on every visit
-  setTimeout(function() {
-    if (confirm("📸 Upload a new banner photo for the front page?\n\nClick OK to upload, Cancel to skip.")) {
-      document.getElementById("bannerFileInput").click();
-    }
-  }, 2000);
 }
 
 function handleBannerUpload(input) {
