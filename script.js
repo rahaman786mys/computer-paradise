@@ -1313,7 +1313,21 @@ function handlePhotoSelect(input) {
   filesToProcess.forEach(function(f) {
     var reader = new FileReader();
     reader.onload = function(ev) {
-      enhanceImage(ev.target.result, function(compressed) {
+      // Resize on canvas to keep under Firestore 1MB limit
+      var raw = ev.target.result;
+      var img = new Image();
+      img.onload = function() {
+        var w = img.width, h = img.height;
+        var maxDim = 800;
+        if (w > maxDim || h > maxDim) {
+          if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+          else { w = Math.round(w * maxDim / h); h = maxDim; }
+        }
+        var canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        var compressed = canvas.toDataURL("image/jpeg", 0.6);
         _editingExistingImages.push(compressed);
         pending--;
         console.log("Photo added, remaining:", pending);
@@ -1324,7 +1338,19 @@ function handlePhotoSelect(input) {
           if (countEl) countEl.textContent = _editingExistingImages.length + " photo(s) total";
           showToast("Added " + filesToProcess.length + " photo(s)!", "✅");
         }
-      });
+      };
+      img.onerror = function() {
+        _editingExistingImages.push(raw);
+        pending--;
+        if (pending === 0) {
+          _editingExistingImages = _editingExistingImages.slice(0, maxPhotos);
+          renderEditPhotoPreview();
+          var countEl = document.getElementById("afPhotoCount");
+          if (countEl) countEl.textContent = _editingExistingImages.length + " photo(s) total";
+          showToast("Added " + filesToProcess.length + " photo(s)!", "✅");
+        }
+      };
+      img.src = raw;
     };
     reader.readAsDataURL(f);
   });
@@ -2197,26 +2223,26 @@ function renderEditPhotoPreview() {
     hint.textContent = i === 0 ? "1st = banner" : "";
     hint.style.cssText = "font-size:0.5rem;color:" + (i === 0 ? "#d4af37" : "rgba(255,255,255,0.2)") + ";text-align:center;margin-top:2px;white-space:nowrap;min-height:12px";
     wrap.appendChild(hint);
-    // Tap to select / swap
-    wrap.onclick = function(e) {
+    // Tap to select / swap — works on mobile and desktop
+    function handleTap(e) {
       if (e.target === del || e.target.closest("button")) return;
+      e.preventDefault();
       if (_selectedPhotoIdx === -1) {
-        // First tap: select
         _selectedPhotoIdx = i;
         renderEditPhotoPreview();
       } else if (_selectedPhotoIdx === i) {
-        // Tap same: deselect
         _selectedPhotoIdx = -1;
         renderEditPhotoPreview();
       } else {
-        // Second tap: swap
         var temp = _editingExistingImages[_selectedPhotoIdx];
         _editingExistingImages[_selectedPhotoIdx] = _editingExistingImages[i];
         _editingExistingImages[i] = temp;
         _selectedPhotoIdx = -1;
         renderEditPhotoPreview();
       }
-    };
+    }
+    wrap.addEventListener("touchend", handleTap, { passive: false });
+    wrap.onclick = handleTap;
     preview.appendChild(wrap);
   });
   var countEl = document.getElementById("afPhotoCount");
