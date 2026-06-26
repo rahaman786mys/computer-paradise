@@ -2450,28 +2450,150 @@ function deleteAdminCoupon(idx) {
 function openAuthModal() {
   const m = document.getElementById("authOverlay");
   if (!m) return;
-  m.classList.add("show"); document.body.style.overflow = "hidden";
-  const i = document.getElementById("authPhone"); if (i) { i.value = ""; i.focus(); }
+  m.classList.add("show");
+  document.body.style.overflow = "hidden";
+  
+  // Reset to step 1 (phone number)
+  document.getElementById("authStep1").style.display = "block";
+  document.getElementById("authStep2").style.display = "none";
+  document.getElementById("authTitle").textContent = "Login / Register";
+  document.getElementById("authSubtitle").textContent = "Enter your phone number to continue";
+  document.getElementById("authError").style.display = "none";
+  document.getElementById("authConfirmGroup").style.display = "none";
+  
+  const i = document.getElementById("authPhone");
+  if (i) { i.value = ""; i.focus(); }
 }
 
 function closeAuthModal() { const m = document.getElementById("authOverlay"); if (!m) return; m.classList.remove("show"); document.body.style.overflow = ""; }
 
-function sendOTP() {
+function handlePhoneSubmit() {
   const phone = (document.getElementById("authPhone").value || "").trim();
-  if (phone.length < 10) { showToast("⚠️ Enter a valid 10-digit number"); return; }
-  saveAuth(phone);
-  closeAuthModal();
-  showToast("✅ Logged in as +91-" + phone);
-  // Notify shop owner via WhatsApp
-  var msg = "📱 New Customer Login\nPhone: +91-" + phone + "\nTime: " + new Date().toLocaleString();
-  window.open("https://wa.me/919916611010?text=" + encodeURIComponent(msg), "_blank");
+  if (phone.length < 10) { showAuthError("⚠️ Enter a valid 10-digit number"); return; }
+  
+  // Check if customer already exists in Firestore
+  if (_useFirestore) {
+    db.collection("customers").doc("+91-" + phone).get().then(doc => {
+      if (doc.exists && doc.data().password) {
+        // Existing customer → show login form
+        showAuthPasswordForm(phone, false);
+      } else {
+        // New customer → show registration form
+        showAuthPasswordForm(phone, true);
+      }
+    }).catch(e => {
+      // Error - treat as new registration
+      showAuthPasswordForm(phone, true);
+    });
+  } else {
+    // localStorage mode - check locally
+    let customers = {};
+    try { customers = JSON.parse(localStorage.getItem("cp_customers") || "{}"); } catch(e) {}
+    if (customers["+91-" + phone] && customers["+91-" + phone].password) {
+      showAuthPasswordForm(phone, false); // login
+    } else {
+      showAuthPasswordForm(phone, true); // register
+    }
+  }
 }
 
-function verifyOTP() { }
-function handleOTPInput(el) { }
-function handleOTPBackspace(el, e) { }
-function resendOTP() { }
-function completeLogin() { closeAuthModal(); }
+function showAuthPasswordForm(phone, isNew) {
+  document.getElementById("authStep1").style.display = "none";
+  document.getElementById("authStep2").style.display = "block";
+  document.getElementById("authTitle").textContent = isNew ? "Create Password" : "Enter Password";
+  document.getElementById("authSubtitle").textContent = isNew ? "Set a password for your account" : "Welcome back! Enter your password";
+  document.getElementById("authPasswordLabel").textContent = isNew ? "Set Password" : "Password";
+  document.getElementById("authConfirmGroup").style.display = isNew ? "block" : "none";
+  document.getElementById("authPasswordBtn").textContent = isNew ? "Register" : "Login";
+  document.getElementById("authPhone").value = phone;
+  document.getElementById("authPassword").value = "";
+  document.getElementById("authConfirmPassword").value = "";
+  document.getElementById("authError").style.display = "none";
+  document.getElementById("authPassword").focus();
+  
+  // Store whether this is new or existing
+  document.getElementById("authOverlay").dataset.isNew = isNew;
+}
+
+function handlePasswordSubmit() {
+  const phone = document.getElementById("authPhone").value.trim();
+  const password = document.getElementById("authPassword").value;
+  const confirmPassword = document.getElementById("authConfirmPassword").value;
+  const isNew = document.getElementById("authOverlay").dataset.isNew === "true";
+  
+  if (password.length < 4) { showAuthError("⚠️ Password must be at least 4 digits"); return; }
+  
+  if (isNew) {
+    // Registration
+    if (password !== confirmPassword) { showAuthError("⚠️ Passwords do not match"); return; }
+    
+    if (_useFirestore) {
+      const customerData = {
+        phone: "+91-" + phone,
+        password: btoa(password), // simple encode (not secure, but basic)
+        createdAt: new Date().toISOString(),
+        loginCount: 1
+      };
+      db.collection("customers").doc(customerData.phone).set(customerData).then(() => {
+        completeRegister(phone);
+      }).catch(e => {
+        showAuthError("❌ Registration failed. Try again.");
+      });
+    } else {
+      let customers = {};
+      try { customers = JSON.parse(localStorage.getItem("cp_customers") || "{}"); } catch(e) {}
+      customers["+91-" + phone] = { password: btoa(password), createdAt: new Date().toISOString(), loginCount: 1 };
+      localStorage.setItem("cp_customers", JSON.stringify(customers));
+      completeRegister(phone);
+    }
+  } else {
+    // Login
+    if (_useFirestore) {
+      db.collection("customers").doc("+91-" + phone).get().then(doc => {
+        if (doc.exists && atob(doc.data().password) === password) {
+          completeLogin(phone);
+        } else {
+          showAuthError("❌ Incorrect password");
+        }
+      }).catch(e => { showAuthError("❌ Login failed. Try again."); });
+    } else {
+      let customers = {};
+      try { customers = JSON.parse(localStorage.getItem("cp_customers") || "{}"); } catch(e) {}
+      if (customers["+91-" + phone] && atob(customers["+91-" + phone].password) === password) {
+        completeLogin(phone);
+      } else {
+        showAuthError("❌ Incorrect password");
+      }
+    }
+  }
+}
+
+function completeRegister(phone) {
+  // Notify shop owner via WhatsApp
+  const msg = "🆕 New Customer Registration\nPhone: +91-" + phone + "\nTime: " + new Date().toLocaleString();
+  window.open("https://wa.me/919916611010?text=" + encodeURIComponent(msg), "_blank");
+  
+  // Auto-login
+  saveAuth(phone);
+  closeAuthModal();
+  showToast("✅ Registered & logged in!");
+}
+
+function completeLogin(phone) {
+  saveAuth(phone);
+  closeAuthModal();
+  showToast("✅ Welcome back +91-" + phone + "!");
+  
+  // Update login count in Firestore
+  if (_useFirestore) {
+    db.collection("customers").doc("+91-" + phone).update({ loginCount: firebase.firestore.FieldValue.increment(1) }).catch(e => {});
+  }
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById("authError");
+  if (el) { el.textContent = msg; el.style.display = "block"; }
+}
 
 // ===== Call Request =====
 function handleCallRequest(e) {

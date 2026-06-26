@@ -183,22 +183,41 @@ document.addEventListener("DOMContentLoaded", function() {
 </section>
 
 <div class="modal-overlay" id="authOverlay">
-  <div class="modal">
-    <button class="modal-close" onclick="closeAuthModal()">✕</button>
-    <div class="modal-icon">📱</div>
-    <h2>Login / Register</h2>
-    <p>Enter your phone number to continue</p>
-    <div class="form-group">
-      <label>Phone Number</label>
-      <div class="auth-phone-input">
-        <span class="country-code">+91</span>
-        <input type="tel" id="authPhone" placeholder="9876543210" maxlength="10" pattern="[0-9]{10}">
+    <div class="modal">
+      <button class="modal-close" onclick="closeAuthModal()">✕</button>
+      <div class="modal-icon">📱</div>
+      <h2 id="authTitle">Login / Register</h2>
+      <p id="authSubtitle">Enter your phone number to continue</p>
+      
+      <!-- Step 1: Phone Number -->
+      <div id="authStep1">
+        <div class="form-group">
+          <label>Phone Number</label>
+          <div class="auth-phone-input">
+            <span class="country-code">+91</span>
+            <input type="tel" id="authPhone" placeholder="9876543210" maxlength="10" pattern="[0-9]{10}">
+          </div>
+        </div>
+        <button class="btn btn-green btn-block" onclick="handlePhoneSubmit()">✅ Continue</button>
       </div>
+      
+      <!-- Step 2: Password (hidden by default) -->
+      <div id="authStep2" style="display:none">
+        <div class="form-group">
+          <label id="authPasswordLabel">Set Password</label>
+          <input type="password" id="authPassword" placeholder="Enter password (min 4 digits)" maxlength="20">
+        </div>
+        <div class="form-group" id="authConfirmGroup" style="display:none">
+          <label>Confirm Password</label>
+          <input type="password" id="authConfirmPassword" placeholder="Re-enter password" maxlength="20">
+        </div>
+        <button class="btn btn-green btn-block" onclick="handlePasswordSubmit()">✅ <span id="authPasswordBtn">Register</span></button>
+      </div>
+      
+      <p id="authError" style="font-size:0.72rem;color:#ef4444;margin-top:10px;text-align:center;display:none"></p>
+      <p style="font-size:0.72rem;color:var(--text-light);margin-top:12px;text-align:center;">We'll save your number for checkout & WhatsApp</p>
     </div>
-    <button class="btn btn-green btn-block" id="sendOTPBtn">✅ Continue</button>
-    <p style="font-size:0.72rem;color:var(--text-light);margin-top:12px;text-align:center;">We'll save your number for checkout & WhatsApp</p>
   </div>
-</div>
 
 <!-- Cart Sidebar -->
 <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
@@ -646,6 +665,6 @@ document.addEventListener("DOMContentLoaded", function() {
   </div>
 </footer>
 
-<script src="script.js?v=37"></script>
+<script src="script.js?v=38"></script>
 </body>
 </html>
