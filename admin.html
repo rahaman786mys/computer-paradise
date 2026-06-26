@@ -13,6 +13,9 @@
     .logout-btn { padding: 8px 16px; background: rgba(255,100,100,0.15); border: 1px solid rgba(255,100,100,0.3); border-radius: 6px; color: #ff6464; cursor: pointer; font-size: 0.9rem; }
     .admin-content { background: #1a1a1a; border-radius: 12px; padding: 20px; min-height: 500px; }
     .unauthorized { text-align: center; padding: 50px; color: #666; }
+    .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .admin-tab { padding: 10px 16px; background: #2a2a2a; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; cursor: pointer; font-size: 0.9rem; }
+    .admin-tab.active { background: #d4af37; border-color: #d4af37; color: #000; }
   </style>
 </head>
 <body>
@@ -21,8 +24,17 @@
       <h1>🛠 Admin Panel - Computer Paradise</h1>
       <button class="logout-btn" onclick="adminLogout()">🚪 Logout</button>
     </div>
-    <div class="admin-content" id="adminContent">
-      <!-- Admin panel will be injected here -->
+    <div class="admin-content">
+      <div class="admin-tabs" id="adminTabs">
+        <button class="admin-tab active" onclick="switchAdminTab('list')">📋 All Laptops</button>
+        <button class="admin-tab" onclick="switchAdminTab('mylistings')">📋 My Listings</button>
+        <button class="admin-tab" onclick="switchAdminTab('add')">➕ Add New</button>
+        <button class="admin-tab" onclick="switchAdminTab('deleted')">🗑 Deleted</button>
+        <button class="admin-tab" onclick="switchAdminTab('inventory')">📊 Inventory</button>
+        <button class="admin-tab" onclick="switchAdminTab('sales')">💰 Sales</button>
+        <button class="admin-tab" onclick="switchAdminTab('customers')">👥 Customers</button>
+      </div>
+      <div id="adminPanelBody">Loading...</div>
     </div>
   </div>
 
@@ -46,9 +58,11 @@
     }
     const db = firebase.firestore();
     
-    // Auth check - redirect if not admin
+    // Auth check
     const ADMIN_PASSWORD = "Mysore@123";
     let currentUser = null;
+    let laptops = [];
+    let _useFirestore = true;
     
     function checkAdminAuth() {
       try {
@@ -97,35 +111,187 @@
       } catch(e) {}
     }, 120000);
     
-    // Check auth immediately
-    if (!checkAdminAuth()) {
-      document.body.innerHTML = '<div class="unauthorized"><h2>🔐 Access Denied</h2><p>Admin login required</p></div>';
-    } else {
-      // Load the full script.js for admin functionality
-      const script = document.createElement("script");
-      script.src = "script.js?v=29";
-      script.onload = function() {
-        // Inject admin panel HTML
-        const content = document.getElementById("adminContent");
-        content.innerHTML = `
-          <div class="admin-tabs" style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
-            <button class="admin-tab active" onclick="switchAdminTab('list')">📋 All Laptops</button>
-            <button class="admin-tab" onclick="switchAdminTab('mylistings')">📋 My Listings</button>
-            <button class="admin-tab" onclick="switchAdminTab('add')">➕ Add New</button>
-            <button class="admin-tab" onclick="switchAdminTab('deleted')">🗑 Deleted</button>
-            <button class="admin-tab" onclick="switchAdminTab('inventory')">📊 Inventory</button>
-            <button class="admin-tab" onclick="switchAdminTab('sales')">💰 Sales</button>
-            <button class="admin-tab" onclick="switchAdminTab('customers')">👥 Customers</button>
-          </div>
-          <div id="adminPanelBody"></div>
-        `;
+    // Toast notification
+    function showToast(msg, icon="ℹ️") {
+      const t = document.createElement("div");
+      t.style.cssText = "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.9);color:#fff;padding:12px 24px;border-radius:8px;z-index:99999;font-size:0.9rem;box-shadow:0 4px 20px rgba(0,0,0,0.3)";
+      t.innerHTML = `${icon} ${msg}`;
+      document.body.appendChild(t);
+      setTimeout(() => { t.style.opacity="0"; setTimeout(()=>t.remove(),300); }, 3000);
+    }
+    
+    // Switch admin tab
+    function switchAdminTab(tab) {
+      document.querySelectorAll(".admin-tab").forEach(t => t.classList.remove("active"));
+      const tabMap = { "list": 0, "mylistings": 1, "add": 2, "deleted": 3, "inventory": 4, "sales": 5, "customers": 6 };
+      const tabs = document.querySelectorAll(".admin-tab");
+      if (tabs[tabMap[tab]]) tabs[tabMap[tab]].classList.add("active");
+      
+      const body = document.getElementById("adminPanelBody");
+      if (tab === "list") renderAdminLaptopList();
+      else if (tab === "add") showAdminAddForm();
+      else if (tab === "deleted") renderAdminDeletedList();
+      else body.innerHTML = "<p>Coming soon...</p>";
+    }
+    
+    // Render laptop list
+    function renderAdminLaptopList() {
+      const body = document.getElementById("adminPanelBody");
+      body.innerHTML = "<p>Loading laptops...</p>";
+      
+      db.collection("laptops").onSnapshot(function(snapshot) {
+        laptops = [];
+        snapshot.forEach(doc => {
+          laptops.push(doc.data());
+        });
         
-        // Initialize admin panel
-        setTimeout(function() {
-          switchAdminTab('list');
-        }, 100);
+        if (laptops.length === 0) {
+          body.innerHTML = "<p style='text-align:center;color:#666;padding:50px;'>📭 No laptops found. Add one!</p>";
+          return;
+        }
+        
+        let html = "<div style='display:grid;gap:15px;'>";
+        laptops.forEach(l => {
+          html += `
+            <div style="background:#2a2a2a;border-radius:12px;padding:15px;display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:700;color:#d4af37">${l.name}</div>
+                <div style="color:#888;font-size:0.85rem">${l.brand} • ${l.ram} • ${l.storage}</div>
+                <div style="color:#4caf50;font-weight:600">₹${l.price.toLocaleString()}</div>
+              </div>
+              <div style="display:flex;gap:8px">
+                <button onclick="editAdminLaptop(${l.id})" style="padding:8px 12px;background:#2196f3;border:none;border-radius:6px;color:#fff;cursor:pointer">✏️</button>
+                <button onclick="deleteAdminLaptop(${l.id})" style="padding:8px 12px;background:#f44336;border:none;border-radius:6px;color:#fff;cursor:pointer">🗑</button>
+              </div>
+            </div>
+          `;
+        });
+        html += "</div>";
+        body.innerHTML = html;
+      });
+    }
+    
+    // Show add form
+    function showAdminAddForm() {
+      const body = document.getElementById("adminPanelBody");
+      body.innerHTML = `
+        <form id="adminForm" onsubmit="return saveAdminLaptop(event)" style="max-width:600px;margin:0 auto">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px">
+            <input type="text" id="afBrand" placeholder="Brand" required style="width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff">
+            <input type="text" id="afName" placeholder="Model Name" required style="width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff">
+            <input type="text" id="afRam" placeholder="RAM" required style="width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff">
+            <input type="text" id="afStorage" placeholder="Storage" required style="width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff">
+            <input type="number" id="afMrp" placeholder="MRP (₹)" required style="width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff">
+            <input type="number" id="afPrice" placeholder="Selling Price (₹)" required style="width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff">
+          </div>
+          <input type="file" id="afPhotos" accept="image/*" multiple multiple style="width:100%;padding:12px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;margin-bottom:15px">
+          <button type="submit" style="width:100%;padding:14px;background:#d4af37;border:none;border-radius:8px;color:#000;font-weight:700;cursor:pointer">💾 Save Laptop</button>
+        </form>
+      `;
+    }
+    
+    // Edit laptop
+    function editAdminLaptop(id) {
+      const l = laptops.find(x => x.id === id);
+      if (!l) return;
+      document.getElementById("afBrand").value = l.brand;
+      document.getElementById("afName").value = l.name;
+      document.getElementById("afRam").value = l.ram;
+      document.getElementById("afStorage").value = l.storage;
+      document.getElementById("afMrp").value = l.mrp || "";
+      document.getElementById("afPrice").value = l.price;
+      showAdminAddForm();
+    }
+    
+    // Delete laptop
+    function deleteAdminLaptop(id) {
+      if (!confirm("Delete this laptop?")) return;
+      db.collection("laptops").doc(String(id)).delete().then(() => {
+        showToast("✅ Laptop deleted");
+      }).catch(e => {
+        console.error(e);
+        showToast("❌ Delete failed");
+      });
+    }
+    
+    // Save laptop
+    function saveAdminLaptop(e) {
+      e.preventDefault();
+      const brand = document.getElementById("afBrand").value;
+      const name = document.getElementById("afName").value;
+      const ram = document.getElementById("afRam").value;
+      const storage = document.getElementById("afStorage").value;
+      const mrp = parseInt(document.getElementById("afMrp").value);
+      const price = parseInt(document.getElementById("afPrice").value);
+      
+      const laptopData = {
+        brand, name, ram, storage, mrp, price,
+        id: Date.now(),
+        images: [],
+        screenSize: "", gen: "", processor: "", os: "windows",
+        condition: "A", deviceType: "laptop", featured: false, priority: 0,
+        purchasePrice: 0, units: 1, specialSpec: "", badge: ""
       };
-      document.head.appendChild(script);
+      
+      showToast("⬆️ Saving...");
+      db.collection("laptops").doc(String(laptopData.id)).set(laptopData).then(() => {
+        showToast("✅ Saved!");
+        switchAdminTab("list");
+      }).catch(e => {
+        console.error(e);
+        showToast("❌ Save failed");
+      });
+      return false;
+    }
+    
+    // Render deleted list
+    function renderAdminDeletedList() {
+      const body = document.getElementById("adminPanelBody");
+      body.innerHTML = "<p>Loading deleted laptops...</p>";
+      
+      db.collection("deleted_laptops").onSnapshot(function(snapshot) {
+        const deleted = [];
+        snapshot.forEach(doc => deleted.push({ id: doc.id, ...doc.data() }));
+        
+        if (deleted.length === 0) {
+          body.innerHTML = "<p style='text-align:center;color:#666;padding:50px;'>🗑 No deleted laptops</p>";
+          return;
+        }
+        
+        let html = "<div style='display:grid;gap:15px;'>";
+        deleted.forEach(l => {
+          html += `
+            <div style="background:#2a2a2a;border-radius:12px;padding:15px;display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:700;color:#d4af37">${l.name}</div>
+                <div style="color:#888;font-size:0.85rem">${l.brand}</div>
+              </div>
+              <button onclick="relistLaptop('${l.id}')" style="padding:8px 12px;background:#4caf50;border:none;border-radius:6px;color:#fff;cursor:pointer">↺ Relist</button>
+            </div>
+          `;
+        });
+        html += "</div>";
+        body.innerHTML = html;
+      });
+    }
+    
+    // Relist laptop
+    function relistLaptop(docId) {
+      db.collection("deleted_laptops").doc(docId).get().then(doc => {
+        if (doc.exists) {
+          const data = doc.data();
+          delete data.id;
+          db.collection("laptops").doc(String(data.id || Date.now())).set(data).then(() => {
+            db.collection("deleted_laptops").doc(docId).delete();
+            showToast("✅ Relisted!");
+          });
+        }
+      });
+    }
+    
+    // Check auth and initialize
+    if (checkAdminAuth()) {
+      setTimeout(() => switchAdminTab("list"), 100);
     }
   </script>
 </body>
