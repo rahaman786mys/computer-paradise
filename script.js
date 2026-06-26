@@ -888,6 +888,7 @@ function enhanceImage(dataUrl, callback) {
     callback(dataUrl);
   };
   img.onload = function() {
+    try {
     // Resize to max 800px to keep under Firestore 1MB limit
     let w = img.width, h = img.height;
     const maxDim = 800;
