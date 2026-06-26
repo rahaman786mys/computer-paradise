@@ -2069,29 +2069,34 @@ function restoreAdminFormDraft() {
 function editAdminLaptop(id) {
   const l = laptops.find(x => x.id === id);
   if (!l) return;
+  // Clear any saved draft so it won't interfere
+  try { localStorage.removeItem("cp_admin_form_draft"); localStorage.removeItem("cp_admin_form_photos"); } catch(e) {}
   switchAdminTab("add");
-  document.getElementById("afId").value = l.id;
-  document.getElementById("afBrand").value = l.brand;
-  document.getElementById("afName").value = l.name;
-  document.getElementById("afScreen").value = l.screenSize || "";
-  document.getElementById("afGen").value = l.gen || "";
-  document.getElementById("afRam").value = l.ram;
-  document.getElementById("afStorage").value = l.storage;
-  document.getElementById("afProcessor").value = l.processor;
-  document.getElementById("afMrp").value = l.mrp || Math.round(l.price * 1.35);
-  document.getElementById("afPrice").value = l.price;
-  document.getElementById("afPurchasePrice").value = l.purchasePrice || "";
-  document.getElementById("afUnits").value = l.units || 1;
-  document.getElementById("afOs").value = l.os;
-  document.getElementById("afDeviceType").value = l.deviceType || "laptop";
-  document.getElementById("afCondition").value = l.condition;
-  document.getElementById("afBadge").value = l.badge || "";
-  document.getElementById("afSpecialSpec").value = l.specialSpec || "";
-  document.getElementById("afFeatured").checked = l.featured || false;
-  document.getElementById("afPriority").value = l.priority || 0;
-  document.getElementById("afPhotoCount").textContent = `${l.images.length} current photo(s)`;
-  const subBtn = document.querySelector("#adminForm .btn-primary");
-  if (subBtn) subBtn.textContent = "✏️ Update Laptop";
+  // Small delay to ensure resetAdminForm from switchAdminTab completes first
+  setTimeout(function() {
+    document.getElementById("afId").value = l.id;
+    document.getElementById("afBrand").value = l.brand;
+    document.getElementById("afName").value = l.name;
+    document.getElementById("afScreen").value = l.screenSize || "";
+    document.getElementById("afGen").value = l.gen || "";
+    document.getElementById("afRam").value = l.ram;
+    document.getElementById("afStorage").value = l.storage;
+    document.getElementById("afProcessor").value = l.processor;
+    document.getElementById("afMrp").value = l.mrp || Math.round(l.price * 1.35);
+    document.getElementById("afPrice").value = l.price;
+    document.getElementById("afPurchasePrice").value = l.purchasePrice || "";
+    document.getElementById("afUnits").value = l.units || 1;
+    document.getElementById("afOs").value = l.os;
+    document.getElementById("afDeviceType").value = l.deviceType || "laptop";
+    document.getElementById("afCondition").value = l.condition;
+    document.getElementById("afBadge").value = l.badge || "";
+    document.getElementById("afSpecialSpec").value = l.specialSpec || "";
+    document.getElementById("afFeatured").checked = l.featured || false;
+    document.getElementById("afPriority").value = l.priority || 0;
+    document.getElementById("afPhotoCount").textContent = `${l.images.length} current photo(s)`;
+    const subBtn = document.querySelector("#adminForm .btn-primary");
+    if (subBtn) subBtn.textContent = "✏️ Update Laptop";
+  }, 50);
 }
 
 function saveAdminLaptop(e) {
