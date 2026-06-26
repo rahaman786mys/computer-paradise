@@ -1224,8 +1224,8 @@ function loginAsAdmin(name) {
   updateAuthUI();
   showToast("👑 Admin logged in");
   closeAdminLoginModal();
-  // Redirect to dedicated admin page
-  window.location.href = "admin.html";
+  // Open admin page in NEW tab so back button stays on main site
+  window.open("admin.html", "_blank");
 }
 
 function handleGoogleCredential(response) {
