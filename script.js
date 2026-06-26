@@ -1332,7 +1332,7 @@ function closeAdminPanel() {
   document.body.style.overflow = "";
 }
 
-function switchAdminTab(tab) {
+function switchAdminTab(tab, skipReset) {
   document.querySelectorAll(".admin-tab").forEach(t => t.classList.remove("active"));
   document.querySelectorAll(".admin-tab-content").forEach(c => c.classList.remove("active"));
   if (tab === "list") {
@@ -1366,7 +1366,7 @@ function switchAdminTab(tab) {
   } else {
     document.querySelectorAll(".admin-tab")[2].classList.add("active");
     document.getElementById("adminTabAdd").classList.add("active");
-    resetAdminForm();
+    if (!skipReset) resetAdminForm();
   }
 }
 
@@ -2073,6 +2073,7 @@ function saveAdminFormDraft() {
 }
 
 function restoreAdminFormDraft() {
+  if (_editingExistingImages.length > 0) return;
   try {
     const raw = localStorage.getItem("cp_admin_form_draft");
     if (!raw) return;
@@ -2105,7 +2106,7 @@ function editAdminLaptop(id) {
   try { localStorage.removeItem("cp_admin_form_draft"); localStorage.removeItem("cp_admin_form_photos"); } catch(e) {}
   _editingExistingImages = l.images || [];
   console.log("editAdminLaptop id=" + id + ": " + _editingExistingImages.length + " images, images type=" + typeof l.images + ", isArray=" + Array.isArray(l.images));
-  switchAdminTab("add");
+  switchAdminTab("add", true);
   setTimeout(function() {
     document.getElementById("afId").value = l.id;
     document.getElementById("afBrand").value = l.brand;
