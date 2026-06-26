@@ -2453,13 +2453,23 @@ function openAuthModal() {
   m.classList.add("show");
   document.body.style.overflow = "hidden";
   
-  // Reset to step 1 (phone number)
-  document.getElementById("authStep1").style.display = "block";
-  document.getElementById("authStep2").style.display = "none";
-  document.getElementById("authTitle").textContent = "Login / Register";
-  document.getElementById("authSubtitle").textContent = "Enter your phone number to continue";
-  document.getElementById("authError").style.display = "none";
-  document.getElementById("authConfirmGroup").style.display = "none";
+  // Reset to step 1 (phone number) - only if elements exist
+  const step1 = document.getElementById("authStep1");
+  const step2 = document.getElementById("authStep2");
+  const title = document.getElementById("authTitle");
+  const subtitle = document.getElementById("authSubtitle");
+  const error = document.getElementById("authError");
+  const confirmGroup = document.getElementById("authConfirmGroup");
+  
+  if (step1) step1.style.display = "block";
+  if (step2) step2.style.display = "none";
+  if (title) title.textContent = "Login / Register";
+  if (subtitle) subtitle.textContent = "Enter your phone number to continue";
+  if (error) error.style.display = "none";
+  if (confirmGroup) confirmGroup.style.display = "none";
+  
+  // Remove stored data
+  m.removeAttribute("data-is-new");
   
   const i = document.getElementById("authPhone");
   if (i) { i.value = ""; i.focus(); }
@@ -2498,28 +2508,47 @@ function handlePhoneSubmit() {
 }
 
 function showAuthPasswordForm(phone, isNew) {
-  document.getElementById("authStep1").style.display = "none";
-  document.getElementById("authStep2").style.display = "block";
-  document.getElementById("authTitle").textContent = isNew ? "Create Password" : "Enter Password";
-  document.getElementById("authSubtitle").textContent = isNew ? "Set a password for your account" : "Welcome back! Enter your password";
-  document.getElementById("authPasswordLabel").textContent = isNew ? "Set Password" : "Password";
-  document.getElementById("authConfirmGroup").style.display = isNew ? "block" : "none";
-  document.getElementById("authPasswordBtn").textContent = isNew ? "Register" : "Login";
-  document.getElementById("authPhone").value = phone;
-  document.getElementById("authPassword").value = "";
-  document.getElementById("authConfirmPassword").value = "";
-  document.getElementById("authError").style.display = "none";
-  document.getElementById("authPassword").focus();
+  const step1 = document.getElementById("authStep1");
+  const step2 = document.getElementById("authStep2");
+  const title = document.getElementById("authTitle");
+  const subtitle = document.getElementById("authSubtitle");
+  const label = document.getElementById("authPasswordLabel");
+  const confirmGroup = document.getElementById("authConfirmGroup");
+  const pwdBtn = document.getElementById("authPasswordBtn");
+  const phoneInput = document.getElementById("authPhone");
+  const passwordInput = document.getElementById("authPassword");
+  const confirmInput = document.getElementById("authConfirmPassword");
+  const error = document.getElementById("authError");
+  const overlay = document.getElementById("authOverlay");
+  
+  if (step1) step1.style.display = "none";
+  if (step2) step2.style.display = "block";
+  if (title) title.textContent = isNew ? "Create Password" : "Enter Password";
+  if (subtitle) subtitle.textContent = isNew ? "Set a password for your account" : "Welcome back! Enter your password";
+  if (label) label.textContent = isNew ? "Set Password" : "Password";
+  if (confirmGroup) confirmGroup.style.display = isNew ? "block" : "none";
+  if (pwdBtn) pwdBtn.textContent = isNew ? "Register" : "Login";
+  if (phoneInput) phoneInput.value = phone;
+  if (passwordInput) passwordInput.value = "";
+  if (confirmInput) confirmInput.value = "";
+  if (error) error.style.display = "none";
+  if (passwordInput) passwordInput.focus();
   
   // Store whether this is new or existing
-  document.getElementById("authOverlay").dataset.isNew = isNew;
+  if (overlay) overlay.dataset.isNew = isNew;
 }
 
 function handlePasswordSubmit() {
-  const phone = document.getElementById("authPhone").value.trim();
-  const password = document.getElementById("authPassword").value;
-  const confirmPassword = document.getElementById("authConfirmPassword").value;
-  const isNew = document.getElementById("authOverlay").dataset.isNew === "true";
+  const phoneEl = document.getElementById("authPhone");
+  const pwdEl = document.getElementById("authPassword");
+  const confirmEl = document.getElementById("authConfirmPassword");
+  const overlay = document.getElementById("authOverlay");
+  
+  if (!phoneEl || !pwdEl) return;
+  const phone = (phoneEl.value || "").trim();
+  const password = pwdEl.value || "";
+  const confirmPassword = confirmEl ? confirmEl.value || "" : "";
+  const isNew = overlay ? overlay.dataset.isNew === "true" : false;
   
   if (password.length < 4) { showAuthError("⚠️ Password must be at least 4 digits"); return; }
   

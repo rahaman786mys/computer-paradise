@@ -6365,13 +6365,23 @@
   .mod-cell { min-height: 120px !important; max-height: 120px !important; }
   .mod-frame { max-width: 100%; }
   
-  /* Fix search panel on mobile */
+  /* Fix filter bar on mobile - make it scrollable, not sticky */
+  .filter-bar { 
+    position: relative !important; 
+    top: 0 !important; 
+    padding: 15px 0;
+  }
+  
+  /* Fix search panel on mobile - full width, proper positioning */
   .search-panel { 
-    width: 100% !important; 
-    max-width: 100vw;
-    right: 0;
-    left: 0;
-    margin: 10px 0;
+    position: fixed !important; 
+    top: 60px !important; 
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 95vw !important; 
+    max-width: 95vw !important;
+    right: auto !important;
+    margin: 0;
   }
   
   /* Fix laptop grid on mobile - show 2 per row */
