@@ -883,6 +883,10 @@ function setupUpload() {
 // Auto image enhancement — resizes, removes blur, fixes lighting, sharpens
 function enhanceImage(dataUrl, callback) {
   const img = new Image();
+  img.onerror = function() {
+    console.warn("enhanceImage: failed to load image, using raw");
+    callback(dataUrl);
+  };
   img.onload = function() {
     // Resize to max 800px to keep under Firestore 1MB limit
     let w = img.width, h = img.height;
@@ -973,8 +977,16 @@ function enhanceImage(dataUrl, callback) {
     }
 
     callback(canvas.toDataURL("image/jpeg", 0.5));
+  } catch(e) {
+    console.warn("enhanceImage: canvas error, using raw", e);
+    callback(dataUrl);
+  }
   };
   img.src = dataUrl;
+  // Safety timeout — if image never loads, use raw after 5s
+  setTimeout(function() {
+    if (!img.complete) { console.warn("enhanceImage: timeout, using raw"); callback(dataUrl); }
+  }, 5000);
 }
 
 // ===== Filter =====
@@ -1308,12 +1320,17 @@ function openAdminPanel() {
             }
             var filesToProcess = Array.from(photoInput.files).slice(0, remaining);
             if (photoInput.files.length > remaining) {
-              showToast("⚠️ Only " + remaining + " more photo(s) allowed. Added " + remaining + " of " + photoInput.files.length);
+              showToast("⚠️ Only " + remaining + " more photo(s) allowed.");
             }
+            showToast("📸 Processing " + filesToProcess.length + " photo(s)...", "⏳");
             var readers = [];
             filesToProcess.forEach(function(f) {
               var r = new FileReader();
-              readers.push(new Promise(function(res) { r.onload = function(ev) { res(ev.target.result); }; r.readAsDataURL(f); }));
+              readers.push(new Promise(function(res, rej) {
+                r.onload = function(ev) { res(ev.target.result); };
+                r.onerror = function() { rej(new Error("FileReader failed")); };
+                r.readAsDataURL(f);
+              }));
             });
             Promise.all(readers).then(function(rawPhotos) {
               var enhanced = [];
@@ -1326,9 +1343,13 @@ function openAdminPanel() {
                     _editingExistingImages = _editingExistingImages.concat(enhanced).slice(0, maxPhotos);
                     renderEditPhotoPreview();
                     document.getElementById("afPhotoCount").textContent = _editingExistingImages.length + " photo(s) total";
+                    showToast("✅ " + enhanced.length + " photo(s) added!", "🎉");
                   }
                 });
               });
+            }).catch(function(e) {
+              console.error("Photo processing error:", e);
+              showToast("❌ Failed to process photos. Try again.", "⚠️");
             });
             photoInput.value = "";
           }
