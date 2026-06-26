@@ -6285,7 +6285,7 @@
   background: rgba(255,255,255,0.04); color: #fff;
   font-size: 0.85rem; outline: none; transition: border 0.2s;
   width: 100%; box-sizing: border-box;
-  resize: vertical; min-height: 60px; font-family: inherit;
+  resize: vertical; min-height: 160px; font-family: inherit; line-height: 1.5;
 }
 .af-group textarea:focus { border-color: rgba(212,175,55,0.3); }
 .af-group textarea::placeholder { color: rgba(255,255,255,0.15); }
