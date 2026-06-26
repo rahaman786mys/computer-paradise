@@ -3618,6 +3618,8 @@ function loadDetailPage() {
 
   document.title = lap.name + " – Computer Paradise";
   document.getElementById("detailName").textContent = lap.name;
+  var bcName = document.getElementById("bcName");
+  if (bcName) bcName.textContent = lap.name;
   const mrp = lap.mrp || Math.round(lap.price * 1.35);
   const save = mrp - lap.price;
   document.getElementById("detailPrice").textContent = "₹" + lap.price.toLocaleString();
@@ -3652,36 +3654,53 @@ function loadDetailPage() {
   if (lap.images && lap.images.length > 0) {
     let currentPhotoIdx = 0;
     const imgs = lap.images;
+    const photoWrap = document.getElementById("detailMainPhoto");
+    photoWrap.style.position = "relative";
+    // Photo counter
+    let counterEl = photoWrap.querySelector(".photo-counter");
+    if (!counterEl) { counterEl = document.createElement("div"); counterEl.className = "photo-counter"; photoWrap.appendChild(counterEl); }
+    function updateCounter() { counterEl.textContent = (currentPhotoIdx + 1) + " / " + imgs.length; }
     function showPhoto(i) {
       if (i < 0) i = imgs.length - 1;
       if (i >= imgs.length) i = 0;
+      if (i === currentPhotoIdx && mainImg.style.display === "block") return;
       currentPhotoIdx = i;
-      mainImg.src = imgs[i];
+      // Crossfade
+      mainImg.classList.add("crossfading");
+      setTimeout(function() {
+        mainImg.src = imgs[i];
+        mainImg.onload = function() { mainImg.classList.remove("crossfading"); mainImg.onload = null; };
+      }, 180);
       mainImg.style.display = "block";
       noImg.style.display = "none";
-      thumbs.querySelectorAll("img").forEach((x, idx) => x.style.borderColor = idx === i ? "var(--accent)" : "transparent");
+      thumbs.querySelectorAll("img").forEach((x, idx) => {
+        x.classList.toggle("active-thumb", idx === i);
+      });
+      updateCounter();
     }
     showPhoto(0);
     mainImg.style.cursor = "zoom-in";
     mainImg.onclick = function() { openDetailLightbox(imgs, currentPhotoIdx, showPhoto); };
-    // Prev / Next arrows on main photo
+    // Prev / Next arrows
     const prevBtn = document.createElement("button");
     prevBtn.innerHTML = "‹";
-    prevBtn.style.cssText = "position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);border:none;color:#fff;font-size:1.5rem;width:36px;height:36px;border-radius:50%;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center";
+    prevBtn.style.cssText = "position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);border:none;color:#fff;font-size:1.5rem;width:36px;height:36px;border-radius:50%;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;transition:background 0.2s";
+    prevBtn.onmouseenter = function() { prevBtn.style.background = "rgba(0,0,0,0.75)"; };
+    prevBtn.onmouseleave = function() { prevBtn.style.background = "rgba(0,0,0,0.5)"; };
     prevBtn.onclick = function(e) { e.stopPropagation(); showPhoto(currentPhotoIdx - 1); };
     const nextBtn = document.createElement("button");
     nextBtn.innerHTML = "›";
-    nextBtn.style.cssText = "position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);border:none;color:#fff;font-size:1.5rem;width:36px;height:36px;border-radius:50%;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center";
+    nextBtn.style.cssText = "position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);border:none;color:#fff;font-size:1.5rem;width:36px;height:36px;border-radius:50%;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;transition:background 0.2s";
+    nextBtn.onmouseenter = function() { nextBtn.style.background = "rgba(0,0,0,0.75)"; };
+    nextBtn.onmouseleave = function() { nextBtn.style.background = "rgba(0,0,0,0.5)"; };
     nextBtn.onclick = function(e) { e.stopPropagation(); showPhoto(currentPhotoIdx + 1); };
-    const photoWrap = document.getElementById("detailMainPhoto");
-    photoWrap.style.position = "relative";
     photoWrap.appendChild(prevBtn);
     photoWrap.appendChild(nextBtn);
     // Thumbs
     imgs.forEach((src, i) => {
       const t = document.createElement("img");
       t.src = src;
-      t.style.cssText = "width:64px;height:64px;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid " + (i === 0 ? "var(--accent)" : "transparent") + ";transition:border 0.2s";
+      t.className = i === 0 ? "active-thumb" : "";
       t.onclick = function() { showPhoto(i); };
       thumbs.appendChild(t);
     });

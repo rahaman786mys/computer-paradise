@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Laptop Details – Computer Paradise</title>
-  <link rel="stylesheet" href="styles.css?v=8">
+  <link rel="stylesheet" href="styles.css?v=9">
   <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore-compat.js"></script>
 </head>
@@ -93,35 +93,79 @@ document.addEventListener("DOMContentLoaded", function() {
 <!-- Laptop Detail -->
 <section class="detail-section">
   <div class="container">
-    <a href="buy.html" class="btn btn-outline" style="margin-bottom:20px;display:inline-flex;align-items:center;gap:6px">← Back to Listings</a>
-    <div id="detailContent" style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start">
-      <!-- Left: Photo Gallery -->
-      <div>
-        <div class="detail-main-photo" id="detailMainPhoto" style="background:#111;border-radius:12px;overflow:hidden;min-height:320px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.06)">
-          <div id="detailNoImg" style="color:rgba(255,255,255,0.15);font-size:3rem;text-align:center">💻<br><span style="font-size:0.8rem">No photos</span></div>
-          <img id="detailMainImg" src="" alt="" style="width:100%;display:none">
+    <!-- Premium Detail Page -->
+    <div class="detail-premium" id="detailContent">
+      <!-- Breadcrumb (dynamic) -->
+      <nav class="detail-breadcrumb" id="detailBreadcrumb">
+        <a href="index.html">Home</a> <span class="bc-sep">›</span> <a href="buy.html">Buy Laptops</a> <span class="bc-sep">›</span> <span class="bc-current" id="bcName">Laptop</span>
+      </nav>
+
+      <div class="detail-grid">
+        <!-- Left: Full-screen Image Gallery -->
+        <div class="detail-gallery">
+          <div class="detail-main-photo" id="detailMainPhoto">
+            <div id="detailNoImg" style="color:rgba(255,255,255,0.15);font-size:3rem;text-align:center">💻<br><span style="font-size:0.8rem">No photos</span></div>
+            <img id="detailMainImg" src="" alt="" style="width:100%;display:none">
+          </div>
+          <div class="detail-thumbs" id="detailThumbs"></div>
         </div>
-        <div class="detail-thumbs" id="detailThumbs" style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"></div>
-      </div>
-      <!-- Right: Details -->
-      <div>
-        <h2 id="detailName" style="font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:4px">Laptop</h2>
-        <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
-          <span class="laptop-card-price" id="detailPrice" style="font-size:1.5rem">₹0</span>
-          <span class="laptop-card-mrp" id="detailMrp" style="font-size:0.85rem">MRP <del>₹0</del></span>
-          <span class="detail-save" id="detailSave" style="font-size:0.75rem;color:#4caf50;font-weight:600"></span>
-        </div>
-        <div id="detailSpecs" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px"></div>
-        <div class="detail-actions" style="display:flex;gap:10px;flex-wrap:wrap">
-          <a id="detailWA" href="#" target="_blank" class="btn btn-primary">💬 Inquire on WhatsApp</a>
-          <button onclick="addToCart(lap.id);showToast('✅ Added to cart!','🛒')" class="btn btn-primary" style="background:rgba(76,175,80,0.9);margin-left:8px">🛒 Add to Cart</button>
-          <button onclick="shareLaptop(parseInt(new URLSearchParams(window.location.search).get('id')))" class="btn btn-outline">🔗 Share</button>
-          <a href="buy.html" class="btn btn-outline">🔍 Browse More</a>
-        </div>
-        <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08);font-size:0.8rem;color:#ccc;display:flex;flex-wrap:wrap;gap:8px">
-          <span id="detailBadge" style="display:none;background:rgba(212,175,55,0.15);color:#d4af37;padding:3px 10px;border-radius:12px;font-weight:600"></span>
-          <span id="detailCondition" style="color:rgba(255,255,255,0.5)"></span>
-          <span id="detailSpec" style="color:rgba(255,255,255,0.5)"></span>
+
+        <!-- Right: Premium Product Info -->
+        <div class="detail-info">
+          <!-- Product Name -->
+          <h1 class="detail-name" id="detailName">Laptop</h1>
+
+          <!-- Quick Summary -->
+          <p class="detail-summary" id="detailSummary">Premium laptop with powerful performance and sleek design.</p>
+
+          <!-- Price Block -->
+          <div class="detail-price-block">
+            <div class="detail-price-current" id="detailPrice">₹0</div>
+            <div class="detail-price-mrp" id="detailMrp">MRP <del>₹0</del></div>
+            <div class="detail-price-save" id="detailSave">You Save ₹0</div>
+          </div>
+
+          <!-- Highlights -->
+          <div class="detail-highlights" id="detailHighlights">
+            <div class="detail-hl-item"><span class="detail-hl-icon">⚡</span><span class="detail-hl-text">High Performance</span></div>
+            <div class="detail-hl-item"><span class="detail-hl-icon">🛡️</span><span class="detail-hl-text">Quality Tested</span></div>
+            <div class="detail-hl-item"><span class="detail-hl-icon">🚚</span><span class="detail-hl-text">Fast Delivery</span></div>
+            <div class="detail-hl-item"><span class="detail-hl-icon">💎</span><span class="detail-hl-text">Premium Condition</span></div>
+          </div>
+
+          <!-- Specs Grid -->
+          <div class="detail-specs-grid" id="detailSpecs"></div>
+
+          <!-- Trust Badges -->
+          <div class="detail-trust">
+            <div class="detail-trust-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>6 Month Warranty</span>
+            </div>
+            <div class="detail-trust-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Quality Tested</span>
+            </div>
+            <div class="detail-trust-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              <span>Fast Delivery</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="detail-actions" id="detailActions">
+            <a id="detailWA" href="#" target="_blank" class="btn btn-wa">💬 Inquire on WhatsApp</a>
+            <button id="detailCartBtn" class="btn btn-cart">🛒 Add to Cart</button>
+            <button id="detailCompareBtn" class="btn btn-compare">⚖ Compare</button>
+            <button id="detailShareBtn" class="btn btn-share">🔗 Share</button>
+          </div>
+
+          <!-- Short Description / Badges -->
+          <div class="detail-meta">
+            <span id="detailBadge" style="display:none"></span>
+            <span id="detailCondition"></span>
+            <span id="detailSpec"></span>
+          </div>
         </div>
       </div>
     </div>
@@ -510,6 +554,6 @@ document.addEventListener("DOMContentLoaded", function() {
   </div>
 </footer>
 
-<script src="script.js?v=38"></script>
+<script src="script.js?v=39"></script>
 </body>
 </html>
