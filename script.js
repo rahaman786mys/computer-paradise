@@ -1282,12 +1282,12 @@ function renderGoogleBtn() {
 }
 
 // ===== Admin Panel =====
+let _adminDraftTimer = null;
 function openAdminPanel() {
   document.getElementById("adminOverlay").classList.add("show");
   document.body.style.overflow = "hidden";
   switchAdminTab("list");
-  // Restore draft on mobile (browser may have reloaded page)
-  setTimeout(() => {
+  _adminDraftTimer = setTimeout(() => {
     restoreAdminFormDraft();
     // Auto-save on every input change
     const form = document.getElementById("adminForm");
@@ -2101,6 +2101,7 @@ function restoreAdminFormDraft() {
 function editAdminLaptop(id) {
   const l = laptops.find(x => x.id === id);
   if (!l) return;
+  if (_adminDraftTimer) { clearTimeout(_adminDraftTimer); _adminDraftTimer = null; }
   try { localStorage.removeItem("cp_admin_form_draft"); localStorage.removeItem("cp_admin_form_photos"); } catch(e) {}
   _editingExistingImages = l.images || [];
   console.log("editAdminLaptop id=" + id + ": " + _editingExistingImages.length + " images, images type=" + typeof l.images + ", isArray=" + Array.isArray(l.images));
