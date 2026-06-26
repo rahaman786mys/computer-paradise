@@ -1295,66 +1295,75 @@ function renderGoogleBtn() {
 
 // ===== Admin Panel =====
 let _adminDraftTimer = null;
+
+// Attach photo handler immediately — works even if panel opens later
+document.addEventListener("DOMContentLoaded", function() {
+  var photoInput = document.getElementById("afPhotos");
+  if (photoInput && !photoInput._handlerAttached) {
+    photoInput._handlerAttached = true;
+    photoInput.addEventListener("change", function() {
+      console.log("afPhotos change fired, files:", photoInput.files.length);
+      if (!photoInput.files.length) return;
+      var maxPhotos = 10;
+      var remaining = maxPhotos - _editingExistingImages.length;
+      if (remaining <= 0) {
+        showToast("⚠️ Maximum 10 photos allowed.");
+        photoInput.value = "";
+        return;
+      }
+      var filesToProcess = Array.from(photoInput.files).slice(0, remaining);
+      if (photoInput.files.length > remaining) {
+        showToast("⚠️ Only " + remaining + " more allowed.");
+      }
+      showToast("📸 Processing " + filesToProcess.length + " photo(s)...", "⏳");
+      var readers = [];
+      filesToProcess.forEach(function(f) {
+        var r = new FileReader();
+        readers.push(new Promise(function(res, rej) {
+          r.onload = function(ev) { res(ev.target.result); };
+          r.onerror = function() { rej(new Error("Read failed")); };
+          r.readAsDataURL(f);
+        }));
+      });
+      Promise.all(readers).then(function(rawPhotos) {
+        console.log("Read " + rawPhotos.length + " photos, enhancing...");
+        var enhanced = [];
+        var done = 0;
+        rawPhotos.forEach(function(raw, i) {
+          enhanceImage(raw, function(compressed) {
+            enhanced[i] = compressed;
+            done++;
+            console.log("Enhanced " + done + "/" + rawPhotos.length);
+            if (done === rawPhotos.length) {
+              _editingExistingImages = _editingExistingImages.concat(enhanced).slice(0, maxPhotos);
+              renderEditPhotoPreview();
+              var countEl = document.getElementById("afPhotoCount");
+              if (countEl) countEl.textContent = _editingExistingImages.length + " photo(s) total";
+              showToast("✅ " + enhanced.length + " photo(s) added!", "🎉");
+            }
+          });
+        });
+      }).catch(function(e) {
+        console.error("Photo error:", e);
+        showToast("❌ Failed. Try again.", "⚠️");
+      });
+      photoInput.value = "";
+    });
+    console.log("afPhotos handler attached");
+  }
+});
+
 function openAdminPanel() {
   document.getElementById("adminOverlay").classList.add("show");
   document.body.style.overflow = "hidden";
   switchAdminTab("list");
   _adminDraftTimer = setTimeout(() => {
     restoreAdminFormDraft();
-    // Auto-save on every input change
     const form = document.getElementById("adminForm");
     if (form && !form._draftListenerAdded) {
       form._draftListenerAdded = true;
       form.addEventListener("input", saveAdminFormDraft);
       form.addEventListener("change", saveAdminFormDraft);
-      var photoInput = document.getElementById("afPhotos");
-      if (photoInput) {
-        photoInput.addEventListener("change", function() {
-          if (photoInput.files.length) {
-            var maxPhotos = 10;
-            var remaining = maxPhotos - _editingExistingImages.length;
-            if (remaining <= 0) {
-              showToast("⚠️ Maximum 10 photos allowed. Remove some first.");
-              photoInput.value = "";
-              return;
-            }
-            var filesToProcess = Array.from(photoInput.files).slice(0, remaining);
-            if (photoInput.files.length > remaining) {
-              showToast("⚠️ Only " + remaining + " more photo(s) allowed.");
-            }
-            showToast("📸 Processing " + filesToProcess.length + " photo(s)...", "⏳");
-            var readers = [];
-            filesToProcess.forEach(function(f) {
-              var r = new FileReader();
-              readers.push(new Promise(function(res, rej) {
-                r.onload = function(ev) { res(ev.target.result); };
-                r.onerror = function() { rej(new Error("FileReader failed")); };
-                r.readAsDataURL(f);
-              }));
-            });
-            Promise.all(readers).then(function(rawPhotos) {
-              var enhanced = [];
-              var done = 0;
-              rawPhotos.forEach(function(raw, i) {
-                enhanceImage(raw, function(compressed) {
-                  enhanced[i] = compressed;
-                  done++;
-                  if (done === rawPhotos.length) {
-                    _editingExistingImages = _editingExistingImages.concat(enhanced).slice(0, maxPhotos);
-                    renderEditPhotoPreview();
-                    document.getElementById("afPhotoCount").textContent = _editingExistingImages.length + " photo(s) total";
-                    showToast("✅ " + enhanced.length + " photo(s) added!", "🎉");
-                  }
-                });
-              });
-            }).catch(function(e) {
-              console.error("Photo processing error:", e);
-              showToast("❌ Failed to process photos. Try again.", "⚠️");
-            });
-            photoInput.value = "";
-          }
-        });
-      }
     }
   }, 100);
 }
