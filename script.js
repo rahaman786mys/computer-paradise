@@ -642,6 +642,7 @@ function laptopCardHTML(l) {
 
       <!-- Actions -->
       <div class="laptop-card-actions">
+        <button class="btn-add-cart" onclick="event.stopPropagation();addToCart(${l.id});showToast('✅ Added to cart!','🛒')" title="Add to Cart" style="background:rgba(76,175,80,0.15);border:1px solid rgba(76,175,80,0.4);border-radius:6px;color:#4caf50;padding:6px 10px;font-size:0.8rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all 0.2s">+ Cart</button>
         <span class="laptop-wish ${wishClass}" onclick="event.stopPropagation();toggleWishlist(${l.id});renderLaptops(laptops,'laptopGrid');if(document.getElementById('sliderTrack'))renderLaptops(laptops,'sliderTrack')">${wishlist.indexOf(l.id) > -1 ? '♥' : '♡'}</span>
         <span class="laptop-share" onclick="event.stopPropagation();shareLaptop(${l.id})" title="Share" style="cursor:pointer;font-size:0.85rem;color:rgba(255,255,255,0.4);transition:color 0.2s">🔗</span>
         <label class="laptop-compare-label" onclick="event.stopPropagation()">

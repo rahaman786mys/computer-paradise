@@ -114,6 +114,7 @@ document.addEventListener("DOMContentLoaded", function() {
         <div id="detailSpecs" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px"></div>
         <div class="detail-actions" style="display:flex;gap:10px;flex-wrap:wrap">
           <a id="detailWA" href="#" target="_blank" class="btn btn-primary">💬 Inquire on WhatsApp</a>
+          <button onclick="addToCart(lap.id);showToast('✅ Added to cart!','🛒')" class="btn btn-primary" style="background:rgba(76,175,80,0.9);margin-left:8px">🛒 Add to Cart</button>
           <button onclick="shareLaptop(parseInt(new URLSearchParams(window.location.search).get('id')))" class="btn btn-outline">🔗 Share</button>
           <a href="buy.html" class="btn btn-outline">🔍 Browse More</a>
         </div>
@@ -490,6 +491,6 @@ document.addEventListener("DOMContentLoaded", function() {
   </div>
 </footer>
 
-<script src="script.js?v=35"></script>
+<script src="script.js?v=37"></script>
 </body>
 </html>
