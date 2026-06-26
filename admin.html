@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Computer Paradise</title>
+  <link rel="stylesheet" href="styles.css?v=8">
+  <style>
+    body { margin: 0; padding: 0; background: #0a0a0a; }
+    .admin-container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; background: #1a1a1a; border-radius: 12px; }
+    .admin-header h1 { margin: 0; color: #d4af37; font-size: 1.5rem; }
+    .logout-btn { padding: 8px 16px; background: rgba(255,100,100,0.15); border: 1px solid rgba(255,100,100,0.3); border-radius: 6px; color: #ff6464; cursor: pointer; font-size: 0.9rem; }
+    .admin-content { background: #1a1a1a; border-radius: 12px; padding: 20px; min-height: 500px; }
+    .unauthorized { text-align: center; padding: 50px; color: #666; }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <div class="admin-header">
+      <h1>🛠 Admin Panel - Computer Paradise</h1>
+      <button class="logout-btn" onclick="adminLogout()">🚪 Logout</button>
+    </div>
+    <div class="admin-content" id="adminContent">
+      <!-- Admin panel will be injected here -->
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+  
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBxkwgJJUPZFFfNKistgjIFGIgeEMWAuQY",
+      authDomain: "computer-paradise-5235b.firebaseapp.com",
+      projectId: "computer-paradise-5235b",
+      storageBucket: "computer-paradise-5235b.appspot.com",
+      messagingSenderId: "226124743417",
+      appId: "1:226124743417:web:80e07aa4a98e66df9b5828"
+    };
+    
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+    
+    // Auth check - redirect if not admin
+    const ADMIN_PASSWORD = "Mysore@123";
+    let currentUser = null;
+    
+    function checkAdminAuth() {
+      try {
+        const d = localStorage.getItem("cp_user");
+        if (d) {
+          currentUser = JSON.parse(d);
+          if (currentUser.role === "admin") {
+            const loginTime = new Date(currentUser.loginTime).getTime();
+            const lastActivity = currentUser.lastActivity || loginTime;
+            const now = Date.now();
+            const fiveMinutes = 5 * 60 * 1000;
+            if ((now - loginTime > fiveMinutes) && (now - lastActivity > fiveMinutes)) {
+              localStorage.removeItem("cp_user");
+              window.location.href = "index.html";
+              return false;
+            }
+            currentUser.lastActivity = now;
+            localStorage.setItem("cp_user", JSON.stringify(currentUser));
+            return true;
+          }
+        }
+        window.location.href = "index.html";
+        return false;
+      } catch(e) {
+        window.location.href = "index.html";
+        return false;
+      }
+    }
+    
+    function adminLogout() {
+      localStorage.removeItem("cp_user");
+      window.location.href = "index.html";
+    }
+    
+    // Keep session alive
+    setInterval(function() {
+      try {
+        const d = localStorage.getItem("cp_user");
+        if (d) {
+          const user = JSON.parse(d);
+          if (user.role === "admin") {
+            user.lastActivity = Date.now();
+            localStorage.setItem("cp_user", JSON.stringify(user));
+          }
+        }
+      } catch(e) {}
+    }, 120000);
+    
+    // Check auth immediately
+    if (!checkAdminAuth()) {
+      document.body.innerHTML = '<div class="unauthorized"><h2>🔐 Access Denied</h2><p>Admin login required</p></div>';
+    } else {
+      // Load the full script.js for admin functionality
+      const script = document.createElement("script");
+      script.src = "script.js?v=29";
+      script.onload = function() {
+        // Inject admin panel HTML
+        const content = document.getElementById("adminContent");
+        content.innerHTML = `
+          <div class="admin-tabs" style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+            <button class="admin-tab active" onclick="switchAdminTab('list')">📋 All Laptops</button>
+            <button class="admin-tab" onclick="switchAdminTab('mylistings')">📋 My Listings</button>
+            <button class="admin-tab" onclick="switchAdminTab('add')">➕ Add New</button>
+            <button class="admin-tab" onclick="switchAdminTab('deleted')">🗑 Deleted</button>
+            <button class="admin-tab" onclick="switchAdminTab('inventory')">📊 Inventory</button>
+            <button class="admin-tab" onclick="switchAdminTab('sales')">💰 Sales</button>
+            <button class="admin-tab" onclick="switchAdminTab('customers')">👥 Customers</button>
+          </div>
+          <div id="adminPanelBody"></div>
+        `;
+        
+        // Initialize admin panel
+        setTimeout(function() {
+          switchAdminTab('list');
+        }, 100);
+      };
+      document.head.appendChild(script);
+    }
+  </script>
+</body>
+</html>

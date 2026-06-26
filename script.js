@@ -1224,7 +1224,8 @@ function loginAsAdmin(name) {
   updateAuthUI();
   showToast("👑 Admin logged in");
   closeAdminLoginModal();
-  openAdminPanel();
+  // Redirect to dedicated admin page
+  window.location.href = "admin.html";
 }
 
 function handleGoogleCredential(response) {
