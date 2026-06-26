@@ -27,7 +27,15 @@
       </div>
     </div>
     <div class="admin-main" id="adminMain">
-      <div style="text-align:center;padding:40px;color:#444">Loading admin panel...</div>
+      <!-- Tabs -->
+      <div class="admin-tabs" style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;padding-bottom:15px;border-bottom:1px solid rgba(255,255,255,0.1)">
+        <button class="admin-tab active" onclick="switchAdminTab('list')" style="padding:10px 16px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;cursor:pointer">📋 All Laptops</button>
+        <button class="admin-tab" onclick="switchAdminTab('add')" style="padding:10px 16px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;cursor:pointer">➕ Add New</button>
+        <button class="admin-tab" onclick="switchAdminTab('deleted')" style="padding:10px 16px;background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;cursor:pointer">🗑 Deleted</button>
+      </div>
+      <div id="adminPanelContent">
+        <div style="text-align:center;padding:40px;color:#444">Loading...</div>
+      </div>
     </div>
   </div>
 
@@ -112,23 +120,20 @@
     let _adminSelected = new Set();
 
     function switchAdminTab(tab) {
-      document.querySelectorAll(".admin-tab")?.forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".admin-tab").forEach(t => t.classList.remove("active"));
       const tabs = document.querySelectorAll(".admin-tab");
-      const tabIdx = { list:0, mylistings:1, add:2, deleted:3, inventory:4, sales:5, customers:6 }[tab];
+      const tabIdx = { list:0, add:1, deleted:2 }[tab];
       if (tabs[tabIdx]) tabs[tabIdx].classList.add("active");
       
-      const main = document.getElementById("adminMain");
+      const content = document.getElementById("adminPanelContent");
       if (tab === "list") renderAdminLaptopList();
-      else if (tab === "mylistings") { showToast("My Listings coming soon"); renderAdminLaptopList(); }
       else if (tab === "add") showAdminAddForm();
       else if (tab === "deleted") renderAdminDeleted();
-      else if (tab === "inventory") { showToast("Inventory coming soon"); main.innerHTML = "<p>Inventory dashboard</p>"; }
-      else if (tab === "sales") { showToast("Sales coming soon"); main.innerHTML = "<p>Sales dashboard</p>"; }
-      else if (tab === "customers") { showToast("Customers coming soon"); main.innerHTML = "<p>Customer list</p>"; }
+      else { content.innerHTML = "<p>Coming soon...</p>"; }
     }
 
     function renderAdminLaptopList() {
-      const main = document.getElementById("adminMain");
+      const main = document.getElementById("adminPanelContent");
       main.innerHTML = "<div style='text-align:center;padding:40px;color:#555'>Loading laptops...</div>";
       
       _adminSelected.clear();
@@ -238,7 +243,7 @@
     }
 
     function showAdminAddForm() {
-      const main = document.getElementById("adminMain");
+      const main = document.getElementById("adminPanelContent");
       main.innerHTML = `
         <form id="adminForm" onsubmit="return saveAdminLaptop(event)" style='max-width:700px;margin:0 auto'>
           <div style='display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px'>
@@ -357,7 +362,7 @@
     }
 
     function renderAdminDeleted() {
-      const main = document.getElementById("adminMain");
+      const main = document.getElementById("adminPanelContent");
       main.innerHTML = "<div style='text-align:center;padding:40px;color:#555'>Loading deleted...</div>";
       
       db.collection("deleted_laptops").orderBy("deletedAt", "desc").onSnapshot(snap => {
