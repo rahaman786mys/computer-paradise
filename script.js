@@ -1313,44 +1313,15 @@ function handlePhotoSelect(input) {
   filesToProcess.forEach(function(f) {
     var reader = new FileReader();
     reader.onload = function(ev) {
-      // Resize on canvas to keep under Firestore 1MB limit
-      var raw = ev.target.result;
-      var img = new Image();
-      img.onload = function() {
-        var w = img.width, h = img.height;
-        var maxDim = 800;
-        if (w > maxDim || h > maxDim) {
-          if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
-          else { w = Math.round(w * maxDim / h); h = maxDim; }
-        }
-        var canvas = document.createElement("canvas");
-        canvas.width = w;
-        canvas.height = h;
-        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-        var compressed = canvas.toDataURL("image/jpeg", 0.6);
-        _editingExistingImages.push(compressed);
-        pending--;
-        console.log("Photo added, remaining:", pending);
-        if (pending === 0) {
-          _editingExistingImages = _editingExistingImages.slice(0, maxPhotos);
-          renderEditPhotoPreview();
-          var countEl = document.getElementById("afPhotoCount");
-          if (countEl) countEl.textContent = _editingExistingImages.length + " photo(s) total";
-          showToast("Added " + filesToProcess.length + " photo(s)!", "✅");
-        }
-      };
-      img.onerror = function() {
-        _editingExistingImages.push(raw);
-        pending--;
-        if (pending === 0) {
-          _editingExistingImages = _editingExistingImages.slice(0, maxPhotos);
-          renderEditPhotoPreview();
-          var countEl = document.getElementById("afPhotoCount");
-          if (countEl) countEl.textContent = _editingExistingImages.length + " photo(s) total";
-          showToast("Added " + filesToProcess.length + " photo(s)!", "✅");
-        }
-      };
-      img.src = raw;
+      _editingExistingImages.push(ev.target.result);
+      pending--;
+      if (pending === 0) {
+        _editingExistingImages = _editingExistingImages.slice(0, maxPhotos);
+        renderEditPhotoPreview();
+        var countEl = document.getElementById("afPhotoCount");
+        if (countEl) countEl.textContent = _editingExistingImages.length + " photo(s) total";
+        showToast("Added " + filesToProcess.length + " photo(s)!", "✅");
+      }
     };
     reader.readAsDataURL(f);
   });
@@ -2224,8 +2195,12 @@ function renderEditPhotoPreview() {
     hint.style.cssText = "font-size:0.5rem;color:" + (i === 0 ? "#d4af37" : "rgba(255,255,255,0.2)") + ";text-align:center;margin-top:2px;white-space:nowrap;min-height:12px";
     wrap.appendChild(hint);
     // Tap to select / swap — works on mobile and desktop
+    var _tapHandled = false;
     function handleTap(e) {
       if (e.target === del || e.target.closest("button")) return;
+      if (_tapHandled) { _tapHandled = false; return; }
+      _tapHandled = true;
+      setTimeout(function() { _tapHandled = false; }, 300);
       e.preventDefault();
       if (_selectedPhotoIdx === -1) {
         _selectedPhotoIdx = i;
