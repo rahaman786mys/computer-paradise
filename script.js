@@ -280,7 +280,7 @@ function showCompare() {
       ${fields.map(f => `<tr><td style="padding:6px 8px;color:rgba(255,255,255,0.4);border-bottom:1px solid rgba(255,255,255,0.04);font-weight:600;white-space:nowrap">${f.label}</td>${items.map(l => {
         const val = l[f.key];
         const display = val != null && val !== '' ? (f.fmt ? f.fmt(val) : val) : '-';
-        return `<td style="padding:6px 8px;border-bottom:1px solid rgba(255,255,255,0.04);color:#fff">${display}</td>`;
+        return `<td style="padding:6px 8px;border-bottom:1px solid rgba(255,255,255,0.04);color:#fff;white-space:pre-wrap">${display}</td>`;
       }).join("")}</tr>`).join("")}
     </table>
   </div>`;
@@ -756,7 +756,7 @@ function openWindowsDesktop(id) {
     <div class="win-spec" style="--spec-w:40%"><span>📦 Type</span><span>${(_winLaptop.deviceType || "laptop").charAt(0).toUpperCase() + (_winLaptop.deviceType || "laptop").slice(1)}</span></div>
     <div class="win-spec" style="--spec-w:30%"><span>📦 Units</span><span>${_winLaptop.units || 1}</span></div>
     <div class="win-spec" style="--spec-w:85%"><span>🏷 Condition</span><span>${_winLaptop.condition}</span></div>
-    ${_winLaptop.specialSpec ? `<div class="win-spec" style="--spec-w:100%"><span>✨ Special</span><span>${_winLaptop.specialSpec}</span></div>` : ''}
+    ${_winLaptop.specialSpec ? `<div class="win-spec" style="--spec-w:100%;white-space:pre-wrap"><span>✨ Special</span><span>${_winLaptop.specialSpec}</span></div>` : ''}
   `;
   // Animate price count-up
   const priceEl = document.getElementById("windowsPrice");
@@ -1826,7 +1826,7 @@ function adminListItemHTML(l, extraActions, itemStyle) {
       <div class="admin-li-info">
         <div class="admin-li-name">${devIcon} ${l.brand} ${l.name}</div>
         <div class="admin-li-spec">${genTag}${l.processor} · ${l.ram} · ${l.storage}${screenTag ? ` · ${screenTag}` : ''}${l.condition}</div>
-        ${l.specialSpec ? `<div class="admin-li-spec" style="color:rgba(255,255,255,0.35)">✨ ${l.specialSpec}</div>` : ''}
+        ${l.specialSpec ? `<div class="admin-li-spec" style="color:rgba(255,255,255,0.35);white-space:pre-wrap">✨ ${l.specialSpec}</div>` : ''}
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;margin-right:8px;font-size:0.65rem;line-height:1.3">
         <span style="color:rgba(255,255,255,0.3)"><del>₹${(l.mrp || Math.round(l.price*1.35)).toLocaleString()}</del></span>
@@ -3826,6 +3826,8 @@ function loadDetailPage() {
   if (lap.badge) { badgeEl.style.display = "inline"; badgeEl.textContent = "🏷️ " + lap.badge; }
   document.getElementById("detailCondition").textContent = lap.condition ? "📋 " + lap.condition : "";
   document.getElementById("detailSpec").textContent = lap.specialSpec ? "✨ " + lap.specialSpec : "";
+  var ds = document.getElementById("detailSpec");
+  if (ds) ds.style.whiteSpace = "pre-wrap";
 
   // WA
   document.getElementById("detailWA").href = "https://wa.me/919916611010?text=" + encodeURIComponent("Hi Computer Paradise, I'm interested in the " + lap.name + " (₹" + lap.price.toLocaleString() + "). Is it available?");
