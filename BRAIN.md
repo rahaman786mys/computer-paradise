@@ -1,0 +1,1 @@
+await runTask(`Analyze the entire project recursively and create a complete BRAIN.md file that serves as the single source of truth for any future AI agent or developer. Fully reverse-engineer the system by understanding architecture, workflows, dependencies, business logic, data flow, state flow, integrations, configuration, security, deployment, and operational behavior...`);

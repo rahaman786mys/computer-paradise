@@ -882,14 +882,14 @@ function setupUpload() {
   });
 }
 
-// Auto image enhancement — resizes, removes blur, fixes lighting, sharpens
+// Auto image enhancement — resizes for Firestore 1MB limit
 function enhanceImage(dataUrl, callback, _retry) {
   const img = new Image();
   img.onerror = function() { callback(dataUrl); };
   img.onload = function() {
     try {
       let w = img.width, h = img.height;
-      const maxDim = 800;
+      const maxDim = _retry ? 600 : 1000;
       if (w > maxDim || h > maxDim) {
         if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
         else { w = Math.round(w * maxDim / h); h = maxDim; }
@@ -897,7 +897,7 @@ function enhanceImage(dataUrl, callback, _retry) {
       const canvas = document.createElement("canvas");
       canvas.width = w; canvas.height = h;
       canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-      callback(canvas.toDataURL("image/jpeg", _retry ? 0.45 : 0.65));
+      callback(canvas.toDataURL("image/jpeg", _retry ? 0.5 : 0.75));
     } catch(e) { callback(dataUrl); }
   };
   img.src = dataUrl;
@@ -2247,29 +2247,18 @@ function saveAdminLaptop(e) {
     });
   }
 
-  // Read photos — upload to Firebase Storage for full quality
+  // Read photos — compress for Firestore 1MB limit (no Storage available)
   const loadPhotos = () => {
     return new Promise(resolve => {
       if (!photoFiles.length) {
         if (_editingExistingImages.length) {
           var alreadyUrls = _editingExistingImages.every(function(s) { return s && !s.startsWith("data:"); });
           if (alreadyUrls) { resolve(_editingExistingImages); return; }
-          var laptopId = id || Date.now();
-          var uploaded = [];
-          var upDone = 0;
+          var result = [];
+          var done = 0;
           _editingExistingImages.forEach(function(src, i) {
-            if (src && !src.startsWith("data:")) { uploaded[i] = src; upDone++; if (upDone === _editingExistingImages.length) resolve(uploaded); return; }
-            var path = "laptops/" + laptopId + "/photo_" + i + "_" + Date.now() + ".jpg";
-            uploadToStorage(src, path).then(function(url) {
-              uploaded[i] = url;
-              upDone++;
-              if (upDone === _editingExistingImages.length) resolve(uploaded);
-            }).catch(function(e) {
-              console.error("Storage upload failed:", e);
-              uploaded[i] = src;
-              upDone++;
-              if (upDone === _editingExistingImages.length) resolve(uploaded);
-            });
+            if (src && !src.startsWith("data:")) { result[i] = src; done++; if (done === _editingExistingImages.length) resolve(result); return; }
+            enhanceImage(src, function(comp) { result[i] = comp; done++; if (done === _editingExistingImages.length) resolve(result); });
           });
           return;
         }
@@ -2280,7 +2269,6 @@ function saveAdminLaptop(e) {
         resolve([]);
         return;
       }
-      var laptopId = id || Date.now();
       const readers = [];
       Array.from(photoFiles).forEach(f => {
         const r = new FileReader();
@@ -2288,21 +2276,13 @@ function saveAdminLaptop(e) {
       });
       Promise.all(readers).then(rawPhotos => {
         if (!rawPhotos.length) { resolve([]); return; }
-        var uploaded = [];
-        var upDone = 0;
+        var compressed = [];
+        var done = 0;
         rawPhotos.forEach((raw, i) => {
-          var path = "laptops/" + laptopId + "/photo_" + i + "_" + Date.now() + ".jpg";
-          uploadToStorage(raw, path).then(function(url) {
-            uploaded[i] = url;
-            upDone++;
-            if (upDone === rawPhotos.length) resolve(uploaded);
-          }).catch(function(e) {
-            console.error("Storage upload failed:", e);
-            enhanceImage(raw, function(compressed) {
-              uploaded[i] = compressed;
-              upDone++;
-              if (upDone === rawPhotos.length) resolve(uploaded);
-            });
+          enhanceImage(raw, function(comp) {
+            compressed[i] = comp;
+            done++;
+            if (done === rawPhotos.length) resolve(compressed);
           });
         });
       });
