@@ -14,7 +14,8 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-const storage = firebase.storage();
+let storage = null;
+try { storage = firebase.storage(); } catch(e) { console.warn("Firebase Storage not available yet"); }
 
 // ===== Laptop Data =====
 const laptops = [
@@ -2233,6 +2234,7 @@ function saveAdminLaptop(e) {
 
   function uploadToStorage(dataUrl, path) {
     return new Promise(function(resolve, reject) {
+      if (!storage) { reject(new Error("Storage not available")); return; }
       var arr = dataUrl.split(",");
       var mime = arr[0].match(/:(.*?);/)[1];
       var bstr = atob(arr[1]);
