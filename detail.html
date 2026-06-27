@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Laptop Details – Computer Paradise</title>
-  <link rel="stylesheet" href="styles.css?v=13">
+  <link rel="stylesheet" href="styles.css?v=14">
   <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-storage-compat.js"></script>
@@ -159,7 +159,9 @@ document.addEventListener("DOMContentLoaded", function() {
             <button id="detailCartBtn" class="btn btn-cart">🛒 Add to Cart</button>
             <button id="detailCompareBtn" class="btn btn-compare">⚖ Compare</button>
             <button id="detailShareBtn" class="btn btn-share">🔗 Share</button>
+            <button id="detailPriceDropBtn" class="btn btn-outline" onclick="notifyPriceDropFromDetail()" style="font-size:0.78rem;padding:8px 14px">🔔 Price Drop Alert</button>
           </div>
+          <div id="stockAlertContainer"></div>
 
           <!-- Short Description / Badges -->
           <div class="detail-meta">
@@ -188,6 +190,23 @@ document.addEventListener("DOMContentLoaded", function() {
     </div>
     <div class="related-track-wrap" style="position:relative">
       <div class="slider-track" id="relatedSlider" style="scroll-behavior:smooth;padding:8px 0"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Reviews Section -->
+<section class="section">
+  <div class="container">
+    <h3 class="section-title" style="margin-bottom:16px">⭐ Customer Reviews</h3>
+    <div id="reviewsContainer"></div>
+    <div class="review-form">
+      <h4 style="font-size:0.9rem;margin-bottom:10px">Write a Review</h4>
+      <div class="star-input" style="margin-bottom:8px">
+        <span onclick="setRating(1)">★</span><span onclick="setRating(2)">★</span><span onclick="setRating(3)">★</span><span onclick="setRating(4)">★</span><span onclick="setRating(5)">★</span>
+      </div>
+      <input type="text" id="reviewName" placeholder="Your name (optional)" style="margin-bottom:8px">
+      <textarea id="reviewText" rows="3" placeholder="Share your experience..." style="width:100%;box-sizing:border-box;padding:8px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#fff;font-size:0.85rem;margin-bottom:8px"></textarea>
+      <button onclick="submitDetailReview()" class="btn btn-primary" style="padding:8px 20px;font-size:0.8rem;border-radius:6px">Submit Review</button>
     </div>
   </div>
 </section>
@@ -395,6 +414,8 @@ document.addEventListener("DOMContentLoaded", function() {
           <button class="admin-tab" onclick="switchAdminTab('sales')">📊 Sales</button>
           <button class="admin-tab" onclick="switchAdminTab('customers')">👥 Customers</button>
           <button class="admin-tab" onclick="switchAdminTab('repairs')">🔧 Repairs</button>
+          <button class="admin-tab" onclick="switchAdminTab('orders')">📦 Orders</button>
+          <button class="admin-tab" onclick="switchAdminTab('coupons')">🎟️ Coupons</button>
         </div>
         <div id="adminTabList" class="admin-tab-content active"></div>
         <div id="adminTabMyListings" class="admin-tab-content"></div>
@@ -531,6 +552,8 @@ document.addEventListener("DOMContentLoaded", function() {
         <div id="adminTabSales" class="admin-tab-content"></div>
         <div id="adminTabCustomers" class="admin-tab-content"></div>
         <div id="adminTabRepairs" class="admin-tab-content"></div>
+        <div id="adminTabOrders" class="admin-tab-content"></div>
+        <div id="adminTabCoupons" class="admin-tab-content"></div>
         <div style="text-align:right;padding-top:10px;border-top:1px solid rgba(255,255,255,0.04);font-size:0.7rem;color:rgba(255,255,255,0.15);">Admin actions save automatically</div>
       </div>
     </div>
@@ -556,6 +579,6 @@ document.addEventListener("DOMContentLoaded", function() {
   </div>
 </footer>
 
-<script src="script.js?v=69"></script>
+<script src="script.js?v=70"></script>
 </body>
 </html>

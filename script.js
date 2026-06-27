@@ -576,6 +576,9 @@ function checkoutCart() {
   persistOrders();
 
   window.open("https://wa.me/919916611010?text=" + encodeURIComponent(msg), "_blank");
+  if (currentUser && currentUser.phone) {
+    setTimeout(function() { sendOrderWhatsAppToCustomer(order, currentUser.phone); }, 1500);
+  }
   showToast("📤 Order sent via WhatsApp!");
 }
 
@@ -592,7 +595,7 @@ function clearCart() {
 function laptopCardHTML(l) {
   const hasImg = l.images.length > 0;
   const imgHtml = hasImg
-    ? `<img src="${l.images[0]}" alt="${l.name}" onerror="this.outerHTML='<span class=\\'placeholder-icon\\'>💻</span>'">`
+    ? `<img src="${l.images[0]}" alt="${l.name}" loading="lazy" onerror="this.outerHTML='<span class=\\'placeholder-icon\\'>💻</span>'">`
     : `<span class="placeholder-icon">💻</span>`;
   const mrp = l.mrp || Math.round(l.price * 1.35);
   const discount = Math.round((1 - l.price / mrp) * 100);
@@ -908,6 +911,8 @@ function enhanceImage(dataUrl, callback, _retry) {
 function filterLaptops() {
   const brand = document.getElementById("filterBrand")?.value;
   const deviceType = document.getElementById("filterDeviceType")?.value;
+  const ram = document.getElementById("filterRam")?.value;
+  const cond = document.getElementById("filterCondition")?.value;
   const minP = parseInt(document.getElementById("filterMin")?.value) || 0;
   const maxP = parseInt(document.getElementById("filterMax")?.value) || Infinity;
   const sort = document.getElementById("filterSort")?.value || "default";
@@ -916,13 +921,14 @@ function filterLaptops() {
   let f = laptops;
   if (brand) f = f.filter(l => l.brand === brand);
   if (deviceType) f = f.filter(l => (l.deviceType || "laptop") === deviceType);
+  if (ram) f = f.filter(l => l.ram === ram);
+  if (cond) f = f.filter(l => l.condition === cond);
   f = f.filter(l => l.price >= minP && l.price <= maxP);
-  if (query) f = f.filter(l => l.name.toLowerCase().includes(query) || l.brand.toLowerCase().includes(query) || l.processor.toLowerCase().includes(query));
+  if (query) f = f.filter(l => l.name.toLowerCase().includes(query) || l.brand.toLowerCase().includes(query) || l.processor.toLowerCase().includes(query) || (l.ram && l.ram.includes(query)) || (l.storage && l.storage.toLowerCase().includes(query)));
   if (sort === "price-asc") f.sort((a, b) => a.price - b.price);
   else if (sort === "price-desc") f.sort((a, b) => b.price - a.price);
   else if (sort === "name") f.sort((a, b) => a.name.localeCompare(b.name));
   else {
-    // Default: featured + priority first, then by id
     f.sort((a, b) => {
       if (a.featured !== b.featured) return a.featured ? -1 : 1;
       if ((b.priority || 0) !== (a.priority || 0)) return (b.priority || 0) - (a.priority || 0);
@@ -1313,6 +1319,16 @@ function switchAdminTab(tab, skipReset) {
     document.querySelectorAll(".admin-tab")[7].classList.add("active");
     document.getElementById("adminTabRepairs").classList.add("active");
     renderAdminRepairs();
+  } else if (tab === "orders") {
+    var tabs = document.querySelectorAll(".admin-tab");
+    tabs[8]?.classList.add("active");
+    document.getElementById("adminTabOrders").classList.add("active");
+    renderAdminOrders();
+  } else if (tab === "coupons") {
+    var tabs2 = document.querySelectorAll(".admin-tab");
+    tabs2[9]?.classList.add("active");
+    document.getElementById("adminTabCoupons").classList.add("active");
+    renderAdminCouponList();
   } else {
     document.querySelectorAll(".admin-tab")[2].classList.add("active");
     document.getElementById("adminTabAdd").classList.add("active");
@@ -3325,7 +3341,7 @@ document.addEventListener("DOMContentLoaded", () => {
       maxS?.addEventListener("input", updatePriceSliders);
       updatePriceSliders();
 
-      ["filterBrand","filterDeviceType","filterMin","filterMax","filterSort"].forEach(id => {
+      ["filterBrand","filterDeviceType","filterRam","filterCondition","filterMin","filterMax","filterSort"].forEach(id => {
         document.getElementById(id)?.addEventListener("change", filterLaptops);
       });
       document.getElementById("filterMin")?.addEventListener("input", filterLaptops);
@@ -3355,6 +3371,20 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   }); // end onLaptopsReady
+
+  // Render recently viewed on homepage
+  try {
+    var viewed = JSON.parse(localStorage.getItem("cp_recently_viewed") || "[]");
+    var viewedContainer = document.getElementById("recentlyViewed");
+    if (viewedContainer && viewed.length) {
+      var viewedLaptops = viewed.map(function(id) { return laptops.find(function(l) { return l.id === id; }); }).filter(Boolean);
+      if (viewedLaptops.length) {
+        viewedContainer.innerHTML = '<div class="container"><h3 class="section-title" style="margin-bottom:16px">Recently Viewed</h3><div class="laptop-grid" id="recentlyViewedGrid"></div></div>';
+        renderLaptops(viewedLaptops, "recentlyViewedGrid");
+        viewedContainer.style.display = "block";
+      }
+    }
+  } catch(e) {}
 
   document.getElementById("sellForm")?.addEventListener("submit", handleSellForm);
   document.getElementById("callForm")?.addEventListener("submit", handleCallRequest);
@@ -3760,6 +3790,15 @@ function loadDetailPage() {
   const lap = laptops.find(l => l.id === id);
   if (!lap) { document.getElementById("detailContent").innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:rgba(255,255,255,0.2)">Laptop not found. <a href="buy.html" style="color:var(--accent)">Browse laptops</a></div>'; return; }
 
+  // Save to recently viewed
+  try {
+    var viewed = JSON.parse(localStorage.getItem("cp_recently_viewed") || "[]");
+    viewed = viewed.filter(function(x) { return x !== id; });
+    viewed.unshift(id);
+    viewed = viewed.slice(0, 5);
+    localStorage.setItem("cp_recently_viewed", JSON.stringify(viewed));
+  } catch(e) {}
+
   document.title = lap.name + " – Computer Paradise";
   document.getElementById("detailName").textContent = lap.name;
   var bcName = document.getElementById("bcName");
@@ -4069,4 +4108,225 @@ function loadBannerPhoto() {
       }
     }).catch(function() {});
   }
+}
+
+// ===== Festive Banner Dismiss Check =====
+if (localStorage.getItem("cp_banner_closed") === "1") {
+  var fb = document.getElementById("festiveBanner");
+  if (fb) fb.style.display = "none";
+}
+
+// ===== Stock Alert =====
+function notifyStock(id) {
+  var lap = laptops.find(function(l) { return l.id === id; });
+  if (!lap) return;
+  try {
+    var alerts = JSON.parse(localStorage.getItem("cp_stock_alerts") || "[]");
+    var phone = currentUser ? currentUser.phone : prompt("Enter your phone to get notified:");
+    if (!phone) return;
+    alerts.push({ laptopId: id, phone: phone, date: new Date().toISOString() });
+    localStorage.setItem("cp_stock_alerts", JSON.stringify(alerts));
+    showToast("🔔 We'll notify you when this is back in stock!");
+  } catch(e) { showToast("⚠️ Could not set alert"); }
+}
+
+// ===== Customer Reviews =====
+function renderReviews(laptopId) {
+  var container = document.getElementById("reviewsContainer");
+  if (!container) return;
+  try {
+    var reviews = JSON.parse(localStorage.getItem("cp_reviews_" + laptopId) || "[]");
+    if (!reviews.length) {
+      container.innerHTML = '<p style="color:rgba(255,255,255,0.3);font-size:0.85rem;text-align:center;padding:16px">No reviews yet. Be the first to review!</p>';
+      return;
+    }
+    container.innerHTML = '<div class="reviews-list">' + reviews.map(function(r) {
+      var stars = "★".repeat(r.rating) + "☆".repeat(5 - r.rating);
+      return '<div class="review-item"><div class="review-stars">' + stars + '</div><div class="review-text">' + (r.text || "No comment") + '</div><div class="review-meta">' + (r.name || "Anonymous") + ' • ' + new Date(r.date).toLocaleDateString() + '</div></div>';
+    }).join("") + '</div>';
+    var avg = reviews.reduce(function(s, r) { return s + r.rating; }, 0) / reviews.length;
+    container.innerHTML = '<div style="text-align:center;margin-bottom:12px"><span style="font-size:1.5rem;color:#d4af37">' + "★".repeat(Math.round(avg)) + '</span> <span style="color:rgba(255,255,255,0.5);font-size:0.85rem">' + avg.toFixed(1) + ' / 5 (' + reviews.length + ' reviews)</span></div>' + container.innerHTML;
+  } catch(e) {}
+}
+
+function submitReview(laptopId) {
+  var rating = 0;
+  document.querySelectorAll(".star-input span").forEach(function(s, i) { if (s.classList.contains("active")) rating = i + 1; });
+  if (!rating) { showToast("⚠️ Please select a rating"); return; }
+  var text = document.getElementById("reviewText")?.value || "";
+  var name = document.getElementById("reviewName")?.value || "Anonymous";
+  try {
+    var reviews = JSON.parse(localStorage.getItem("cp_reviews_" + laptopId) || "[]");
+    reviews.unshift({ rating: rating, text: text, name: name, date: new Date().toISOString() });
+    localStorage.setItem("cp_reviews_" + laptopId, JSON.stringify(reviews));
+    if (_useFirestore) db.collection("reviews").add({ laptopId: laptopId, rating: rating, text: text, name: name, date: new Date().toISOString() }).catch(function(){});
+    showToast("✅ Review submitted!");
+    renderReviews(laptopId);
+    document.getElementById("reviewText").value = "";
+    document.getElementById("reviewName").value = "";
+  } catch(e) { showToast("⚠️ Failed to submit"); }
+}
+
+function setRating(n) {
+  document.querySelectorAll(".star-input span").forEach(function(s, i) { s.classList.toggle("active", i < n); });
+}
+
+// ===== Price Drop Alert =====
+function notifyPriceDrop(id) {
+  var phone = currentUser ? currentUser.phone : prompt("Enter your phone to get notified when price drops:");
+  if (!phone) return;
+  try {
+    var alerts = JSON.parse(localStorage.getItem("cp_price_alerts") || "[]");
+    var lap = laptops.find(function(l) { return l.id === id; });
+    alerts.push({ laptopId: id, phone: phone, oldPrice: lap.price, date: new Date().toISOString() });
+    localStorage.setItem("cp_price_alerts", JSON.stringify(alerts));
+    showToast("🔔 We'll notify you when the price drops!");
+  } catch(e) {}
+}
+
+// ===== Auto-Generate Description =====
+function autoGenDescription() {
+  var brand = document.getElementById("afBrand")?.value || "";
+  var name = document.getElementById("afName")?.value || "";
+  var ram = document.getElementById("afRam")?.value || "";
+  var storage = document.getElementById("afStorage")?.value || "";
+  var processor = document.getElementById("afProcessor")?.value || "";
+  var screen = document.getElementById("afScreen")?.value || "";
+  var gen = document.getElementById("afGen")?.value || "";
+  var cond = document.getElementById("afCondition")?.value || "";
+  if (!brand || !name) { showToast("⚠️ Select brand and enter model name first"); return; }
+  var condText = cond === "A" ? "excellent condition with minimal signs of use" : cond === "B" ? "good condition with light cosmetic wear" : "fair condition with visible wear";
+  var desc = brand + " " + name + " — ";
+  if (screen) desc += screen + '" ';
+  if (gen) desc += gen + " Gen ";
+  desc += "laptop powered by " + processor + " with " + ram + " RAM and " + storage + " storage. ";
+  desc += "This device is in " + condText + ", fully tested and ready to use. ";
+  desc += "Perfect for students, professionals, and everyday computing. ";
+  desc += "Includes genuine charger and " + (cond === "A" ? "original box" : "compatible charger") + ".";
+  var field = document.getElementById("afSpecialSpec");
+  if (field) { field.value = desc; showToast("✅ Description generated!"); }
+}
+
+// ===== Bulk CSV Import =====
+function handleCSVImport(input) {
+  if (!input.files.length) return;
+  var file = input.files[0];
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var text = e.target.result;
+    var lines = text.split("\n").filter(function(l) { return l.trim(); });
+    if (lines.length < 2) { showToast("⚠️ CSV must have header + at least 1 row"); return; }
+    var headers = lines[0].split(",").map(function(h) { return h.trim().toLowerCase(); });
+    var imported = 0, failed = 0;
+    var maxId = laptops.reduce(function(m, x) { return Math.max(m, x.id); }, 0);
+    for (var i = 1; i < lines.length; i++) {
+      var vals = lines[i].split(",");
+      var lap = { id: maxId + 1 + i - 1, images: [], adminCreated: true, featured: false, priority: 0, units: 1, os: "windows", deviceType: "laptop", condition: "A", badge: "", purchasePrice: 0 };
+      headers.forEach(function(h, j) {
+        if (vals[j] === undefined) return;
+        var v = vals[j].trim();
+        if (h === "brand") lap.brand = v;
+        else if (h === "name") lap.name = v;
+        else if (h === "processor") lap.processor = v;
+        else if (h === "ram") lap.ram = v;
+        else if (h === "storage") lap.storage = v;
+        else if (h === "mrp") lap.mrp = parseInt(v) || 0;
+        else if (h === "price") lap.price = parseInt(v) || 0;
+        else if (h === "purchaseprice") lap.purchasePrice = parseInt(v) || 0;
+        else if (h === "units") lap.units = parseInt(v) || 1;
+        else if (h === "os") lap.os = v || "windows";
+        else if (h === "devicetype") lap.deviceType = v || "laptop";
+        else if (h === "condition") lap.condition = v || "A";
+      });
+      if (lap.brand && lap.name && lap.ram && lap.storage && lap.processor && lap.price) {
+        laptops.push(lap);
+        if (_useFirestore) db.collection("laptops").doc(String(lap.id)).set(lap).catch(function(){});
+        imported++;
+      } else failed++;
+    }
+    persistLaptops();
+    renderAdminLaptopList();
+    showToast("✅ Imported " + imported + " laptops" + (failed ? ", " + failed + " skipped" : ""));
+    input.value = "";
+  };
+  reader.readAsText(file);
+}
+
+function downloadCSVTemplate() {
+  var csv = "brand,name,processor,ram,storage,mrp,price,purchasePrice,units,os,deviceType,condition\n";
+  csv += "Dell,Inspiron 15 3520,Intel i5 12th Gen,8GB,512GB SSD,55000,39999,30000,3,windows,laptop,A\n";
+  csv += "HP,Pavilion 14,Intel i7 12th Gen,16GB,1TB SSD,70000,54999,42000,2,windows,laptop,A\n";
+  var blob = new Blob([csv], { type: "text/csv" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "laptops_template.csv";
+  a.click();
+}
+
+// ===== Order Management =====
+function updateOrderStatus(orderId, status) {
+  var order = orders.find(function(o) { return o.id === orderId; });
+  if (!order) return;
+  order.status = status;
+  persistOrders();
+  renderAdminOrders();
+  showToast("📦 Order marked as " + status);
+}
+
+function renderAdminOrders() {
+  var el = document.getElementById("adminTabOrders");
+  if (!el) return;
+  if (!orders.length) { el.innerHTML = '<div class="admin-empty">No orders yet.</div>'; return; }
+  el.innerHTML = orders.slice().reverse().map(function(o) {
+    var status = o.status || "pending";
+    var statusClass = "order-" + status;
+    var items = (o.items || []).map(function(i) { return i.name + " ×" + i.qty; }).join(", ");
+    return '<div class="order-row"><div style="flex:1"><strong>#' + o.id + '</strong> — ' + items + '<br><span style="font-size:0.7rem;color:rgba(255,255,255,0.4)">' + new Date(o.date).toLocaleString() + ' • ' + (o.customer ? o.customer.name : "Guest") + ' • ₹' + (o.finalTotal || o.totalSell || 0).toLocaleString() + '</span></div><select onchange="updateOrderStatus(' + o.id + ',this.value)" class="order-status-badge ' + statusClass + '" style="border:none;padding:6px 10px;border-radius:20px;font-size:0.7rem;font-weight:600"><option value="pending"' + (status==="pending"?" selected":"") + '>⏳ Pending</option><option value="confirmed"' + (status==="confirmed"?" selected":"") + '>✓ Confirmed</option><option value="shipped"' + (status==="shipped"?" selected":"") + '>🚚 Shipped</option><option value="delivered"' + (status==="delivered"?" selected":"") + '>✅ Delivered</option><option value="cancelled"' + (status==="cancelled"?" selected":"") + '>❌ Cancelled</option></select></div>';
+  }).join("");
+}
+
+function submitDetailReview() {
+  var params = new URLSearchParams(window.location.search);
+  var id = parseInt(params.get("id"));
+  if (!id) return;
+  submitReview(id);
+}
+
+function notifyPriceDropFromDetail() {
+  var params = new URLSearchParams(window.location.search);
+  var id = parseInt(params.get("id"));
+  if (id) notifyPriceDrop(id);
+}
+
+// Auto-render reviews on detail page
+var _reviewInterval = setInterval(function() {
+  if (_laptopsLoaded && document.getElementById("reviewsContainer")) {
+    var params = new URLSearchParams(window.location.search);
+    var id = parseInt(params.get("id"));
+    if (id) { renderReviews(id); }
+    clearInterval(_reviewInterval);
+  }
+}, 500);
+
+// ===== PWA Service Worker =====
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  window.addEventListener("load", function() {
+    navigator.serviceWorker.register("sw.js").catch(function(e) { console.warn("SW registration failed:", e); });
+  });
+}
+
+// ===== WhatsApp Order Notification to Customer =====
+function sendOrderWhatsAppToCustomer(order, customerPhone) {
+  if (!customerPhone || customerPhone === "Guest") return;
+  var phone = customerPhone.replace(/\D/g, "");
+  if (phone.length === 10) phone = "91" + phone;
+  var msg = "✅ *Order Confirmed - Computer Paradise*\n\n";
+  msg += "Order #" + order.id + "\n";
+  msg += "Date: " + new Date(order.date).toLocaleString() + "\n\n";
+  msg += "*Items:*\n";
+  (order.items || []).forEach(function(i) { msg += "• " + i.name + " ×" + i.qty + " — ₹" + (i.price * i.qty).toLocaleString() + "\n"; });
+  msg += "\n*Total: ₹" + (order.finalTotal || order.totalSell || 0).toLocaleString() + "*\n\n";
+  msg += "Thank you for your order! We'll notify you when it ships.\n\n";
+  msg += "— Computer Paradise\n📞 +91 99166 11010";
+  window.open("https://wa.me/" + phone + "?text=" + encodeURIComponent(msg), "_blank");
 }

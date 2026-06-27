@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Buy Laptops & Desktops – Computer Paradise</title>
-  <link rel="stylesheet" href="styles.css?v=13">
+  <link rel="stylesheet" href="styles.css?v=14">
   <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-storage-compat.js"></script>
@@ -137,6 +137,20 @@ document.addEventListener("DOMContentLoaded", function() {
       <option value="desktop">🖥️ Desktops</option>
       <option value="tablet">📱 Tablets</option>
       <option value="other">📦 Other</option>
+    </select>
+    <select id="filterRam">
+      <option value="">All RAM</option>
+      <option value="4GB">4GB</option>
+      <option value="8GB">8GB</option>
+      <option value="16GB">16GB</option>
+      <option value="32GB">32GB</option>
+      <option value="64GB">64GB</option>
+    </select>
+    <select id="filterCondition">
+      <option value="">All Conditions</option>
+      <option value="A">⭐ Grade A</option>
+      <option value="B">Grade B</option>
+      <option value="C">Grade C</option>
     </select>
     <div class="price-range-wrapper">
       <div class="price-slider">
@@ -338,6 +352,8 @@ document.addEventListener("DOMContentLoaded", function() {
         <button class="admin-tab" onclick="switchAdminTab('sales')">📊 Sales</button>
         <button class="admin-tab" onclick="switchAdminTab('customers')">👥 Customers</button>
         <button class="admin-tab" onclick="switchAdminTab('repairs')">🔧 Repairs</button>
+        <button class="admin-tab" onclick="switchAdminTab('orders')">📦 Orders</button>
+        <button class="admin-tab" onclick="switchAdminTab('coupons')">🎟️ Coupons</button>
       </div>
       <div id="adminTabList" class="admin-tab-content active"></div>
       <div id="adminTabMyListings" class="admin-tab-content"></div>
@@ -474,6 +490,8 @@ document.addEventListener("DOMContentLoaded", function() {
       <div id="adminTabSales" class="admin-tab-content"></div>
       <div id="adminTabCustomers" class="admin-tab-content"></div>
       <div id="adminTabRepairs" class="admin-tab-content"></div>
+      <div id="adminTabOrders" class="admin-tab-content"></div>
+      <div id="adminTabCoupons" class="admin-tab-content"></div>
 
       <div style="text-align:right;padding-top:10px;border-top:1px solid rgba(255,255,255,0.04);font-size:0.7rem;color:rgba(255,255,255,0.15);">
         Admin actions save automatically
@@ -616,6 +634,6 @@ document.querySelectorAll('#mobileDrawer a[onclick*="openAuthModal"]').forEach(e
   el.addEventListener('click', function(e) { openAuthModal(); closeMenu(); });
 });
 </script>
-<script src="script.js?v=69"></script>
+<script src="script.js?v=70"></script>
 </body>
 </html>
