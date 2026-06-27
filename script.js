@@ -4185,6 +4185,16 @@ function notifyPriceDrop(id) {
 }
 
 // ===== Auto-Generate Description =====
+function insertEmoji(emoji) {
+  var ta = document.getElementById("afSpecialSpec");
+  if (!ta) return;
+  var start = ta.selectionStart;
+  var end = ta.selectionEnd;
+  ta.value = ta.value.substring(0, start) + emoji + ta.value.substring(end);
+  ta.selectionStart = ta.selectionEnd = start + emoji.length;
+  ta.focus();
+}
+
 function autoGenDescription() {
   var brand = document.getElementById("afBrand")?.value || "";
   var name = document.getElementById("afName")?.value || "";
